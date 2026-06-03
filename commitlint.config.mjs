@@ -5,9 +5,9 @@
  * @type {import("@commitlint/types").UserConfig}
  */
 export default {
-  extends: ["@commitlint/config-conventional"],
-  helpUrl: "https://www.conventionalcommits.org/en/v1.0.0/#summary",
+  extends: ['@commitlint/config-conventional'],
+  helpUrl: 'https://www.conventionalcommits.org/en/v1.0.0/#summary',
   rules: {
-    "scope-case": [2, "always", "kebab-case"],
+    'scope-case': [2, 'always', 'kebab-case'],
   },
 };
