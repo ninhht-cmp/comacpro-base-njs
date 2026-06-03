@@ -153,7 +153,6 @@
 
   body {
     @apply bg-background text-foreground;
-    transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   button:not(:disabled),

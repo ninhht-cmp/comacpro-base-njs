@@ -1,0 +1,11 @@
+{
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "description": "Trang bạn yêu cầu không tồn tại hoặc đã bị di chuyển.",
+    "back": "Về trang chủ"
+  },
+  "generic": {
+    "title": "Đã có lỗi xảy ra",
+    "description": "Vui lòng thử lại sau."
+  }
+}

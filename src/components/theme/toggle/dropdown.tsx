@@ -1,7 +1,8 @@
 'use client';
 
-import { useTheme } from 'next-themes';
+import { useTranslations } from 'next-intl';
 import { IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-react';
+import { useTheme } from '../provider';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -11,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function ThemeToggle() {
+  const t = useTranslations('Common.theme');
   const { setTheme } = useTheme();
 
   return (
@@ -19,21 +21,21 @@ export function ThemeToggle() {
         <Button variant="ghost" size="icon">
           <IconSun className="h-4 w-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
           <IconMoon className="absolute h-4 w-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
+          <span className="sr-only">{t('toggle')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={() => setTheme('light')}>
           <IconSun className="mr-2 h-4 w-4" />
-          Light
+          {t('light')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           <IconMoon className="mr-2 h-4 w-4" />
-          Dark
+          {t('dark')}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme('system')}>
           <IconDeviceDesktop className="mr-2 h-4 w-4" />
-          System
+          {t('system')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -1,0 +1,24 @@
+{
+  "brand": "Comacpro",
+  "nav": {
+    "home": "Trang chủ",
+    "products": "Sản phẩm",
+    "cart": "Giỏ hàng",
+    "account": "Tài khoản"
+  },
+  "actions": {
+    "save": "Lưu",
+    "cancel": "Huỷ",
+    "submit": "Gửi",
+    "retry": "Thử lại"
+  },
+  "locale": {
+    "switch": "Đổi ngôn ngữ"
+  },
+  "theme": {
+    "toggle": "Đổi giao diện",
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  }
+}

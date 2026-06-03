@@ -1,0 +1,11 @@
+{
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you requested does not exist or has moved.",
+    "back": "Back to home"
+  },
+  "generic": {
+    "title": "Something went wrong",
+    "description": "Please try again later."
+  }
+}
