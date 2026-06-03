@@ -1,10 +1,12 @@
+node_modules/
 .next/
 out/
 build/
 coverage/
-node_modules/
+
+*.tsbuildinfo
+next-env.d.ts
 pnpm-lock.yaml
 pnpm-workspace.yaml
-next-env.d.ts
 src/lib/api/
-*.tsbuildinfo
+src/styles/globals.css
