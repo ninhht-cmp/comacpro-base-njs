@@ -93,6 +93,7 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
     'src/lib/api/**',
+    'public/mockServiceWorker.js',
   ]),
 ]);
 

@@ -1,0 +1,172 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Comacpro Storefront API (sample)",
+    "version": "1.0.0",
+    "description": "Placeholder OpenAPI spec used for `orval` codegen until the real NestJS Swagger document is wired in.\n\nGenerate the typed client/hooks/zod with:\n\n    pnpm gen:api\n\nPoint codegen at the real NestJS spec by setting `OPENAPI_SPEC` (URL or path), e.g.\n\n    OPENAPI_SPEC=https://api.example.com/v1/openapi.json pnpm gen:api"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Relative to NEXT_PUBLIC_API_BASE_URL / API_BASE_URL"
+    }
+  ],
+  "tags": [
+    { "name": "Health", "description": "Service liveness" },
+    { "name": "Products", "description": "Catalog read endpoints" }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "tags": ["Health"],
+        "summary": "Liveness probe",
+        "responses": {
+          "200": {
+            "description": "Service is up",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthStatus" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "operationId": "listProducts",
+        "tags": ["Products"],
+        "summary": "List products",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "minimum": 1, "default": 1 }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "description": "Full-text search query",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of products",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProductList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "operationId": "getProduct",
+        "tags": ["Products"],
+        "summary": "Get a product by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The product",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Product" }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthStatus": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": { "type": "string", "enum": ["ok", "degraded"] },
+          "version": { "type": "string" }
+        }
+      },
+      "Money": {
+        "type": "object",
+        "required": ["amount", "currency"],
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "description": "Minor units (e.g. cents)"
+          },
+          "currency": { "type": "string", "example": "VND" }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "required": ["id", "slug", "name", "price", "inStock"],
+        "properties": {
+          "id": { "type": "string" },
+          "slug": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "price": { "$ref": "#/components/schemas/Money" },
+          "imageUrl": { "type": "string", "format": "uri" },
+          "inStock": { "type": "boolean" },
+          "rating": { "type": "number", "minimum": 0, "maximum": 5 }
+        }
+      },
+      "ProductList": {
+        "type": "object",
+        "required": ["items", "page", "pageSize", "total"],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          },
+          "page": { "type": "integer" },
+          "pageSize": { "type": "integer" },
+          "total": { "type": "integer" }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": ["statusCode", "message"],
+        "properties": {
+          "statusCode": { "type": "integer" },
+          "message": { "type": "string" },
+          "error": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -14,6 +14,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.url().optional(),
     NEXT_PUBLIC_API_BASE_URL: z.url().optional(),
+    NEXT_PUBLIC_API_MOCKING: z.enum(['enabled', 'disabled']).optional(),
   },
 
   runtimeEnv: {
@@ -23,6 +24,7 @@ export const env = createEnv({
     REVALIDATE_SECRET: process.env.REVALIDATE_SECRET,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    NEXT_PUBLIC_API_MOCKING: process.env.NEXT_PUBLIC_API_MOCKING,
   },
 
   emptyStringAsUndefined: true,

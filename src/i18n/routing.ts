@@ -7,6 +7,7 @@ export const routing = defineRouting({
 
   pathnames: {
     '/': '/',
+    '/login': '/login',
     '/products': {
       vi: '/san-pham',
       en: '/products',

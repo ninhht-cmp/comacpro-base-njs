@@ -1,7 +1,7 @@
 # Tech Stack & Kiến trúc — `comacpro-base-njs`
 
 > **Bối cảnh**: Frontend E-commerce traffic cao, build trên **Next.js 16.2.7 (App Router) + React 19.2**. Backend tách riêng bằng **NestJS** (REST/OpenAPI). Auth phía FE dùng **Auth.js/NextAuth**. Tổ chức **polyrepo** (không monorepo) — có thêm app **admin/CMS** ở repo riêng.
-> **Trạng thái**: **Phase 0 (nền tảng) đã implement & commit. Phase 1 (design system) đang chạy — shadcn đã init (Radix).** Đây là tài liệu sống, cập nhật theo tiến độ.
+> **Trạng thái**: **Phase 0 ✅, Phase 2 (data layer) ✅, Phase 3 (Auth) ✅ đã implement. Phase 1 (design system) ⏳ đang chạy — shadcn đã init (Radix).** Phase 2 đã nối **spec thật** từ NestJS (`OPENAPI_SPEC=https://api.dev.cmpup.com/docs-json`; `gen:api` tự đọc `.env`). Phase 3 dùng **custom cookie-session (jose)** thay vì Auth.js (xem §7). Đây là tài liệu sống, cập nhật theo tiến độ.
 > _Cập nhật: 2026-06-03. Version đã verify trên npm registry tại thời điểm này._
 
 ---
@@ -31,7 +31,7 @@
 | CI/CD             | **GitHub Actions + Docker standalone**                                  | —                                  | Pipeline lint→typecheck→test→build mỗi repo; cache pnpm store  |
 
 **Thứ tự build (5 phase):**
-`P0 Nền tảng (TS, quality, CI)` ✅ → `P1 Design system + i18n` ⏳ → `P2 API contract + data layer` → `P3 Auth` → `P4 Tính năng e-commerce + caching/SEO` → `P5 Observability + hardening`. Chi tiết ở **§8**.
+`P0 Nền tảng (TS, quality, CI)` ✅ → `P1 Design system + i18n` ⏳ → `P2 API contract + data layer` ✅ → `P3 Auth` ✅ → `P4 Tính năng e-commerce + caching/SEO` → `P5 Observability + hardening`. Chi tiết ở **§8**.
 
 ---
 
@@ -329,21 +329,27 @@ Nguyên tắc: dựng nền & guardrail trước, tính năng sau. Mỗi phase c
 
 **DoD**: Storybook chạy; trang demo đổi locale + format tiền đúng; component brand cơ bản dùng được.
 
-### Phase 2 — API contract + data layer
+### Phase 2 — API contract + data layer ✅ ĐÃ IMPLEMENT
 
-1. Lấy `openapi.json` từ NestJS Swagger (pin version API).
-2. **orval in-repo** (`orval.config.ts` → `src/lib/api`): types + RQ hooks + zod; `mutator` (ky/axios). Script `pnpm gen:api`.
-3. **TanStack Query** (QueryClient, HydrationBoundary, devtools). **MSW** mock API.
+1. **Spec**: nối spec thật `OPENAPI_SPEC=https://api.dev.cmpup.com/docs-json` (BE Global Service API, 28 domain). `gen:api` đọc `.env` qua `node --env-file-if-exists`. Còn `openapi/openapi.json` (mẫu) để chạy offline khi cần.
+2. **orval in-repo** (`orval.config.ts` → `src/lib/api/generated`): TS types + TanStack Query hooks (`httpClient: 'axios'`) + zod schemas (`*.zod.ts`). `mutator` = **ky** (`src/lib/fetcher/orval-client.ts`: baseUrl server/client, retry GET, `Accept-Language`, chỗ chờ Bearer token cho P3, `ApiError` chuẩn hoá). Output **commit** (lint/prettier-ignore) để CI typecheck không cần backend.
+3. **TanStack Query** (`src/lib/query-client`): `makeQueryClient`/`getQueryClient` (server per-request, browser singleton), `HydrateQuery` (prefetch RSC → dehydrate → hydrate), `QueryProvider` + devtools, đã gắn vào `components/providers`.
+4. **MSW** (`src/mocks`): hạ tầng browser worker + node server (qua `instrumentation.ts`), bật bằng `NEXT_PUBLIC_API_MOCKING=enabled`. **Sinh mock từ spec đã TẮT** (BE bọc `BaseResDto<T>` khiến faker-mock của orval sai type) — `handlers.ts` để rỗng, tự viết handler khi cần.
 
-**DoD**: gọi 1 endpoint thật qua hook gen sẵn, type chạy đầu cuối; đổi spec → gen lại → TS báo đỏ.
+**DoD ✅**: client gen từ spec thật, type chạy đầu cuối (typecheck xanh trên 28 domain); đổi field trong spec → `pnpm gen:api` → TS báo đỏ ngay nơi tiêu thụ (đã verify). _Còn lại để gọi được API thật_: **auth/Bearer token (P3)** cho hầu hết endpoint `/v1/...`, và fetch phía server/BFF để tránh CORS từ browser.
 
-### Phase 3 — Auth
+### Phase 3 — Auth ✅ ĐÃ IMPLEMENT
 
-1. Chốt **Auth.js v5** vs **Better Auth** (§7.3).
-2. Provider (Credentials + OAuth), jwt/session callback, **refresh token**.
-3. Gắn token vào `mutator`; `proxy.ts` chặn `(account)`/`(checkout)`.
+> **Quyết định: KHÔNG dùng Auth.js v5 / Better Auth — dùng custom cookie-session (`jose`).** NestJS đã là issuer (cấp access+refresh qua `/v1/auth/external/signin|refresh`); Next chỉ giữ token + forward + refresh. `next-auth@5` còn beta & rủi ro trên Next 16; Better Auth lệch grain (issuer). Cookie-session dùng API gốc của Next → chắc chắn, kiểm soát hoàn toàn.
 
-**DoD**: login/logout/refresh chạy; gọi endpoint cần auth OK; route bảo vệ redirect đúng.
+1. **Session** (`src/lib/auth/session.ts`): payload `{ user, accessToken, refreshToken, expiresAt }` mã hoá JWE bằng `jose` (key = sha256(`AUTH_SECRET`)), cookie httpOnly `cmp_session`. Tách phần thuần (proxy dùng) khỏi helper `next/headers` (`cookies.ts`).
+2. **Service** (`service.ts`): `signIn`/`refreshTokens`/`fetchProfile` gọi NestJS bằng `fetch` thuần (KHÔNG qua mutator — auth bootstrap không phụ thuộc client đọc session), parse envelope lỗi thật `{ errors:[{messages}] }`.
+3. **Server Actions** (`actions.ts`): `login` (useActionState, trả error code để form i18n) + `logout`.
+4. **Token vào API**: mutator **giữ client-safe** (không import `next/headers`); server-side đính kèm token tường minh qua `authorizedRequest()` ở call-site (vì httpOnly cookie không đọc được từ client; mutator nằm trong client bundle qua hooks).
+5. **`proxy.ts`**: chặn `(account)`/`(checkout)` (khớp cả path đã localize: `/tai-khoan`, `/thanh-toan`) → redirect `/login`; **refresh chủ động** khi token sắp hết hạn (threshold 60s) rồi set cookie mới lên response.
+6. **Demo**: trang `/login` (form) + `/account` (protected, gọi `/me` đã auth) + i18n `Auth`.
+
+**DoD ✅**: login page render, route bảo vệ redirect đúng (đã verify `/account`→307→`/login`, cả `/tai-khoan`), gọi `/me` đính token, refresh logic in-place. _Cần để chạy thật_: set `AUTH_SECRET` trong `.env` (đang rỗng) + tài khoản external hợp lệ. Client-side authenticated calls (cart…) sẽ qua BFF route ở P4 (token httpOnly không đọc được từ browser).
 
 ### Phase 4 — Tính năng e-commerce + caching/SEO _(khối lớn nhất)_
 

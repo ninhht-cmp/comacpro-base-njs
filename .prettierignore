@@ -10,3 +10,4 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 src/lib/api/
 src/styles/globals.css
+public/mockServiceWorker.js

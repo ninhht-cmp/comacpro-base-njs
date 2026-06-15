@@ -15,13 +15,18 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "gen:api": "node --env-file-if-exists=.env node_modules/orval/dist/bin/orval.mjs --config ./orval.config.ts",
+    "gen:api:watch": "node --env-file-if-exists=.env node_modules/orval/dist/bin/orval.mjs --config ./orval.config.ts --watch",
     "prepare": "husky"
   },
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.13.11",
     "@tabler/icons-react": "^3.44.0",
+    "@tanstack/react-query": "^5.100.14",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "jose": "^6.2.3",
+    "ky": "^2.0.2",
     "next": "16.2.7",
     "next-intl": "^4.13.0",
     "radix-ui": "^1.4.3",
@@ -34,7 +39,9 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.2",
     "@commitlint/config-conventional": "^21.0.2",
+    "@faker-js/faker": "^10.4.0",
     "@tailwindcss/postcss": "^4",
+    "@tanstack/react-query-devtools": "^5.100.14",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -43,6 +50,8 @@
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
     "lint-staged": "^17.0.7",
+    "msw": "^2.14.6",
+    "orval": "^8.14.0",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "shadcn": "^4.10.0",
@@ -56,6 +65,11 @@
     ],
     "*.{json,jsonc,md,css,yml,yaml}": [
       "prettier --write"
+    ]
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
     ]
   }
 }
