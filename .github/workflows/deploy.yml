@@ -1,0 +1,76 @@
+name: Deploy
+
+# Builds a container image and publishes it to GitHub Container Registry on
+# pushes to main (staging) and version tags (production). The actual rollout
+# (apply to your orchestrator) is a TODO — wire it to the org's target once
+# decided (see docs/adr/0001-architecture-and-platform.md, Decision 3 / the
+# rollback runbook). Image build + push is real and target-agnostic.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  image:
+    name: Build & push image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata (tags & labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=sha,format=short
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Roll out
+    needs: image
+    runs-on: ubuntu-latest
+    # Promote to the environment matching the ref: tags → production, main → staging.
+    environment: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
+    steps:
+      - name: Roll out the new image
+        run: |
+          echo "Image built and pushed. TODO(deploy): apply to the target."
+          echo "Examples once the target is chosen:"
+          echo "  - Kubernetes: kubectl set image deploy/web web=\$IMAGE && kubectl rollout status ..."
+          echo "  - ECS:        aws ecs update-service --force-new-deployment ..."
+          echo "  - Nomad/Helm: helm upgrade ... / nomad job run ..."
+          echo "Rollback procedure: docs/runbooks/rollback.md"

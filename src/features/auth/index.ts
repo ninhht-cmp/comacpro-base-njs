@@ -6,6 +6,8 @@
  * actions used outside a form) live behind `@/features/auth/server`.
  */
 
+export { AuthCard } from './components/auth-card';
+export { AuthToast } from './components/auth-toast';
 export { ForgotPasswordForm } from './components/forgot-password-form';
 export { GoogleSigninButton } from './components/google-signin-button';
 export { LogoutButton } from './components/logout-button';

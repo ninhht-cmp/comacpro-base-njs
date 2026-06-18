@@ -26,5 +26,24 @@ export default defineConfig({
       NEXT_PUBLIC_API_BASE_URL: 'http://test.local',
       NEXT_PUBLIC_GOOGLE_CLIENT_ID: 'test-client-id',
     },
+    coverage: {
+      provider: 'v8',
+      // `lcov` for Codecov, `text` for local runs, `json-summary` for tooling.
+      reporter: ['text', 'lcov', 'json-summary'],
+      reportsDirectory: './coverage',
+      include: ['src/**/*.{ts,tsx}'],
+      // Exclude generated code, mocks, type-only and barrel/boilerplate files —
+      // they'd dilute the signal. Coverage is gated on *new* code via Codecov
+      // patch status (see codecov.yml), so no hard global thresholds yet; ratchet
+      // them up here once the suite fills in.
+      exclude: [
+        'src/lib/api/generated/**',
+        'src/mocks/**',
+        'src/**/*.d.ts',
+        'src/**/index.ts',
+        'src/**/*.stories.*',
+        'src/instrumentation.ts',
+      ],
+    },
   },
 });

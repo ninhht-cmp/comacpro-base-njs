@@ -1,0 +1,37 @@
+# Code ownership → auto-requests review from the right team on every PR.
+# Last matching pattern wins. Replace the placeholder @comacpro/* teams with
+# real GitHub team slugs (Org → Teams), then enable "Require review from Code
+# Owners" in branch protection for `main`.
+
+# Default owner for anything not matched below.
+*                               @comacpro/frontend-platform
+
+# Platform / build / CI / tooling
+/.github/                       @comacpro/frontend-platform
+/scripts/                       @comacpro/frontend-platform
+/next.config.ts                 @comacpro/frontend-platform
+/orval.config.ts                @comacpro/frontend-platform
+/eslint.config.*                @comacpro/frontend-platform
+/tsconfig.json                  @comacpro/frontend-platform
+/playwright.config.ts           @comacpro/frontend-platform
+/vitest.config.ts               @comacpro/frontend-platform
+
+# Cross-cutting infrastructure
+/src/config/                    @comacpro/frontend-platform
+/src/lib/                       @comacpro/frontend-platform
+/src/proxy.ts                   @comacpro/frontend-platform @comacpro/security
+/src/instrumentation.ts         @comacpro/frontend-platform
+
+# Generated API client — owned by codegen, not hand-edited. Spec is the source.
+/src/lib/api/generated/         @comacpro/frontend-platform
+
+# Auth & identity (security-sensitive — dual review)
+/src/features/auth/             @comacpro/identity @comacpro/security
+/src/features/users/            @comacpro/identity
+
+# i18n
+/src/i18n/                      @comacpro/frontend-platform
+/src/i18n/messages/             @comacpro/localization
+
+# Architecture decision records — changes warrant broad visibility.
+/docs/adr/                      @comacpro/frontend-platform @comacpro/staff-eng

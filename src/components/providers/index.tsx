@@ -2,6 +2,8 @@ import type { ReactNode } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { ThemeProvider } from '@/components/theme';
 import { HtmlLang } from '@/components/common/html-lang';
+import { Toaster } from '@/components/ui/sonner';
+import { ReportWebVitals } from '@/lib/observability/report-web-vitals';
 import { MswProvider } from './msw-provider';
 import { QueryProvider } from './query-provider';
 
@@ -23,7 +25,9 @@ export function Providers({
         <QueryProvider>
           <ThemeProvider>
             <HtmlLang locale={locale} />
+            <ReportWebVitals />
             {children}
+            <Toaster richColors position="top-center" />
           </ThemeProvider>
         </QueryProvider>
       </MswProvider>

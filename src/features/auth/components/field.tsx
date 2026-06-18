@@ -1,19 +1,21 @@
-import type { InputHTMLAttributes } from 'react';
+import type { ComponentProps } from 'react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-export const fieldClassName =
-  'h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none ' +
-  'focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40';
-
-/** Labeled text input shared by the auth forms. */
+/** Labeled input shared by the auth forms — shadcn `Label` + `Input`. */
 export function Field({
   label,
+  id,
+  name,
   ...props
-}: { label: string } & InputHTMLAttributes<HTMLInputElement>) {
+}: { label: string } & ComponentProps<typeof Input>) {
+  // Auth field names are unique per form, so they make stable input ids.
+  const fieldId = id ?? name;
   return (
-    <label className="flex flex-col gap-1.5 text-sm font-medium text-foreground">
-      {label}
-      <input className={fieldClassName} {...props} />
-    </label>
+    <div className="flex flex-col gap-1.5">
+      <Label htmlFor={fieldId}>{label}</Label>
+      <Input id={fieldId} name={name} {...props} />
+    </div>
   );
 }
 

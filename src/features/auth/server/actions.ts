@@ -124,7 +124,10 @@ export async function signup(
 
   const locale = await getLocale();
   redirect({
-    href: { pathname: '/verify-otp', query: { email: parsed.data.email } },
+    href: {
+      pathname: '/verify-otp',
+      query: { email: parsed.data.email, status: 'otp_sent' },
+    },
     locale,
   });
   return {};
@@ -145,7 +148,10 @@ export async function verifyOtp(
   }
 
   const locale = await getLocale();
-  redirect({ href: '/signin', locale });
+  redirect({
+    href: { pathname: '/signin', query: { status: 'verified' } },
+    locale,
+  });
   return {};
 }
 
@@ -167,7 +173,7 @@ export async function forgotPassword(
   redirect({
     href: {
       pathname: '/verify-forgot-otp',
-      query: { email: parsed.data.email },
+      query: { email: parsed.data.email, status: 'otp_sent' },
     },
     locale,
   });
@@ -224,7 +230,10 @@ export async function resetPassword(
   }
 
   const locale = await getLocale();
-  redirect({ href: '/signin', locale });
+  redirect({
+    href: { pathname: '/signin', query: { status: 'password_reset' } },
+    locale,
+  });
   return {};
 }
 

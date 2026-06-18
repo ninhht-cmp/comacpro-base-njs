@@ -1,0 +1,27 @@
+# Coverage policy. We gate on PATCH coverage (new/changed lines) rather than a
+# hard global threshold, so coverage ratchets up as the suite fills in without
+# blocking on legacy gaps. Raise the project target over time.
+coverage:
+  status:
+    project:
+      default:
+        # Informational for now — don't fail the build on the baseline.
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        # New code should be tested. Tune down if it's too strict early on.
+        target: 70%
+        threshold: 5%
+
+comment:
+  layout: 'reach, diff, flags, files'
+  require_changes: true
+
+ignore:
+  - 'src/lib/api/generated/**'
+  - 'src/mocks/**'
+  - '**/*.d.ts'
+  - 'e2e/**'
+  - 'scripts/**'

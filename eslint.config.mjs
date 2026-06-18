@@ -123,6 +123,8 @@ const eslintConfig = defineConfig([
     'next-env.d.ts',
     'src/lib/api/**',
     'public/mockServiceWorker.js',
+    // Generated coverage report (Vitest/Codecov output).
+    'coverage/**',
   ]),
 ]);
 

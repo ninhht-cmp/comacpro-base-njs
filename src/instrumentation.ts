@@ -13,4 +13,40 @@ export async function register() {
     const { server } = await import('@/mocks/server');
     server.listen({ onUnhandledRequest: 'bypass' });
   }
+
+  // TODO(observability): initialise the Sentry/OpenTelemetry SDK here, e.g.
+  //   if (process.env.NEXT_RUNTIME === 'nodejs') await import('./sentry.server');
+  //   if (process.env.NEXT_RUNTIME === 'edge')   await import('./sentry.edge');
+  // Gated on SENTRY_DSN so unconfigured envs stay a no-op.
+}
+
+/**
+ * Server-side error hook (Next.js `onRequestError`). Fires for uncaught errors
+ * in Server Components, Route Handlers, Server Actions and middleware. Logs a
+ * structured line now; forward to Sentry/Datadog once the SDK is wired in.
+ */
+export async function onRequestError(
+  error: unknown,
+  request: {
+    path: string;
+    method: string;
+    headers: Record<string, string | string[] | undefined>;
+  },
+  context: { routerKind: string; routePath: string; renderSource?: string },
+): Promise<void> {
+  // Structured so log pipelines (Datadog) can parse and alert on it.
+  console.error(
+    JSON.stringify({
+      level: 'error',
+      kind: 'request_error',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      method: request.method,
+      path: request.path,
+      routerKind: context.routerKind,
+      routePath: context.routePath,
+    }),
+  );
+
+  // TODO(observability): Sentry.captureRequestError(error, request, context);
 }
