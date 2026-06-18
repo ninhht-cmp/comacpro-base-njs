@@ -21,10 +21,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@comacpro/ui": ["./src/packages/ui/src"],
-      "@comacpro/ui/*": ["./src/packages/ui/src/*"],
-      "@comacpro/config/*": ["./src/packages/config/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [

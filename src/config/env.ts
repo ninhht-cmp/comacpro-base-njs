@@ -15,6 +15,8 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: z.url().optional(),
     NEXT_PUBLIC_API_BASE_URL: z.url().optional(),
     NEXT_PUBLIC_API_MOCKING: z.enum(['enabled', 'disabled']).optional(),
+    // Google Sign-In client id (public). When unset, the Google button hides.
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional(),
   },
 
   runtimeEnv: {
@@ -25,6 +27,7 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_API_MOCKING: process.env.NEXT_PUBLIC_API_MOCKING,
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   },
 
   emptyStringAsUndefined: true,

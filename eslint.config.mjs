@@ -15,7 +15,10 @@ const eslintConfig = defineConfig([
   // Feature boundary: outside code may only import a feature via its barrel.
   {
     files: ['src/**/*.{ts,tsx}'],
-    ignores: ['src/features/**', 'src/i18n/navigation.ts'],
+    // proxy.ts is middleware-tier: it must import the edge-safe auth modules
+    // (`server/session`, `server/service`) directly, bypassing the
+    // `next/headers`-laden server barrel.
+    ignores: ['src/features/**', 'src/i18n/navigation.ts', 'src/proxy.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -29,9 +32,22 @@ const eslintConfig = defineConfig([
           ],
           patterns: [
             {
-              group: ['@/features/*/*'],
+              // Allowed public entrypoints: `@/features/<name>` (client-safe
+              // barrel) and `@/features/<name>/server` (server barrel). Every
+              // other internal path is forbidden.
+              group: [
+                '@/features/*/components',
+                '@/features/*/components/**',
+                '@/features/*/schema',
+                '@/features/*/schema/**',
+                '@/features/*/api',
+                '@/features/*/api/**',
+                '@/features/*/hooks',
+                '@/features/*/hooks/**',
+                '@/features/*/server/**',
+              ],
               message:
-                'Import features through their public barrel: `@/features/<name>`. Deep imports are forbidden.',
+                'Import features through their public barrels: `@/features/<name>` (client) or `@/features/<name>/server` (server). Deep imports are forbidden.',
             },
             {
               group: ['next/navigation'],
@@ -65,9 +81,22 @@ const eslintConfig = defineConfig([
           ],
           patterns: [
             {
-              group: ['@/features/*/*'],
+              // A feature uses relative paths for its own internals; it may
+              // reach a sibling only through that sibling's public barrels
+              // (`@/features/<name>` or `@/features/<name>/server`).
+              group: [
+                '@/features/*/components',
+                '@/features/*/components/**',
+                '@/features/*/schema',
+                '@/features/*/schema/**',
+                '@/features/*/api',
+                '@/features/*/api/**',
+                '@/features/*/hooks',
+                '@/features/*/hooks/**',
+                '@/features/*/server/**',
+              ],
               message:
-                'Cross-feature imports must use the sibling feature barrel: `@/features/<name>`.',
+                'Cross-feature imports must use the sibling barrel: `@/features/<name>` or `@/features/<name>/server`.',
             },
             {
               group: ['next/navigation'],

@@ -1,34 +1,96 @@
 import createMiddleware from 'next-intl/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
 import { routing } from '@/i18n/routing';
-import { refreshTokens } from '@/lib/auth/service';
+import { refreshTokens } from '@/features/auth/server/service';
 import {
   isAccessTokenExpiring,
   openSession,
   sealSession,
   SESSION_COOKIE,
   sessionCookieOptions,
-} from '@/lib/auth/session';
+} from '@/features/auth/server/session';
 
 const intlMiddleware = createMiddleware(routing);
 
-// Localized segments that require a session (see i18n/routing `pathnames`):
-// account → /account | /tai-khoan, checkout → /checkout | /thanh-toan.
-const PROTECTED_PATTERN =
-  /(?:^|\/)(account|tai-khoan|checkout|thanh-toan)(?:\/|$)/;
+type PathKey = keyof typeof routing.pathnames;
 
-function loginUrl(request: NextRequest): URL {
-  const { pathname } = request.nextUrl;
-  const matched = pathname.match(/^\/([a-z]{2})(?:\/|$)/);
-  const locale =
-    matched && routing.locales.includes(matched[1] as never)
-      ? matched[1]
-      : routing.defaultLocale;
-  // `localePrefix: 'as-needed'` → the default locale has no prefix.
-  const prefix = locale === routing.defaultLocale ? '' : `/${locale}`;
-  const url = new URL(`${prefix}/login`, request.url);
-  url.searchParams.set('redirect', pathname);
+// Logical routes that require a session vs. routes a signed-in user shouldn't
+// see. Localized variants are derived from `routing.pathnames`, so renaming a
+// path in one place keeps the guards correct in every locale.
+const PROTECTED_HREFS = ['/account', '/checkout'] as const satisfies PathKey[];
+const AUTH_HREFS = [
+  '/signin',
+  '/signup',
+  '/verify-otp',
+  '/forgot-password',
+  '/verify-forgot-otp',
+  '/reset-password',
+] as const satisfies PathKey[];
+
+/** The localized path for a logical href in a given locale (e.g. `/tai-khoan`). */
+function localizedFor(href: PathKey, locale: string): string {
+  const entry = routing.pathnames[href];
+  if (typeof entry === 'string') return entry;
+  return (entry as Record<string, string>)[locale] ?? href;
+}
+
+/** Every localized path variant of the given hrefs, across all locales. */
+function localizedPaths(hrefs: readonly PathKey[]): string[] {
+  const out: string[] = [];
+  for (const href of hrefs) {
+    const entry = routing.pathnames[href];
+    if (typeof entry === 'string') out.push(entry);
+    else for (const value of Object.values(entry)) out.push(value as string);
+  }
+  return out;
+}
+
+const PROTECTED_PATHS = localizedPaths(PROTECTED_HREFS);
+const AUTH_PATHS = localizedPaths(AUTH_HREFS);
+
+function localeOf(request: NextRequest): string {
+  const code = request.nextUrl.pathname.match(/^\/([a-z]{2})(?:\/|$)/)?.[1];
+  return code && routing.locales.includes(code as never)
+    ? code
+    : routing.defaultLocale;
+}
+
+/** Prefix a path with the locale (default locale has no prefix — `as-needed`). */
+function withLocale(locale: string, path: string): string {
+  return locale === routing.defaultLocale ? path : `/${locale}${path}`;
+}
+
+/** Strip a leading `/<locale>` so the path can be matched against logical bases. */
+function withoutLocale(pathname: string): string {
+  const code = pathname.match(/^\/([a-z]{2})(?:\/|$)/)?.[1];
+  if (code && routing.locales.includes(code as never)) {
+    const rest = pathname.slice(code.length + 1);
+    return rest === '' ? '/' : rest;
+  }
+  return pathname;
+}
+
+function matchesBase(path: string, bases: string[]): boolean {
+  return bases.some((base) => path === base || path.startsWith(`${base}/`));
+}
+
+function signinUrl(request: NextRequest): URL {
+  const locale = localeOf(request);
+  const url = new URL(
+    withLocale(locale, localizedFor('/signin', locale)),
+    request.url,
+  );
+  // Remember where they were headed so sign-in can send them back.
+  url.searchParams.set('redirect', request.nextUrl.pathname);
   return url;
+}
+
+function accountUrl(request: NextRequest): URL {
+  const locale = localeOf(request);
+  return new URL(
+    withLocale(locale, localizedFor('/account', locale)),
+    request.url,
+  );
 }
 
 export async function proxy(request: NextRequest) {
@@ -51,20 +113,34 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  if (PROTECTED_PATTERN.test(request.nextUrl.pathname) && !session) {
-    return NextResponse.redirect(loginUrl(request));
+  // Persist a refreshed cookie / clear a dead one on whatever response we send.
+  const applyCookies = (response: NextResponse): NextResponse => {
+    if (refreshedCookie) {
+      response.cookies.set(
+        SESSION_COOKIE,
+        refreshedCookie,
+        sessionCookieOptions,
+      );
+    } else if (!session && cookieValue) {
+      response.cookies.delete(SESSION_COOKIE);
+    }
+    return response;
+  };
+
+  const path = withoutLocale(request.nextUrl.pathname);
+
+  // Not signed in → keep out of protected routes (remember the intended path).
+  if (matchesBase(path, PROTECTED_PATHS) && !session) {
+    return applyCookies(NextResponse.redirect(signinUrl(request)));
   }
 
-  // Locale routing owns the response.
-  const response = intlMiddleware(request);
-
-  if (refreshedCookie) {
-    response.cookies.set(SESSION_COOKIE, refreshedCookie, sessionCookieOptions);
-  } else if (!session && cookieValue) {
-    response.cookies.delete(SESSION_COOKIE);
+  // Already signed in → keep out of the auth routes.
+  if (matchesBase(path, AUTH_PATHS) && session) {
+    return applyCookies(NextResponse.redirect(accountUrl(request)));
   }
 
-  return response;
+  // Locale routing owns the normal response.
+  return applyCookies(intlMiddleware(request));
 }
 
 export const config = {

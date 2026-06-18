@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   quality:
-    name: Typecheck · Lint · Format · Build
+    name: Typecheck · Lint · Format · i18n · Test · Build
     runs-on: ubuntu-latest
     env:
       # Skip env validation in CI (no real .env present)
@@ -40,6 +40,12 @@ jobs:
 
       - name: Format check
         run: pnpm format:check
+
+      - name: i18n keys
+        run: pnpm check:i18n
+
+      - name: Test
+        run: pnpm test
 
       - name: Build
         run: pnpm build
