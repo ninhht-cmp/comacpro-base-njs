@@ -4,7 +4,7 @@ import { useActionState, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { cancelAccount, type UserFormState } from '../server/actions';
-import { FormError } from './field';
+import { FormError } from '@/components/form/field';
 
 const initialState: UserFormState = {};
 

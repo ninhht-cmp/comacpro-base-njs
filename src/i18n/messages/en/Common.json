@@ -4,7 +4,9 @@
     "home": "Home",
     "products": "Products",
     "cart": "Cart",
-    "account": "Account"
+    "account": "Account",
+    "signin": "Sign in",
+    "logout": "Log out"
   },
   "actions": {
     "save": "Save",

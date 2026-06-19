@@ -4,7 +4,9 @@
     "home": "Trang chủ",
     "products": "Sản phẩm",
     "cart": "Giỏ hàng",
-    "account": "Tài khoản"
+    "account": "Tài khoản",
+    "signin": "Đăng nhập",
+    "logout": "Đăng xuất"
   },
   "actions": {
     "save": "Lưu",

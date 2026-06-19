@@ -32,8 +32,8 @@ import type {
   UpdateFaqDto
 } from '../model';
 
-import { customInstance } from '../../../fetcher/orval-client';
-import type { ErrorType , BodyType } from '../../../fetcher/orval-client';
+import { customInstance } from '../../client';
+import type { ErrorType , BodyType } from '../../client';
 
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];

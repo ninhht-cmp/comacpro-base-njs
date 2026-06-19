@@ -1,11 +1,11 @@
 /**
- * Server-side public API of the auth feature. Import from `@/features/auth/server`
- * in Server Components, Route Handlers and Server Actions.
+ * Server-side public API of the auth feature — the sign-in/up/OTP/reset/Google
+ * server actions. Import from `@/features/auth/server` in Server Components,
+ * Route Handlers and Server Actions.
  *
- * This barrel pulls in `next/headers` (via `./cookies`) and is therefore NOT
- * client-safe — client components must import the server *actions* directly
- * (they carry their own `'use server'` boundary). `proxy.ts` (middleware tier,
- * no `next/headers`) imports `./session` and `./service` directly instead.
+ * Session storage and identity transport now live in the session core
+ * (`@/core/session` / `@/core/session/server`), not here — the auth feature only
+ * owns its flows.
  */
 
 export type { AuthFormState, SigninState } from './actions';
@@ -19,15 +19,3 @@ export {
   verifyForgotOtp,
   verifyOtp,
 } from './actions';
-
-export {
-  authorizedRequest,
-  clearSession,
-  getAccessToken,
-  getSession,
-  setSession,
-} from './cookies';
-
-export { AuthError, fetchProfile, refreshTokens } from './service';
-
-export type { SessionData, SessionUser } from './session';

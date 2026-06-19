@@ -2,6 +2,9 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
 import prettierConfig from 'eslint-config-prettier';
+// Lints Storybook story files (CSF best practices). See:
+// https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from 'eslint-plugin-storybook';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
@@ -15,10 +18,7 @@ const eslintConfig = defineConfig([
   // Feature boundary: outside code may only import a feature via its barrel.
   {
     files: ['src/**/*.{ts,tsx}'],
-    // proxy.ts is middleware-tier: it must import the edge-safe auth modules
-    // (`server/session`, `server/service`) directly, bypassing the
-    // `next/headers`-laden server barrel.
-    ignores: ['src/features/**', 'src/i18n/navigation.ts', 'src/proxy.ts'],
+    ignores: ['src/features/**', 'src/i18n/navigation.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -121,11 +121,14 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
-    'src/lib/api/**',
+    'src/lib/api/generated/**',
     'public/mockServiceWorker.js',
     // Generated coverage report (Vitest/Codecov output).
     'coverage/**',
+    // Storybook build output.
+    'storybook-static/**',
   ]),
+  ...storybook.configs['flat/recommended'],
 ]);
 
 export default eslintConfig;

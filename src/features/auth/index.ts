@@ -15,5 +15,6 @@ export { OtpForm } from './components/otp-form';
 export { ResetPasswordForm } from './components/reset-password-form';
 export { SigninForm } from './components/signin-form';
 export { SignupForm } from './components/signup-form';
+export { UserMenu } from './components/user-menu';
 
 export * from './schema';

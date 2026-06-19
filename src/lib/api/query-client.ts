@@ -3,7 +3,7 @@ import {
   isServer,
   QueryClient,
 } from '@tanstack/react-query';
-import { ApiError } from '@/lib/fetcher/orval-client';
+import { ApiError } from './client';
 
 /**
  * Creates a fresh {@link QueryClient}. On the server we make a new one per

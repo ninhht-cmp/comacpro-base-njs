@@ -9,14 +9,17 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { requireSession } from '@/core/guard/require';
+import { fetchProfile } from '@/core/session/server';
 import { LogoutButton } from '@/features/auth';
-import { fetchProfile, getSession } from '@/features/auth/server';
 import {
   CancelAccountButton,
   ChangePasswordForm,
   ProfileForm,
+  type User,
+  UserType,
+  toUser,
 } from '@/features/users';
-import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 
 export default async function AccountPage({
@@ -28,39 +31,43 @@ export default async function AccountPage({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
 
-  // proxy.ts already guards this route; this is defense-in-depth.
-  const session = await getSession();
-  if (!session) {
-    redirect({ href: '/signin', locale });
-    return null;
-  }
+  // proxy.ts already guards this route; `requireSession` is defense-in-depth
+  // (redirects to sign-in if the session is somehow absent).
+  const session = await requireSession();
 
   const t = await getTranslations('Auth');
 
-  // Fetch the live profile with the session's bearer token (raw fetch — the
-  // generated client's `BaseResDto` envelope doesn't match the live response).
-  // Fall back to the session snapshot if the call fails.
-  let fullName = session.user.fullName;
-  let email = session.user.email;
-  const username = session.user.username;
-  let address: string | undefined;
+  // Start from the session snapshot, then refine with the live profile. The DTO
+  // is mapped to the domain `User` at the boundary (`toUser`) — the page never
+  // sees the wire shape or its numeric enums.
+  let user: User = {
+    id: session.user.id,
+    username: session.user.username,
+    fullName: session.user.fullName,
+    email: session.user.email,
+    avatar: session.user.avatar,
+  };
   try {
-    const profile = await fetchProfile(session.accessToken);
-    fullName = profile.fullName;
-    email = profile.email;
-    address = profile.address;
+    user = toUser(await fetchProfile(session.accessToken));
   } catch {
     // Keep the session snapshot.
   }
+
+  const roleLabel: Record<UserType, string> = {
+    [UserType.SuperAdmin]: t('account.roles.super_admin'),
+    [UserType.Admin]: t('account.roles.admin'),
+    [UserType.User]: t('account.roles.user'),
+  };
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-16">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{t('account.title')}</CardTitle>
-          {username ? (
+          {user.username ? (
             <CardDescription>
-              {t('account.username')}: {username}
+              {t('account.username')}: {user.username}
+              {user.type ? ` · ${roleLabel[user.type]}` : ''}
             </CardDescription>
           ) : null}
         </CardHeader>
@@ -74,7 +81,13 @@ export default async function AccountPage({
                 {t('account.profile.description')}
               </p>
             </div>
-            <ProfileForm defaultValues={{ fullName, email, address }} />
+            <ProfileForm
+              defaultValues={{
+                fullName: user.fullName,
+                email: user.email,
+                address: user.address,
+              }}
+            />
           </section>
 
           <Separator />

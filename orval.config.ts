@@ -36,7 +36,7 @@ export default defineConfig({
       // types). Hand-write the handlers you need in `src/mocks/handlers.ts`.
       override: {
         mutator: {
-          path: './src/lib/fetcher/orval-client.ts',
+          path: './src/lib/api/client.ts',
           name: 'customInstance',
         },
         query: {

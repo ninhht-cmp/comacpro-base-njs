@@ -47,6 +47,10 @@ export const routing = defineRouting({
       vi: '/tai-khoan',
       en: '/account',
     },
+    '/notifications': {
+      vi: '/thong-bao',
+      en: '/notifications',
+    },
   },
 });
 

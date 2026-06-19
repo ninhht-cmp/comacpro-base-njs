@@ -6,7 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { Separator } from '@/components/ui/separator';
 import { env } from '@/config/env';
 import { signinWithGoogle } from '../server/actions';
-import { FormError } from './field';
+import { FormError } from '@/components/form/field';
 
 /**
  * "Continue with Google" — a fully custom-styled button that still returns a
@@ -35,6 +35,10 @@ interface GsiClient {
       initialize(config: {
         client_id: string;
         callback: (response: GsiCredentialResponse) => void;
+        /** Use the browser-native FedCM button UX (Chrome desktop M125+ /
+         * Android M128+) instead of a popup — avoids the COOP/`postMessage`
+         * issue; unsupported browsers fall back automatically. */
+        use_fedcm_for_button?: boolean;
       }): void;
       renderButton(parent: HTMLElement, options: Record<string, unknown>): void;
     };
@@ -109,6 +113,8 @@ export function GoogleSigninButton({ redirectTo }: { redirectTo?: string }) {
     window.google.accounts.id.initialize({
       client_id: clientId,
       callback: handleCredential,
+      // FedCM button UX: browser-mediated account chooser, no popup/postMessage.
+      use_fedcm_for_button: true,
     });
     // Clear any previous render so remounts don't stack duplicate buttons.
     parent.replaceChildren();

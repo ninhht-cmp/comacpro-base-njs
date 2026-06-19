@@ -54,6 +54,10 @@ const securityHeaders = [
   },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
+  // Keep COOP isolation but let popups we open (Google Sign-In) retain their
+  // opener handle, so GSI's popup↔opener `postMessage` works. `same-origin`
+  // would sever it and break/flood-warn the sign-in popup.
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   {
     key: 'Permissions-Policy',

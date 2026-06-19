@@ -110,7 +110,7 @@ function getClient(): KyInstance {
           // This mutator is shared with client bundles, so it must stay free of
           // server-only imports (`next/headers`). Server-side auth is attached
           // explicitly by the caller via the per-request `headers` option — see
-          // `authorizedRequest()` in `@/features/auth/server`.
+          // `authorizedRequest()` in `@/core/session/server`.
           if (
             typeof window !== 'undefined' &&
             !request.headers.has('accept-language')

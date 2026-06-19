@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 // redirect would try to re-localize it, so navigate there verbatim.
 // eslint-disable-next-line no-restricted-imports
 import { redirect as redirectToPath } from 'next/navigation';
+import { clearSession, setSession } from '@/core/session/server';
 import { redirect } from '@/i18n/navigation';
 import { safeRedirect } from './redirect';
 import {
@@ -15,7 +16,6 @@ import {
   signinSchema,
   signupSchema,
 } from '../schema';
-import { clearSession, setSession } from './cookies';
 import {
   AuthError,
   forgotPassword as forgotPasswordRequest,

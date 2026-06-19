@@ -8,6 +8,7 @@ const NAMESPACES = [
   'Home',
   'Errors',
   'Auth',
+  'Notifications',
 ] as const satisfies ReadonlyArray<keyof Messages>;
 
 export async function loadMessages(locale: Locale): Promise<Messages> {

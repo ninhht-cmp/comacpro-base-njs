@@ -3,7 +3,7 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import type { ReactNode } from 'react';
-import { getQueryClient } from '@/lib/query-client';
+import { getQueryClient } from '@/lib/api';
 
 /**
  * Supplies the TanStack Query client to the tree. On the server this resolves

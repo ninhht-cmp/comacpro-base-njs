@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import { signup, type AuthFormState } from '../server/actions';
-import { Field, FormError } from './field';
+import { Field, FormError } from '@/components/form/field';
 
 const initialState: AuthFormState = {};
 

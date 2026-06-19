@@ -1,52 +1,17 @@
 import createMiddleware from 'next-intl/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
-import { routing } from '@/i18n/routing';
-import { refreshTokens } from '@/features/auth/server/service';
+import { evaluateGuard, localizedFor } from '@/core/guard';
+import { refreshTokens } from '@/core/session/identity';
 import {
   isAccessTokenExpiring,
   openSession,
   sealSession,
   SESSION_COOKIE,
   sessionCookieOptions,
-} from '@/features/auth/server/session';
+} from '@/core/session/session';
+import { routing } from '@/i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
-
-type PathKey = keyof typeof routing.pathnames;
-
-// Logical routes that require a session vs. routes a signed-in user shouldn't
-// see. Localized variants are derived from `routing.pathnames`, so renaming a
-// path in one place keeps the guards correct in every locale.
-const PROTECTED_HREFS = ['/account', '/checkout'] as const satisfies PathKey[];
-const AUTH_HREFS = [
-  '/signin',
-  '/signup',
-  '/verify-otp',
-  '/forgot-password',
-  '/verify-forgot-otp',
-  '/reset-password',
-] as const satisfies PathKey[];
-
-/** The localized path for a logical href in a given locale (e.g. `/tai-khoan`). */
-function localizedFor(href: PathKey, locale: string): string {
-  const entry = routing.pathnames[href];
-  if (typeof entry === 'string') return entry;
-  return (entry as Record<string, string>)[locale] ?? href;
-}
-
-/** Every localized path variant of the given hrefs, across all locales. */
-function localizedPaths(hrefs: readonly PathKey[]): string[] {
-  const out: string[] = [];
-  for (const href of hrefs) {
-    const entry = routing.pathnames[href];
-    if (typeof entry === 'string') out.push(entry);
-    else for (const value of Object.values(entry)) out.push(value as string);
-  }
-  return out;
-}
-
-const PROTECTED_PATHS = localizedPaths(PROTECTED_HREFS);
-const AUTH_PATHS = localizedPaths(AUTH_HREFS);
 
 function localeOf(request: NextRequest): string {
   const code = request.nextUrl.pathname.match(/^\/([a-z]{2})(?:\/|$)/)?.[1];
@@ -68,10 +33,6 @@ function withoutLocale(pathname: string): string {
     return rest === '' ? '/' : rest;
   }
   return pathname;
-}
-
-function matchesBase(path: string, bases: string[]): boolean {
-  return bases.some((base) => path === base || path.startsWith(`${base}/`));
 }
 
 function signinUrl(request: NextRequest): URL {
@@ -127,16 +88,16 @@ export async function proxy(request: NextRequest) {
     return response;
   };
 
-  const path = withoutLocale(request.nextUrl.pathname);
-
-  // Not signed in → keep out of protected routes (remember the intended path).
-  if (matchesBase(path, PROTECTED_PATHS) && !session) {
-    return applyCookies(NextResponse.redirect(signinUrl(request)));
-  }
-
-  // Already signed in → keep out of the auth routes.
-  if (matchesBase(path, AUTH_PATHS) && session) {
-    return applyCookies(NextResponse.redirect(accountUrl(request)));
+  // Access-control decision is owned by the (pure, edge-safe) guard policy;
+  // this tier just resolves the target URL and carries the cookie.
+  const decision = evaluateGuard(
+    withoutLocale(request.nextUrl.pathname),
+    !!session,
+  );
+  if (decision.type === 'redirect') {
+    const url =
+      decision.to === '/signin' ? signinUrl(request) : accountUrl(request);
+    return applyCookies(NextResponse.redirect(url));
   }
 
   // Locale routing owns the normal response.

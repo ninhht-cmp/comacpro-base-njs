@@ -1,7 +1,7 @@
 'use server';
 
 import { getLocale, getTranslations } from 'next-intl/server';
-import { clearSession, getSession, setSession } from '@/features/auth/server';
+import { clearSession, getSession, setSession } from '@/core/session/server';
 import { redirect } from '@/i18n/navigation';
 import { changePasswordSchema, updateProfileSchema } from '../schema';
 import {

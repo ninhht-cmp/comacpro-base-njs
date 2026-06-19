@@ -2,17 +2,14 @@ import type { ComponentProps } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-/**
- * Labeled input shared by the account forms — shadcn `Label` + `Input`. Kept
- * local to the feature (the lint rules forbid cross-feature deep imports, so
- * each feature owns its small form primitives).
- */
+/** Labeled input shared by forms — shadcn `Label` + `Input`. */
 export function Field({
   label,
   id,
   name,
   ...props
 }: { label: string } & ComponentProps<typeof Input>) {
+  // Field names are unique per form, so they make stable input ids.
   const fieldId = id ?? name;
   return (
     <div className="flex flex-col gap-1.5">

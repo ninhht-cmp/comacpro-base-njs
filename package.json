@@ -26,7 +26,9 @@
     "format:check": "prettier --check .",
     "gen:api": "node --env-file-if-exists=.env node_modules/orval/dist/bin/orval.mjs --config ./orval.config.ts",
     "gen:api:watch": "node --env-file-if-exists=.env node_modules/orval/dist/bin/orval.mjs --config ./orval.config.ts --watch",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@t3-oss/env-nextjs": "^0.13.11",
@@ -53,6 +55,9 @@
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.61.0",
     "@size-limit/file": "^12.1.0",
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/nextjs-vite": "^10.4.6",
     "@tailwindcss/postcss": "^4",
     "@tanstack/react-query-devtools": "^5.100.14",
     "@testing-library/dom": "^10.4.1",
@@ -67,6 +72,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-storybook": "^10.4.6",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lint-staged": "^17.0.7",
@@ -76,9 +82,11 @@
     "prettier-plugin-tailwindcss": "^0.8.0",
     "shadcn": "^4.10.0",
     "size-limit": "^12.1.0",
+    "storybook": "^10.4.6",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5",
+    "vite": "^8.0.16",
     "vitest": "^4.1.9"
   },
   "lint-staged": {

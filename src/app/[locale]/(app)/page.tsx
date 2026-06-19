@@ -2,14 +2,8 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import {
-  ThemeToggle,
-  ThemeToggleCompact,
-  ThemeToggleSwitch,
-} from '@/components/theme';
 import { Button } from '@/components/ui/button';
 import { routing } from '@/i18n/routing';
-import { LocaleSwitcher } from '@/components/common/locale-switcher';
 
 export default async function Home({
   params,
@@ -77,12 +71,6 @@ export default async function Home({
               {t('docs')}
             </a>
           </Button>
-          <LocaleSwitcher />
-          <ThemeToggle />
-          <ThemeToggleCompact />
-        </div>
-        <div className="mt-8 flex w-full justify-center sm:justify-start">
-          <ThemeToggleSwitch />
         </div>
       </main>
     </div>

@@ -106,9 +106,16 @@ SECURITY; branch protection as code (`.github/settings.yml`).
 
 ## Consequences
 
-- New `core/` layer and `components/form` to build (Decisions 1–2); app-facing
-  feature barrels stay unchanged, so route/page code is untouched.
-- Removing the `proxy.ts` ESLint exception is gated on the `core/session` move.
-- `output: 'standalone'` is now set for the container build; non-container hosts
+- **Decisions 1–2 applied.** `lib/api` consolidated (mutator → `lib/api/client.ts`,
+  orval config + generated imports updated together); `components/{form,layout}`
+  added (shared `Field`/`FormError`, `common/` retired); `providers/` lifted out of
+  `components/`; **session/identity extracted to `@/core/session`** with an
+  edge/server split. The `proxy.ts` ESLint exception is **removed** — it now
+  imports `@/core/session/*`, and `users` no longer imports `auth` for session.
+- **Decision 2 applied.** `core/guard` extracted: `policy.ts` (pure, edge-safe,
+  unit-tested `evaluateGuard`) drives `proxy.ts` (now thin plumbing, 149→110
+  lines); `require.ts` (`requireSession`/`requireGuest`) replaces the hand-rolled
+  session guard in the account page.
+- `output: 'standalone'` is set for the container build; non-container hosts
   ignore it.
 - Decision 3 (topology) and the deploy/flag vendors still need owner sign-off.

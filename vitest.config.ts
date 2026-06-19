@@ -13,7 +13,8 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./vitest.setup.ts'],
-    // Unit/integration tests only. Playwright owns `e2e/`.
+    // Unit/integration tests only. Playwright owns `e2e/`; Storybook runs
+    // standalone (`pnpm storybook` / `build-storybook`), not through Vitest.
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['e2e/**', 'node_modules/**', '.next/**'],
     // Provide the env the app reads at import time (t3-env). `SKIP_ENV_VALIDATION`
