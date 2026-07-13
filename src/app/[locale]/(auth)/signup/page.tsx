@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   AuthCard,
-  HonorCarousel,
+  HonorMedals,
   ReferrerBlock,
   SignupAboutSection,
   SignupForm,
@@ -107,18 +107,24 @@ export default async function SignupPage({
   const platform = detectPlatform((await headers()).get('user-agent'));
 
   return (
-    // Mobile is edge-to-edge (cards span the viewport, carousel bleeds off
-    // screen); the padded, centered column only kicks in from `sm`.
-    <main className="mx-auto flex w-full max-w-md flex-col gap-8 py-12 sm:max-w-2xl sm:px-6 sm:py-16">
+    // Mobile is edge-to-edge (cards span the viewport); the padded, centered
+    // column only kicks in from `sm`. No mobile bottom padding — the form
+    // card is a bottom sheet there (rounded top, flush bottom).
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-8 py-12 max-sm:pb-0 sm:max-w-2xl sm:px-6 sm:py-16">
       {resolution.kind === 'resolved' ? (
         // Card-less, but aligned to the form card's column below.
         <div className="mx-auto flex w-full max-w-md flex-col gap-6">
           <ReferrerBlock referrer={resolution.referrer} />
-          <HonorCarousel />
+          <HonorMedals />
         </div>
       ) : null}
 
-      <Card className="mx-auto w-full max-w-md shadow-md max-sm:rounded-none">
+      {/* Edge-less (the Card "border" is a ring utility, not `border`):
+          elevation comes from the shadow alone. On mobile it reads as a
+          bottom sheet — top corners keep their rounding, bottom runs flush. */}
+      {/* max-sm:flex-1: on short content the card's white surface stretches
+          to the viewport bottom instead of leaving a strip of page bg. */}
+      <Card className="mx-auto w-full max-w-md shadow-md ring-0 max-sm:flex-1 max-sm:rounded-b-none">
         <CardContent className="flex flex-col gap-4">
           {maskedPhone ? (
             <SignupSuccessCard maskedPhone={maskedPhone} platform={platform} />
@@ -134,10 +140,19 @@ export default async function SignupPage({
               <SignupForm referralCode={referral!} />
             </>
           )}
+
+          {/* Mobile: the about section lives INSIDE this card (one sheet with
+              the form); from `sm` the standalone section below renders
+              instead. Two instances, one visible — RSC, so no JS cost. */}
+          <div className="pt-2 sm:hidden">
+            <SignupAboutSection />
+          </div>
         </CardContent>
       </Card>
 
-      <SignupAboutSection />
+      <div className="max-sm:hidden">
+        <SignupAboutSection />
+      </div>
     </main>
   );
 }

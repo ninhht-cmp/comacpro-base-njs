@@ -22,7 +22,9 @@ export default async function AuthLayout({
   setRequestLocale(locale);
 
   return (
-    <div className="min-h-svh bg-gradient-to-b from-muted/60 via-background to-background">
+    // flex-col so a page can stretch itself (flex-1) to the viewport bottom —
+    // the signup card runs flush to the bottom edge on mobile.
+    <div className="flex min-h-svh flex-col bg-gradient-to-b from-muted/60 via-background to-background">
       {children}
     </div>
   );

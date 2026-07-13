@@ -5,6 +5,7 @@ import type Home from './messages/vi/Home.json';
 import type Errors from './messages/vi/Errors.json';
 import type Auth from './messages/vi/Auth.json';
 import type Notifications from './messages/vi/Notifications.json';
+import type About from './messages/vi/About.json';
 
 type Messages = {
   Common: typeof Common;
@@ -12,6 +13,7 @@ type Messages = {
   Errors: typeof Errors;
   Auth: typeof Auth;
   Notifications: typeof Notifications;
+  About: typeof About;
 };
 
 declare module 'next-intl' {

@@ -16,9 +16,14 @@ export function ReferrerBlock({ referrer }: { referrer: ReferralUser }) {
 
   return (
     <section className="flex items-center gap-4 px-4 sm:px-0">
-      <Avatar size="lg" className="size-18 text-xl">
+      {/* No `size` variant: its `data-[size=…]:size-*` class outranks a plain
+          `size-*` override (variant specificity), pinning the avatar at 40px.
+          The default's plain `size-8` is cleanly replaced by tailwind-merge. */}
+      <Avatar className="size-24 sm:size-28">
         <AvatarImage src={referrer.avatar} alt="" />
-        <AvatarFallback className="text-xl">{initialsOf(name)}</AvatarFallback>
+        <AvatarFallback className="text-2xl sm:text-3xl">
+          {initialsOf(name)}
+        </AvatarFallback>
       </Avatar>
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <h1 className="truncate text-lg font-semibold text-foreground">

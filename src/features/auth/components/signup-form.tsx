@@ -3,7 +3,6 @@
 import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { Link } from '@/i18n/navigation';
 import { signup, type AuthFormState } from '../server/actions';
 import { Field, FormError } from '@/components/form/field';
 
@@ -55,16 +54,15 @@ export function SignupForm({
           surface at form level — merge it with the general error slot. */}
       <FormError message={state.fieldErrors?.referralCode ?? state.error} />
 
-      <Button type="submit" disabled={pending} className="mt-2">
+      {/* h-10: matches the input height so the primary CTA never reads
+          smaller than the fields it submits. */}
+      {/* No "have an account? sign in" escape hatch here: this is an
+          invite-only landing for NEW members, and the proxy already bounces
+          signed-in visitors to /account. The invalid-invite state (see the
+          page) keeps its sign-in link — there it's the only useful action. */}
+      <Button type="submit" disabled={pending} className="mt-2 h-10">
         {pending ? t('signup.submitting') : t('signup.submit')}
       </Button>
-
-      <p className="text-center text-sm text-muted-foreground">
-        {t('links.haveAccount')}{' '}
-        <Link href="/signin" className="font-medium text-foreground underline">
-          {t('links.toLogin')}
-        </Link>
-      </p>
     </form>
   );
 }

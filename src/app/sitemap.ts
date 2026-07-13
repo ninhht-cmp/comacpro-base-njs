@@ -6,7 +6,7 @@ import { routing, type Locale } from '@/i18n/routing';
 const FALLBACK = 'http://localhost:3000';
 
 /** Public, parameterless routes to list — keys of `routing.pathnames`. */
-const STATIC_PATHS = ['/'] as const;
+const STATIC_PATHS = ['/', '/about-us'] as const;
 
 function origin() {
   return env.NEXT_PUBLIC_APP_URL ?? FALLBACK;

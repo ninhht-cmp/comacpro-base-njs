@@ -10,7 +10,7 @@ export { AuthCard } from './components/auth-card';
 export { AuthToast } from './components/auth-toast';
 export { ForgotPasswordForm } from './components/forgot-password-form';
 export { LogoutButton } from './components/logout-button';
-export { HonorCarousel } from './components/honor-carousel';
+export { HonorMedals } from './components/honor-medals';
 export { ReferrerBlock } from './components/referrer-block';
 export { SignupAboutSection } from './components/signup-about';
 export { SignupSuccessCard } from './components/signup-success-card';

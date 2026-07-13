@@ -1,49 +1,71 @@
 import { useTranslations } from 'next-intl';
 import {
-  IconHeadset,
-  IconPackage,
-  IconUsers,
+  IconTargetArrow,
+  IconTrendingUp,
+  IconUserPlus,
   type Icon,
 } from '@tabler/icons-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from '@/i18n/navigation';
 
 /**
- * "About us" landing section: heading + three value-prop cards.
- * TODO(product): placeholder copy — replace with the real value props.
+ * "About us" landing section: heading + three link cards deep-linking into
+ * `/about-us` — each card lands on its own section via the URL hash (the
+ * section ids on that page are this `hash` value).
  */
 
 const ITEMS = [
-  { key: 'community', icon: IconUsers },
-  { key: 'products', icon: IconPackage },
-  { key: 'support', icon: IconHeadset },
-] as const satisfies readonly { key: string; icon: Icon }[];
+  { key: 'mission', icon: IconTargetArrow, hash: 'mission' },
+  { key: 'join', icon: IconUserPlus, hash: 'join' },
+  { key: 'growth', icon: IconTrendingUp, hash: 'growth' },
+] as const satisfies readonly { key: string; icon: Icon; hash: string }[];
 
 export function SignupAboutSection() {
   const t = useTranslations('Auth.signup.about');
 
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="px-4 text-xs font-medium tracking-widest text-muted-foreground uppercase sm:px-0">
+      {/* No own side padding: the container provides it (CardContent on
+          mobile, the page column on sm+). */}
+      <h2 className="text-center text-xs font-medium tracking-widest text-muted-foreground uppercase">
         {t('heading')}
       </h2>
-      <div className="grid gap-3 sm:grid-cols-3">
-        {ITEMS.map(({ key, icon: ItemIcon }) => (
-          <Card key={key} size="sm" className="max-sm:rounded-none">
-            <CardHeader>
-              <ItemIcon
-                aria-hidden
-                size={22}
-                className="text-primary"
-                stroke={1.75}
-              />
-              <CardTitle className="text-sm font-semibold">
-                {t(`${key}.title`)}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              {t(`${key}.body`)}
-            </CardContent>
-          </Card>
+      {/* Always 3-up — on phones the cards shrink instead of stacking, so the
+          section stays one compact row (hence the smaller type below). */}
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+        {ITEMS.map(({ key, icon: ItemIcon, hash }) => (
+          <Link
+            key={key}
+            href={{ pathname: '/about-us', hash }}
+            className="group rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {/* Brand-tinted (the Card "border" is a ring utility): primary
+                ring, pastel primary wash, primary text; hover deepens the
+                wash — the card reads as a button. */}
+            <Card
+              size="sm"
+              className="h-full bg-primary/5 ring-primary/25 transition-colors group-hover:bg-primary/10"
+            >
+              <CardHeader className="justify-items-center">
+                <ItemIcon
+                  aria-hidden
+                  size={22}
+                  className="text-primary"
+                  stroke={1.75}
+                />
+                {/* min-h = two lines at each breakpoint: every card keeps the
+                    same height whether its title wraps or not (h-full on the
+                    Card equalizes any third line across the row). */}
+                {/* Darkened terracotta (primary hue, L 0.672→0.55): raw
+                    `text-primary` at 14px on the pastel wash is 2.97:1 —
+                    below AA (4.5) for interactive text; this is 5.1:1. Dark
+                    mode reverts to the token (light-on-dark passes there). */}
+                <CardTitle className="flex min-h-8 items-center justify-center text-center text-xs leading-4 font-semibold text-[oklch(0.55_0.131_38.8)] sm:min-h-10 sm:text-sm sm:leading-5 dark:text-primary">
+                  {t(key)}
+                </CardTitle>
+              </CardHeader>
+            </Card>
+          </Link>
         ))}
       </div>
     </section>
