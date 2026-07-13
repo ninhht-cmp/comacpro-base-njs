@@ -20,10 +20,15 @@ import { useSmartHeader } from './use-smart-header';
 export function SiteHeader({
   brand,
   nav,
+  navLabel,
   actions,
 }: {
   brand: ReactNode;
   nav?: ReactNode;
+  /** Accessible name for the main <nav> — translated by the caller, since
+   * this component stays i18n-agnostic (it also renders in Storybook without
+   * an intl provider). */
+  navLabel?: string;
   actions?: ReactNode;
 }) {
   const { hidden, scrolled } = useSmartHeader();
@@ -44,7 +49,7 @@ export function SiteHeader({
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
         <div className="flex items-center gap-6">
           {brand}
-          {nav ? <nav aria-label="Main">{nav}</nav> : null}
+          {nav ? <nav aria-label={navLabel}>{nav}</nav> : null}
         </div>
         {actions ? (
           <div className="ml-auto flex items-center gap-2">{actions}</div>

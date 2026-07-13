@@ -19,11 +19,14 @@ export function ForgotPasswordForm() {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <Field
-        label={t('email')}
-        name="email"
-        type="email"
-        autoComplete="email"
+        label={t('username')}
+        name="username"
+        type="tel"
+        inputMode="numeric"
+        autoComplete="tel"
+        placeholder="09xxxxxxxx"
         required
+        error={state.fieldErrors?.username}
       />
 
       <FormError message={state.error} />

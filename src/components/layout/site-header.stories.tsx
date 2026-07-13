@@ -11,6 +11,7 @@ const meta = {
     brand: (
       <span className="text-base font-semibold tracking-tight">Comacpro</span>
     ),
+    navLabel: 'Main',
     nav: (
       <ul className="hidden items-center sm:flex">
         <li>

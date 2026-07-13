@@ -10,25 +10,25 @@
 
 **Stack chốt (1 dòng/layer):**
 
-| Layer             | Chọn                                                                    | Version                            | Vì sao (ngắn)                                                  |
-| ----------------- | ----------------------------------------------------------------------- | ---------------------------------- | -------------------------------------------------------------- |
-| Repo strategy     | **Polyrepo** (mỗi app 1 repo) + **private registry** cho thư viện chung | —                                  | Phân quyền/độc lập/CI theo repo; chuẩn enterprise              |
-| Language          | **TypeScript strict**                                                   | 5.x (≥5.1)                         | Bắt buộc cho scale; `strict` + `noUncheckedIndexedAccess`      |
-| Schema/validation | **Zod 4**                                                               | 4.4.x                              | Nguồn sự thật cho type ở runtime (env, form, API boundary)     |
-| UI                | **Tailwind 4 + shadcn/ui (Radix) + Tabler icons**                       | radix-ui 1.4.3, shadcn 4.10        | own-your-code, a11y (Radix), không lock-in                     |
-| Server state      | **TanStack Query 5**                                                    | 5.100.x                            | Chuẩn de-facto cho data REST; cache/invalidation/retry         |
-| Type-safe API     | **orval** (OpenAPI → TS + RQ hooks), generate **in-repo**               | 8.14.x                             | Sinh client + hook từ Swagger NestJS → type-safe đầu cuối      |
-| Client state      | **Zustand 5 + nuqs**                                                    | zustand 5, nuqs 2                  | Zustand cho cart/UI; nuqs đưa filter/search lên URL            |
-| Form              | **React Hook Form + Zod**                                               | rhf 7                              | Ít re-render, validate bằng chính Zod schema                   |
-| Auth              | **Auth.js v5** _(hoặc Better Auth)_                                     | next-auth 5 beta / better-auth 1.6 | Honor lựa chọn; xem §7 trade-off                               |
-| i18n              | **next-intl 4**                                                         | 4.13.x                             | Tích hợp App Router tốt nhất; routing + format                 |
-| Env               | **@t3-oss/env-nextjs + Zod**                                            | 0.13.x                             | Fail-fast khi thiếu/sai env, tách server/client                |
-| Lint/format       | **ESLint flat (next) + Prettier**                                       | eslint 9 + prettier 3              | Cần `@next/eslint-plugin-next` cho Core Web Vitals             |
-| Git hygiene       | **Husky + lint-staged + commitlint + Changesets**                       | latest                             | Guardrail commit; Changesets versioning cho package dùng chung |
-| Test              | **Vitest 4 + Testing Library + Playwright 1.60 + MSW**                  | —                                  | Unit/component + E2E + mock API                                |
-| Observability     | **Sentry + OpenTelemetry + web-vitals**                                 | latest                             | Error + tracing (Next 16 có `instrumentation` sẵn)             |
-| Product analytics | **PostHog**                                                             | latest                             | Funnel e-commerce, feature flag, A/B                           |
-| CI/CD             | **GitHub Actions + Docker standalone**                                  | —                                  | Pipeline lint→typecheck→test→build mỗi repo; cache pnpm store  |
+| Layer             | Chọn                                                                    | Version                            | Vì sao (ngắn)                                                                     |
+| ----------------- | ----------------------------------------------------------------------- | ---------------------------------- | --------------------------------------------------------------------------------- |
+| Repo strategy     | **Polyrepo** (mỗi app 1 repo) + **private registry** cho thư viện chung | —                                  | Phân quyền/độc lập/CI theo repo; chuẩn enterprise                                 |
+| Language          | **TypeScript strict**                                                   | 5.x (≥5.1)                         | Bắt buộc cho scale; `strict` + `noUncheckedIndexedAccess`                         |
+| Schema/validation | **Zod 4**                                                               | 4.4.x                              | Nguồn sự thật cho type ở runtime (env, form, API boundary)                        |
+| UI                | **Tailwind 4 + shadcn/ui (Radix) + Tabler icons**                       | radix-ui 1.4.3, shadcn 4.10        | own-your-code, a11y (Radix), không lock-in                                        |
+| Server state      | **TanStack Query 5**                                                    | 5.100.x                            | Chuẩn de-facto cho data REST; cache/invalidation/retry                            |
+| Type-safe API     | **orval** (OpenAPI → TS + RQ hooks), generate **in-repo**               | 8.14.x                             | Sinh client + hook từ Swagger NestJS → type-safe đầu cuối                         |
+| Client state      | **Zustand 5 + nuqs**                                                    | zustand 5, nuqs 2                  | Zustand cho cart/UI; nuqs đưa filter/search lên URL                               |
+| Form              | **React Hook Form + Zod**                                               | rhf 7                              | Ít re-render, validate bằng chính Zod schema                                      |
+| Auth              | **Auth.js v5** _(hoặc Better Auth)_                                     | next-auth 5 beta / better-auth 1.6 | Honor lựa chọn; xem §7 trade-off                                                  |
+| i18n              | **next-intl 4**                                                         | 4.13.x                             | Tích hợp App Router tốt nhất; routing + format                                    |
+| Env               | **@t3-oss/env-nextjs + Zod**                                            | 0.13.x                             | Fail-fast khi thiếu/sai env, tách server/client                                   |
+| Lint/format       | **ESLint flat (next) + Prettier**                                       | eslint 9 + prettier 3              | Cần `@next/eslint-plugin-next` cho Core Web Vitals                                |
+| Git hygiene       | **Husky + lint-staged + PR-title lint**                                 | latest                             | Guardrail commit; commitlint đã bỏ (solo + squash-merge → lint PR title trong CI) |
+| Test              | **Vitest 4 + Testing Library + Playwright 1.60 + MSW**                  | —                                  | Unit/component + E2E + mock API                                                   |
+| Observability     | **Sentry + OpenTelemetry + web-vitals**                                 | latest                             | Error + tracing (Next 16 có `instrumentation` sẵn)                                |
+| Product analytics | **PostHog**                                                             | latest                             | Funnel e-commerce, feature flag, A/B                                              |
+| CI/CD             | **GitHub Actions + Docker standalone**                                  | —                                  | Pipeline lint→typecheck→test→build mỗi repo; cache pnpm store                     |
 
 **Thứ tự build (5 phase):**
 `P0 Nền tảng (TS, quality, CI)` ✅ → `P1 Design system + i18n` ⏳ → `P2 API contract + data layer` ✅ → `P3 Auth` ✅ → `P4 Tính năng e-commerce + caching/SEO` → `P5 Observability + hardening`. Chi tiết ở **§8**.
@@ -177,7 +177,7 @@ _Alternative_: **@hey-api/openapi-ts** nếu chỉ cần client + types; hoặc 
 
 ### 4.11. Git hygiene & versioning
 
-- **Husky + lint-staged + commitlint** (Conventional Commits; chỉ override `scope-case: kebab`, scope tự do) ở mọi repo + **Changesets** cho repo thư viện chung. Đã làm ở Phase 0.
+- **Husky + lint-staged** ở mọi repo + **Changesets** cho repo thư viện chung. Commitlint đã gỡ (2026-07): solo dev + squash-merge nghĩa là PR title mới là commit lên main — CI lint PR title bằng `amannn/action-semantic-pull-request` thay cho hook local.
 
 ### 4.12. Testing
 
@@ -332,8 +332,8 @@ Nguyên tắc: dựng nền & guardrail trước, tính năng sau. Mỗi phase c
 ### Phase 2 — API contract + data layer ✅ ĐÃ IMPLEMENT
 
 1. **Spec**: nối spec thật `OPENAPI_SPEC=https://api.dev.cmpup.com/docs-json` (BE Global Service API, 28 domain). `gen:api` đọc `.env` qua `node --env-file-if-exists`. Còn `openapi/openapi.json` (mẫu) để chạy offline khi cần.
-2. **orval in-repo** (`orval.config.ts` → `src/lib/api/generated`): TS types + TanStack Query hooks (`httpClient: 'axios'`) + zod schemas (`*.zod.ts`). `mutator` = **ky** (`src/lib/fetcher/orval-client.ts`: baseUrl server/client, retry GET, `Accept-Language`, chỗ chờ Bearer token cho P3, `ApiError` chuẩn hoá). Output **commit** (lint/prettier-ignore) để CI typecheck không cần backend.
-3. **TanStack Query** (`src/lib/query-client`): `makeQueryClient`/`getQueryClient` (server per-request, browser singleton), `HydrateQuery` (prefetch RSC → dehydrate → hydrate), `QueryProvider` + devtools, đã gắn vào `components/providers`.
+2. **orval in-repo** (`orval.config.ts` → `src/lib/api/generated`): ⚠️ **ĐÃ THU GỌN (2026-07, xem ADR 0002)** — chỉ còn sinh **model types** (`generated/model`). Hooks TanStack Query + zod schemas + ky mutator đã gỡ: API thật lệch envelope so với spec nên toàn bộ data đi qua `serverFetch` (`src/lib/api/server-fetch.ts`) từ RSC/Server Actions. Output **commit** (lint/prettier-ignore) để CI typecheck không cần backend.
+3. **TanStack Query**: ⚠️ **ĐÃ GỠ (ADR 0002)** — kiến trúc hiện tại là RSC-first, không có client-side query cache; mutation dùng Server Action + `router.refresh()`. Đưa lại TanStack Query khi có nhu cầu client-side thật (polling/infinite scroll/optimistic).
 4. **MSW** (`src/mocks`): hạ tầng browser worker + node server (qua `instrumentation.ts`), bật bằng `NEXT_PUBLIC_API_MOCKING=enabled`. **Sinh mock từ spec đã TẮT** (BE bọc `BaseResDto<T>` khiến faker-mock của orval sai type) — `handlers.ts` để rỗng, tự viết handler khi cần.
 
 **DoD ✅**: client gen từ spec thật, type chạy đầu cuối (typecheck xanh trên 28 domain); đổi field trong spec → `pnpm gen:api` → TS báo đỏ ngay nơi tiêu thụ (đã verify). _Còn lại để gọi được API thật_: **auth/Bearer token (P3)** cho hầu hết endpoint `/v1/...`, và fetch phía server/BFF để tránh CORS từ browser.
@@ -406,27 +406,27 @@ Nguyên tắc: dựng nền & guardrail trước, tính năng sau. Mỗi phase c
 
 ### 10.1. Bảng version pin (verify 2026-06-03, npm)
 
-| Package                             | Version                    |     | Package               | Version |
-| ----------------------------------- | -------------------------- | --- | --------------------- | ------- |
-| next                                | 16.2.7                     |     | @tanstack/react-query | 5.100.x |
-| react / react-dom                   | 19.2.x                     |     | zustand               | 5.0.x   |
-| typescript                          | 5.x (≥5.1)                 |     | nuqs                  | 2.x     |
-| tailwindcss                         | 4.x                        |     | react-hook-form       | 7.x     |
-| zod                                 | 4.4.x                      |     | next-intl             | 4.13.x  |
-| shadcn (CLI)                        | 4.10.x                     |     | @t3-oss/env-nextjs    | 0.13.x  |
-| radix-ui                            | 1.4.3                      |     | eslint                | 9.x     |
-| @tabler/icons-react                 | 3.44.x                     |     | prettier              | 3.x     |
-| class-variance-authority            | 0.7.x                      |     | tailwind-merge        | 3.6.x   |
-| orval                               | 8.14.x                     |     | vitest                | 4.1.x   |
-| next-auth (Auth.js)                 | 5.0.0-beta.31 ⚠️ / 4.24.14 |     | @playwright/test      | 1.60.x  |
-| better-auth (alt)                   | 1.6.13                     |     | @sentry/nextjs        | latest  |
-| @base-ui-components/react (đã loại) | 1.0.0-rc.0                 |     |                       |         |
+| Package                             | Version                    |     | Package               | Version          |
+| ----------------------------------- | -------------------------- | --- | --------------------- | ---------------- |
+| next                                | 16.2.7                     |     | @tanstack/react-query | — (gỡ, ADR 0002) |
+| react / react-dom                   | 19.2.x                     |     | zustand               | 5.0.x            |
+| typescript                          | 5.x (≥5.1)                 |     | nuqs                  | 2.x              |
+| tailwindcss                         | 4.x                        |     | react-hook-form       | 7.x              |
+| zod                                 | 4.4.x                      |     | next-intl             | 4.13.x           |
+| shadcn (CLI)                        | 4.10.x                     |     | @t3-oss/env-nextjs    | 0.13.x           |
+| radix-ui                            | 1.4.3                      |     | eslint                | 9.x              |
+| @tabler/icons-react                 | 3.44.x                     |     | prettier              | 3.x              |
+| class-variance-authority            | 0.7.x                      |     | tailwind-merge        | 3.6.x            |
+| orval                               | 8.14.x                     |     | vitest                | 4.1.x            |
+| next-auth (Auth.js)                 | 5.0.0-beta.31 ⚠️ / 4.24.14 |     | @playwright/test      | 1.60.x           |
+| better-auth (alt)                   | 1.6.13                     |     | @sentry/nextjs        | latest           |
+| @base-ui-components/react (đã loại) | 1.0.0-rc.0                 |     |                       |                  |
 
 ### 10.2. Lệnh tham khảo theo phase
 
 ```bash
 # P0 (đã xong) — quality & nền tảng
-pnpm add -D prettier prettier-plugin-tailwindcss @commitlint/cli @commitlint/config-conventional husky lint-staged
+pnpm add -D prettier prettier-plugin-tailwindcss husky lint-staged
 pnpm add @t3-oss/env-nextjs zod
 
 # P1 — UI (shadcn đã init: Radix, tabler) & i18n
@@ -434,9 +434,8 @@ pnpm dlx shadcn@latest add button dropdown-menu ...   # thêm component khi cầ
 pnpm add next-intl
 pnpm add -D storybook
 
-# P2 — data & codegen
-pnpm add @tanstack/react-query ky
-pnpm add -D orval @tanstack/react-query-devtools msw
+# P2 — data & codegen (RSC-first, xem ADR 0002 — không còn react-query/ky)
+pnpm add -D orval msw
 
 # P3 — auth (chọn 1)
 pnpm add next-auth@beta            # Auth.js v5

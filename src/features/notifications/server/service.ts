@@ -1,70 +1,22 @@
 import type {
-  NotificationControllerGetMyNotifications200,
   NotificationResDto,
+  NotificationUnreadCountDto,
 } from '@/lib/api/generated/model';
-import { env } from '@/config/env';
+import { serverFetch, serverFetchPage } from '@/lib/api/server-fetch';
 import { type NotificationPage, toNotification } from '../api';
 
 /**
- * NestJS `notifications` endpoints via plain `fetch` (same rationale as the auth
- * service: runs server-side with the session bearer token).
+ * SaleNet `notifications` endpoints via the shared `serverFetch` transport.
  *
- * Notifications are the **only** endpoints that send `Content-Language`: their
- * `title`/`content` are localized by the backend per that header. Every call
- * here forwards the active locale; no other feature does.
+ * Notifications are the **only** endpoints that get a locale. ⚠️ The SaleNet
+ * spec declares no localization header; `serverFetch` sends both
+ * `Accept-Language` and `Content-Language` as a best effort (see its docs) —
+ * whether `description` is actually localized per-request is unconfirmed
+ * with the backend team.
  */
 
-const API_PREFIX = '/api/v1';
-
-export class NotificationApiError extends Error {
-  override readonly name = 'NotificationApiError';
-  constructor(
-    message: string,
-    readonly status?: number,
-  ) {
-    super(message);
-  }
-}
-
-function apiBaseUrl(): string {
-  const base = env.API_BASE_URL ?? env.NEXT_PUBLIC_API_BASE_URL;
-  if (!base) throw new NotificationApiError('API base URL is not configured.');
-  return base.replace(/\/+$/, '');
-}
-
-async function notificationRequest<T>(
-  path: string,
-  accessToken: string,
-  locale: string,
-  init: RequestInit = {},
-): Promise<T> {
-  const response = await fetch(`${apiBaseUrl()}${API_PREFIX}${path}`, {
-    cache: 'no-store',
-    ...init,
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      // i18n: backend localizes notification title/content by this header.
-      'Content-Language': locale,
-      ...init.headers,
-    },
-  });
-
-  const text = await response.text();
-  let body: unknown;
-  try {
-    body = text ? JSON.parse(text) : undefined;
-  } catch {
-    body = text;
-  }
-  if (!response.ok) {
-    const message =
-      body && typeof body === 'object' && 'message' in body
-        ? String((body as { message: unknown }).message)
-        : 'Request failed';
-    throw new NotificationApiError(message, response.status);
-  }
-  return body as T;
-}
+// Re-exported so the feature's actions keep importing it from `./service`.
+export { ApiError } from '@/lib/api/server-fetch';
 
 export interface NotificationQuery {
   page?: number;
@@ -81,52 +33,60 @@ function searchParams(query: NotificationQuery): string {
   return s ? `?${s}` : '';
 }
 
-/** GET /notifications — the signed-in user's notifications (localized). */
+/** GET /v1/notifications — the signed-in user's notifications (localized). */
 export async function fetchMyNotifications(
   accessToken: string,
   locale: string,
   query: NotificationQuery = {},
 ): Promise<NotificationPage> {
-  const body =
-    await notificationRequest<NotificationControllerGetMyNotifications200>(
-      `/notifications${searchParams(query)}`,
-      accessToken,
-      locale,
-      { method: 'GET' },
-    );
-  const items = (body.data ?? []).map(toNotification);
-  return { items, meta: body.meta };
+  const { data, pagination } = await serverFetchPage<NotificationResDto[]>(
+    `/notifications${searchParams(query)}`,
+    { method: 'GET', accessToken, locale },
+  );
+  return {
+    items: (data ?? []).map(toNotification),
+    meta: pagination && {
+      page: pagination.currentPage ?? 1,
+      perPage: pagination.perPage ?? (data ?? []).length,
+      total: pagination.totalItem,
+      totalPages: pagination.totalPage ?? 1,
+    },
+  };
 }
 
-/** GET /notifications/count — unread count for the badge. */
+/** GET /v1/notifications/unread-count — unread count for the badge. */
 export async function fetchUnreadCount(
   accessToken: string,
   locale: string,
 ): Promise<number> {
-  const body = await notificationRequest<unknown>(
-    `/notifications/count${searchParams({ isRead: false })}`,
-    accessToken,
-    locale,
-    { method: 'GET' },
+  const body = await serverFetch<NotificationUnreadCountDto>(
+    '/notifications/unread-count',
+    { method: 'GET', accessToken, locale },
   );
-  // The live endpoint may return the count bare or wrapped in `{ data }`.
-  const value =
-    typeof body === 'number'
-      ? body
-      : ((body as { data?: unknown } | undefined)?.data ?? 0);
-  return typeof value === 'number' ? value : 0;
+  return body?.count ?? 0;
 }
 
-/** PATCH /notifications/:id/read — mark one notification as read. */
+/** PUT /v1/notifications/:id — mark one notification as read. */
 export async function markNotificationRead(
   accessToken: string,
   locale: string,
-  id: number,
+  id: string,
 ): Promise<void> {
-  await notificationRequest<NotificationResDto>(
-    `/notifications/${id}/read`,
+  await serverFetch<boolean>(`/notifications/${encodeURIComponent(id)}`, {
+    method: 'PUT',
     accessToken,
     locale,
-    { method: 'PATCH' },
-  );
+  });
+}
+
+/** PUT /v1/notifications/read-all — mark every notification as read. */
+export async function markAllNotificationsRead(
+  accessToken: string,
+  locale: string,
+): Promise<void> {
+  await serverFetch<boolean>('/notifications/read-all', {
+    method: 'PUT',
+    accessToken,
+    locale,
+  });
 }

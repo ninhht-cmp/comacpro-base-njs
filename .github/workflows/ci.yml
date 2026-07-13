@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+# Least privilege by default; jobs that need more elevate per-job.
+permissions:
+  contents: read
+
 # Cancel superseded runs on the same ref
 concurrency:
   group: ci-${{ github.ref }}
@@ -44,16 +48,10 @@ jobs:
       - name: i18n keys
         run: pnpm check:i18n
 
+      # Coverage floors live in vitest.config.ts (coverage.thresholds) — no
+      # external coverage service; the run fails locally and here identically.
       - name: Test
         run: pnpm test:coverage
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          files: ./coverage/lcov.info
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build
         run: pnpm build
@@ -61,6 +59,22 @@ jobs:
       - name: Bundle size budget
         run: pnpm size
 
+  # PR titles must be Conventional Commits — with squash-merge they become the
+  # commit history on main (this replaces the old commitlint commit-msg hook).
+  pr-title:
+    name: PR title (Conventional Commits)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Advisory only (not in required status checks): the template has no real
+  # pages yet, so scores are noise. Promote it to a required gate in
+  # .github/settings.yml once real product pages exist.
   lighthouse:
     name: Lighthouse CI
     runs-on: ubuntu-latest
@@ -113,9 +127,30 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # Cache browser binaries keyed on the lockfile-resolved @playwright/test
+      # version — a version bump invalidates the cache, anything else reuses it.
+      - name: Resolve Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
+      # On cache hit the binaries exist but the runner's OS packages may not.
+      - name: Install Playwright OS deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      # playwright.config.ts builds + serves the production server when CI is
+      # set — e2e validates what ships, not the dev server.
       - name: E2E
         run: pnpm test:e2e
 
@@ -127,6 +162,8 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
+  # Smoke check only — proves stories still compile; the static output is not
+  # published anywhere, so no artifact upload.
   storybook:
     name: Storybook build
     runs-on: ubuntu-latest
@@ -149,11 +186,3 @@ jobs:
 
       - name: Build Storybook
         run: pnpm build-storybook
-
-      - name: Upload Storybook static
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: storybook-static
-          path: storybook-static/
-          retention-days: 7

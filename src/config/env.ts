@@ -1,13 +1,20 @@
 import { createEnv } from '@t3-oss/env-nextjs';
 import { z } from 'zod';
 
+// Secrets the app cannot run without. Optional in dev/test so local setups and
+// unit tests boot without a full .env, but REQUIRED in production so a
+// misconfigured deploy fails at build/boot-time env validation instead of
+// 500-ing on the first request that lazily touches the missing value.
+const isProd = process.env.NODE_ENV === 'production';
+
 export const env = createEnv({
   server: {
     NODE_ENV: z
       .enum(['development', 'test', 'production'])
       .default('development'),
-    API_BASE_URL: z.url().optional(),
-    AUTH_SECRET: z.string().min(1).optional(),
+    API_BASE_URL: isProd ? z.url() : z.url().optional(),
+    // ≥32 chars: it is hashed into the AES-256 session key (see core/session).
+    AUTH_SECRET: isProd ? z.string().min(32) : z.string().min(1).optional(),
     REVALIDATE_SECRET: z.string().min(16).optional(),
     // Observability (server). Consumed once the Sentry SDK is wired into
     // `instrumentation.ts`; optional so unconfigured environments are a no-op.

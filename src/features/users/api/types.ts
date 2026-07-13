@@ -1,26 +1,41 @@
 /**
  * Curated **domain model** for the user feature — the clean surface the app
- * imports, decoupled from the generated API DTOs (`UserResDto` & its
- * `NUMBER_0/1/2` enums). The role/status enums are shared identity primitives
- * (`@/core/identity`); the DTO → domain mapping lives in `./mapper` (the only
- * place that touches the generated layer).
+ * imports, decoupled from the generated API DTOs. The role/status enums are
+ * shared identity primitives (`@/core/identity`); the DTO → domain mapping
+ * lives in `./mapper` (the only place that touches the generated layer).
  */
 
-import { UserStatus, UserType } from '@/core/identity';
+import { UserRole, UserStatus } from '@/core/identity';
 
-export { UserStatus, UserType };
+export { UserRole, UserStatus };
 
 /** A user profile as the app understands it (not the wire DTO). */
 export interface User {
-  id: number;
+  /** SaleNet user id (UUID string). */
+  id: string;
+  /** SaleNet usernames are VN phone numbers. */
   username?: string;
   email?: string;
   fullName?: string;
   avatar?: string;
   address?: string;
   phone?: string;
-  type?: UserType;
+  role?: UserRole;
+  referralCode?: string;
+  referralUrl?: string;
+  /** Backend nudges: profile incomplete / password change required. */
+  needsProfileUpdate?: boolean;
+  needsPasswordChange?: boolean;
+}
+
+/** The public referral lookup (`GET /v1/users/referral/{code}`). */
+export interface ReferralUser {
+  id: string;
+  username?: string;
+  fullName?: string;
+  phone?: string;
+  avatar?: string;
+  role?: UserRole;
   status?: UserStatus;
-  createdAt?: string;
-  lastLoginAt?: string;
+  code?: string;
 }

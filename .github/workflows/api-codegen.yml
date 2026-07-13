@@ -11,6 +11,10 @@ on:
       - 'orval.config.ts'
       - 'src/lib/api/generated/**'
 
+# Read-only: the job just regenerates the client and diffs the working tree.
+permissions:
+  contents: read
+
 concurrency:
   group: api-codegen-${{ github.ref }}
   cancel-in-progress: true

@@ -5,6 +5,12 @@ allowBuilds:
   msw: true
   sharp: true
   unrs-resolver: true
+# Supply-chain cooldown: refuse packages published less than 3 days ago
+# (minutes), mirroring Renovate's `minimumReleaseAge: "3 days"` — compromised
+# releases are usually yanked within that window. See SECURITY.md.
+minimumReleaseAge: 4320
+# Pinned exceptions to the cooldown (exact versions we deliberately adopted
+# before they aged out).
 minimumReleaseAgeExclude:
   - '@next/env@16.2.7'
   - '@next/eslint-plugin-next@16.2.7'

@@ -5,13 +5,13 @@ import { HtmlLang } from '@/components/layout/html-lang';
 import { Toaster } from '@/components/ui/sonner';
 import { ReportWebVitals } from '@/lib/observability/report-web-vitals';
 import { MswProvider } from './msw-provider';
-import { QueryProvider } from './query-provider';
 
 // Order matters: NextIntlClientProvider must be outermost so anything below
-// (toasts, error boundaries, …) can call `t()`. Data providers go between
-// i18n and UI; portal targets like a Toaster sit after children.
-// MswProvider gates rendering until mocks are ready (no-op unless enabled), so
-// it wraps the data layer to guarantee no request escapes before interception.
+// (toasts, error boundaries, …) can call `t()`; portal targets like a Toaster
+// sit after children. MswProvider gates rendering until mocks are ready (no-op
+// unless enabled), so no request escapes before interception. There is no
+// client-side data-fetching provider by design — data flows RSC → props and
+// mutations go through Server Actions (see docs/adr/0002-rsc-first-data-layer.md).
 export function Providers({
   locale,
   children,
@@ -22,14 +22,12 @@ export function Providers({
   return (
     <NextIntlClientProvider>
       <MswProvider>
-        <QueryProvider>
-          <ThemeProvider>
-            <HtmlLang locale={locale} />
-            <ReportWebVitals />
-            {children}
-            <Toaster richColors position="top-center" />
-          </ThemeProvider>
-        </QueryProvider>
+        <ThemeProvider>
+          <HtmlLang locale={locale} />
+          <ReportWebVitals />
+          {children}
+          <Toaster richColors position="top-center" />
+        </ThemeProvider>
       </MswProvider>
     </NextIntlClientProvider>
   );

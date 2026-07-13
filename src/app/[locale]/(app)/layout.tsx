@@ -59,6 +59,7 @@ export default async function AppLayout({
             {t('brand')}
           </Link>
         }
+        navLabel={t('nav.main')}
         nav={
           <ul className="hidden items-center sm:flex">
             <li>

@@ -1,15 +1,25 @@
 name: Deploy
 
-# Builds a container image and publishes it to GitHub Container Registry on
-# pushes to main (staging) and version tags (production). The actual rollout
-# (apply to your orchestrator) is a TODO — wire it to the org's target once
-# decided (see docs/adr/0001-architecture-and-platform.md, Decision 3 / the
-# rollback runbook). Image build + push is real and target-agnostic.
+# Builds a container image and publishes it to GitHub Container Registry after
+# CI succeeds on main (staging) and on version tags (production). The actual
+# rollout (apply to your orchestrator) is a TODO — wire it to the org's target
+# once decided (see docs/adr/0001-architecture-and-platform.md, Decision 3 /
+# the rollback runbook). Image build + push is real and target-agnostic.
 on:
-  push:
+  # Gate on the full CI gate instead of raw pushes to main — never ship an
+  # image from a commit whose checks failed. (`workflow_run` only fires for
+  # branches; tag pushes below stay direct since CI doesn't run on tags.)
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
+  push:
     tags: ['v*']
   workflow_dispatch:
+
+# Top-level default; jobs that push images elevate `packages` explicitly.
+permissions:
+  contents: read
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -23,11 +33,18 @@ jobs:
   image:
     name: Build & push image
     runs-on: ubuntu-latest
+    # For workflow_run triggers only proceed when CI concluded green; tag
+    # pushes and manual dispatches pass through unconditionally.
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # On workflow_run, check out the exact commit CI validated (default
+          # would be the branch head, which may have moved).
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || github.ref }}
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -50,6 +67,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build & push
+        id: build
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -58,6 +76,26 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # Supply-chain attestations: SLSA provenance + SBOM, both stored
+          # alongside the image in GHCR.
+          provenance: true
+          sbom: true
+
+      # Block the rollout if the image we just built ships known-critical CVEs.
+      # Scans by digest so we check exactly what was pushed.
+      - name: Scan image (Trivy)
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+          format: table
+          severity: CRITICAL
+          # Only fail on vulnerabilities that have a fix available — unfixable
+          # CVEs would otherwise wedge every deploy.
+          ignore-unfixed: true
+          exit-code: '1'
+        env:
+          TRIVY_USERNAME: ${{ github.actor }}
+          TRIVY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     name: Roll out

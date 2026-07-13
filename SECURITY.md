@@ -21,9 +21,10 @@ supported only while a deployment depends on them.
 
 ## What this project already does
 
-- **Dependencies:** Renovate updates with a `minimumReleaseAge` cooldown (also
-  enforced via pnpm) to avoid pulling compromised fresh releases; CI runs
-  `pnpm audit --prod --audit-level high`.
+- **Dependencies:** Renovate updates with a **3-day** `minimumReleaseAge`
+  cooldown (`renovate.json`, enforced at install time via
+  `minimumReleaseAge: 4320` minutes in `pnpm-workspace.yaml`) to avoid pulling
+  compromised fresh releases; CI runs `pnpm audit --prod --audit-level high`.
 - **SAST:** CodeQL (`security-extended`) on PRs, main, and weekly.
 - **Secrets:** gitleaks scans every PR; never commit credentials — use env vars
   validated by `src/config/env.ts` (t3-env).

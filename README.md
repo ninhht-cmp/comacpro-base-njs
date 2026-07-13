@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# comacpro-base-njs
 
-## Getting Started
+Next.js 16 (App Router) base template for Comacpro frontends. It ships a
+working vertical slice — session auth against a NestJS backend, i18n, a typed
+API layer, and a full test/CI harness — so new apps start from a production
+posture instead of a blank `create-next-app`.
 
-First, run the development server:
+**What's inside**
+
+- **Next.js 16 / React 19** — App Router, Turbopack, `output: 'standalone'`.
+- **Session auth** — custom cookie sessions (JWE via `jose`, httpOnly) against
+  a NestJS REST backend; guards in `src/core/guard`, session in `src/core/session`.
+- **i18n** — next-intl, `vi`/`en` locales, locale-aware navigation enforced by lint.
+- **UI** — Tailwind CSS v4 + shadcn/ui (Radix), Tabler icons, Storybook.
+- **Data layer** — RSC-first (ADR 0002): a single `serverFetch` transport with
+  orval-generated model types from the backend OpenAPI spec; Server Actions
+  for mutations; MSW mocks for backend-free development and tests.
+- **Quality** — TypeScript strict, ESLint (feature-boundary rules), Prettier,
+  Vitest (+ coverage floors), Playwright e2e, i18n key parity check.
+
+## Quickstart
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+nvm use              # Node 24.16 (.nvmrc)
+corepack enable      # provides pnpm
+pnpm install
+cp .env.example .env # fill values; NEXT_PUBLIC_API_MOCKING=enabled → no backend needed
+pnpm doctor          # environment sanity checks
+pnpm dev             # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command                             | What                                              |
+| ----------------------------------- | ------------------------------------------------- |
+| `pnpm dev` / `pnpm build` / `start` | Run / build / serve the app                       |
+| `pnpm typecheck`                    | `tsc --noEmit`                                    |
+| `pnpm lint` / `pnpm lint:fix`       | ESLint (includes architecture boundary rules)     |
+| `pnpm format` / `pnpm format:check` | Prettier                                          |
+| `pnpm test` / `pnpm test:coverage`  | Vitest unit/integration (coverage floors)         |
+| `pnpm test:e2e`                     | Playwright (dev server locally, prod build in CI) |
+| `pnpm check:i18n`                   | i18n key parity across locales                    |
+| `pnpm gen:api`                      | Regenerate the API client from the OpenAPI spec   |
+| `pnpm storybook`                    | Component workbench                               |
+| `pnpm doctor`                       | Environment sanity checks                         |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Documentation
 
-## Learn More
+- [`docs/tech-stack.md`](docs/tech-stack.md) — stack choices and rationale.
+- [`docs/adr/`](docs/adr/) — architecture decision records.
+- [`docs/golden-path/`](docs/golden-path/README.md) — shared-config blueprint.
+- [`docs/runbooks/`](docs/runbooks/) — operational runbooks (rollback, …).
+- [`src/features/README.md`](src/features/README.md) — feature-module rules.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) / [`SECURITY.md`](SECURITY.md)
 
-To learn more about Next.js, take a look at the following resources:
+## Docker
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Multi-stage build on the Next.js standalone output (small, non-root, healthchecked):
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+docker build -t comacpro-base-njs .
+docker run --rm -p 3000:3000 --env-file .env comacpro-base-njs
+```
 
-## Deploy on Vercel
+CI publishes images to GHCR after the CI gate passes on `main` (staging) and on
+`v*` tags (production) — see `.github/workflows/deploy.yml`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## CI gates
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Every PR must pass (`.github/workflows/`):
+
+- **CI** — typecheck · lint · format · i18n keys · tests with coverage floors ·
+  build · bundle-size budget; Playwright e2e against the production build;
+  Storybook build (smoke); PR title follows Conventional Commits (squash-merge
+  keeps history clean). Lighthouse runs as advisory signal only.
+- **Security** — gitleaks secret scan, `pnpm audit` (high+), CodeQL.
+- **API codegen freshness** — generated client must match the OpenAPI spec.
+
+Branch protection is code — `.github/settings.yml` (Probot Settings app).
+Renovate keeps dependencies fresh with a 3-day supply-chain cooldown
+(`minimumReleaseAge`, mirrored in `pnpm-workspace.yaml`).

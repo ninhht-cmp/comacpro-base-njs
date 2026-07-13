@@ -6,7 +6,7 @@
 export type { NotificationActionState } from './actions';
 export { markNotificationAsRead } from './actions';
 export {
-  NotificationApiError,
+  ApiError,
   type NotificationQuery,
   fetchMyNotifications,
   fetchUnreadCount,

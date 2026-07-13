@@ -38,8 +38,9 @@ pnpm dev
 
 ## Commits & branches
 
-- **Conventional Commits** (enforced by commitlint on `commit-msg`):
-  `feat:`, `fix:`, `chore:`, `refactor:`, `docs:`, `test:`…
+- **Conventional Commits on the PR title** — PRs are squash-merged, so the
+  title becomes the commit on `main`. CI validates it (`pr-title` job); local
+  commit messages on the branch are free-form.
 - Branch off `main`; keep PRs focused. Husky runs lint-staged (pre-commit) and
   typecheck (pre-push) locally.
 
@@ -47,9 +48,9 @@ pnpm dev
 
 - Fill in the PR template; link the Jira issue (`CMP-XXXX`).
 - Green CI is required: typecheck · lint · format · i18n · test (+coverage) ·
-  build · e2e · CodeQL · security. New code should meet the **patch coverage**
-  target (see `codecov.yml`).
-- A CODEOWNER review is required for the areas you touch (`.github/CODEOWNERS`).
+  build · e2e · CodeQL · security. Coverage must stay above the floors in
+  `vitest.config.ts` (`coverage.thresholds`) — raise them as tests are added,
+  never lower them.
 
 ## Adding things
 

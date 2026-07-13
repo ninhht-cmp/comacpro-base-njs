@@ -1,3 +1,5 @@
+# Everything `next build` doesn't need — keeps the build context (and cache
+# invalidation surface) minimal.
 .git
 .github
 node_modules
@@ -17,3 +19,12 @@ docs
 !.env.example
 Dockerfile
 .dockerignore
+# Test/tooling surfaces that never feed the production build.
+.storybook
+storybook-static
+tsconfig.tsbuildinfo
+*.log
+# Agent/tooling workspaces.
+.claude
+.agents
+.playwright-mcp

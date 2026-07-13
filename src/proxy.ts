@@ -1,7 +1,8 @@
 import createMiddleware from 'next-intl/middleware';
 import { type NextRequest, NextResponse } from 'next/server';
 import { evaluateGuard, localizedFor } from '@/core/guard';
-import { refreshTokens } from '@/core/session/identity';
+import { refreshSession } from '@/core/session/identity';
+import { ApiError } from '@/lib/api/server-fetch';
 import {
   isAccessTokenExpiring,
   openSession,
@@ -9,9 +10,20 @@ import {
   SESSION_COOKIE,
   sessionCookieOptions,
 } from '@/core/session/session';
+import {
+  newVisitorId,
+  VISITOR_COOKIE,
+  visitorCookieOptions,
+} from '@/lib/visitor';
 import { routing } from '@/i18n/routing';
 
 const intlMiddleware = createMiddleware(routing);
+
+// Localized variants of the signup path — the only flow that needs the
+// anonymous visitor id (referral attribution, see src/lib/visitor.ts).
+const SIGNUP_PATHS = [
+  ...new Set(routing.locales.map((locale) => localizedFor('/signup', locale))),
+];
 
 function localeOf(request: NextRequest): string {
   const code = request.nextUrl.pathname.match(/^\/([a-z]{2})(?:\/|$)/)?.[1];
@@ -61,17 +73,42 @@ export async function proxy(request: NextRequest) {
 
   // Proactively refresh while the current access token is still valid (the
   // threshold gives this request's downstream calls a valid token; the new one
-  // is persisted on the response for subsequent requests).
+  // is persisted on the response for subsequent requests). `refreshSession`
+  // deduplicates concurrent refreshes for the same token and re-fetches the
+  // user snapshot so backend-side role/identity changes reach the cookie.
   if (session?.refreshToken && isAccessTokenExpiring(session, Date.now())) {
     try {
-      const tokens = await refreshTokens(session.refreshToken);
-      session = { ...session, ...tokens };
+      session = await refreshSession(session);
       refreshedCookie = await sealSession(session);
       request.cookies.set(SESSION_COOKIE, refreshedCookie);
-    } catch {
-      session = null; // refresh failed → treat as logged out
-      request.cookies.delete(SESSION_COOKIE);
+    } catch (error) {
+      if (
+        error instanceof ApiError &&
+        (error.status === 400 || error.status === 401 || error.status === 403)
+      ) {
+        // The backend rejected the refresh token → genuinely logged out.
+        session = null;
+        request.cookies.delete(SESSION_COOKIE);
+      } else {
+        // Transient failure (network blip, 5xx, timeout — e.g. mid-deploy):
+        // keep the session. We refresh ahead of expiry, so the current access
+        // token is usually still valid and the next request retries. Logging
+        // users out on backend hiccups is worse than one stale-token request.
+        console.error('[proxy] token refresh failed transiently', error);
+      }
     }
+  }
+
+  // Mint the anonymous visitor id on the signup flow only (Server Components
+  // can't set cookies). Mutating the request cookie makes it visible to THIS
+  // request's RSC render; applyCookies persists it for subsequent ones.
+  let mintedVisitorId: string | undefined;
+  if (
+    SIGNUP_PATHS.includes(withoutLocale(request.nextUrl.pathname)) &&
+    !request.cookies.get(VISITOR_COOKIE)?.value
+  ) {
+    mintedVisitorId = newVisitorId();
+    request.cookies.set(VISITOR_COOKIE, mintedVisitorId);
   }
 
   // Persist a refreshed cookie / clear a dead one on whatever response we send.
@@ -84,6 +121,13 @@ export async function proxy(request: NextRequest) {
       );
     } else if (!session && cookieValue) {
       response.cookies.delete(SESSION_COOKIE);
+    }
+    if (mintedVisitorId) {
+      response.cookies.set(
+        VISITOR_COOKIE,
+        mintedVisitorId,
+        visitorCookieOptions,
+      );
     }
     return response;
   };

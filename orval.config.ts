@@ -1,8 +1,13 @@
 import { defineConfig } from 'orval';
 
 /**
- * Codegen from the NestJS OpenAPI spec → typed client, TanStack Query hooks
- * and zod schemas, written in-repo under `src/lib/api/generated`.
+ * Codegen from the NestJS OpenAPI spec → TypeScript model types under
+ * `src/lib/api/generated/model`. Models are the ONLY generated artifact: the
+ * app is RSC-first and talks to the backend through the hand-rolled
+ * `serverFetch` transport (`src/lib/api/server-fetch.ts`), because the live
+ * API's response envelopes deviate from the spec — see
+ * docs/adr/0002-rsc-first-data-layer.md and docs/api-spec-issue.md. Client
+ * generation (hooks/fetchers/zod) can come back once the spec is trustworthy.
  *
  * Run with `pnpm gen:api`. Override the spec source (URL or path) for the real
  * backend: `OPENAPI_SPEC=https://api.example.com/v1/openapi.json pnpm gen:api`.
@@ -14,48 +19,34 @@ import { defineConfig } from 'orval';
 const OPENAPI_SPEC = process.env.OPENAPI_SPEC ?? './openapi/openapi.json';
 
 export default defineConfig({
-  // TanStack Query hooks + TS types, transported via the ky mutator.
   api: {
     input: {
       target: OPENAPI_SPEC,
-    },
-    output: {
-      mode: 'tags-split',
-      target: './src/lib/api/generated',
-      schemas: './src/lib/api/generated/model',
-      client: 'react-query',
-      // Axios-style request config (`{ url, method, params, data, signal }`)
-      // so the ky mutator returns the payload directly — `query.data` is the
-      // response body, not a `{ status, data, headers }` envelope. No axios is
-      // imported; the custom mutator fully replaces the transport.
-      httpClient: 'axios',
-      clean: true,
-      // MSW mock generation is intentionally OFF: the backend wraps responses in
-      // `BaseResDto<T>` / `BaseResPaginationDto`, which orval's faker mocks can't
-      // satisfy (they emit `data: undefined` where the DTO requires it → invalid
-      // types). Hand-write the handlers you need in `src/mocks/handlers.ts`.
+      // Deliberate scope: only the tags the app consumes today (auth flows,
+      // users/referral, notifications). Widen the list as features are
+      // migrated — an unfiltered run generates all 244 paths.
+      filters: {
+        mode: 'include',
+        tags: ['Auth', 'Users', 'Notifications'],
+      },
+      // Sanitize known spec defects (empty enums) before validation.
       override: {
-        mutator: {
-          path: './src/lib/api/client.ts',
-          name: 'customInstance',
-        },
-        query: {
-          useQuery: true,
-          signal: true,
-        },
+        transformer: './scripts/openapi-input-transformer.mjs',
       },
     },
-  },
-  // Runtime zod schemas for the same operations (form / boundary validation).
-  zod: {
-    input: {
-      target: OPENAPI_SPEC,
-    },
     output: {
-      mode: 'tags-split',
-      target: './src/lib/api/generated',
-      fileExtension: '.zod.ts',
-      client: 'zod',
+      // `fetch` is the smallest self-contained client orval can emit (orval
+      // cannot generate models alone); the client file is quarantined in
+      // `.reference/` — see the README generated alongside it. Only `model/`
+      // is a supported import (enforced by ESLint).
+      client: 'fetch',
+      mode: 'single',
+      target: './src/lib/api/generated/.reference/client.ts',
+      schemas: './src/lib/api/generated/model',
+      // NO `clean`: orval wipes the output folder BEFORE resolving the input,
+      // so an unreachable spec URL would destroy the committed models. Stale
+      // files are caught by `pnpm check:api-fresh` in CI instead.
+      clean: false,
     },
   },
 });

@@ -1,44 +1,38 @@
+import {
+  ProfileMeResDtoRole,
+  UserRefResDtoStatus,
+} from '@/lib/api/generated/model';
+
 /**
  * Canonical user-domain enums, shared by the session/authz cores and the users
- * feature. Readable string values replace the API's numeric codes; the
- * `*FromValue` helpers map a raw code (e.g. from the session snapshot) to the
- * enum, leniently (unknown → undefined).
+ * feature. SaleNet already uses readable string values (`sm-admin`, `active`),
+ * so the domain types re-export the GENERATED unions instead of duplicating
+ * them: when the backend adds a role, the generated union widens and every
+ * exhaustive `Record<UserRole, …>` (authz policy, labels) fails to compile —
+ * the same drift guarantee the old numeric mappers provided.
  */
 
-export const UserType = {
-  SuperAdmin: 'super_admin',
-  Admin: 'admin',
-  User: 'user',
-} as const;
-export type UserType = (typeof UserType)[keyof typeof UserType];
+export const UserRole = ProfileMeResDtoRole;
+export type UserRole = ProfileMeResDtoRole;
 
-export const UserStatus = {
-  Active: 'active',
-  Inactive: 'inactive',
-  Blocked: 'blocked',
-} as const;
-export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus];
+export const UserStatus = UserRefResDtoStatus;
+export type UserStatus = UserRefResDtoStatus;
 
-const USER_TYPE_BY_VALUE: Record<number, UserType> = {
-  0: UserType.SuperAdmin,
-  1: UserType.Admin,
-  2: UserType.User,
-};
+const ALL_ROLES = new Set<string>(Object.values(UserRole));
+const ALL_STATUSES = new Set<string>(Object.values(UserStatus));
 
-const USER_STATUS_BY_VALUE: Record<number, UserStatus> = {
-  0: UserStatus.Active,
-  1: UserStatus.Inactive,
-  2: UserStatus.Blocked,
-};
-
-export function userTypeFromValue(
-  value: number | undefined,
-): UserType | undefined {
-  return value === undefined ? undefined : USER_TYPE_BY_VALUE[value];
+/** Validate a raw wire/session value into a role, leniently (unknown → undefined). */
+export function roleFromValue(value: string | undefined): UserRole | undefined {
+  return value !== undefined && ALL_ROLES.has(value)
+    ? (value as UserRole)
+    : undefined;
 }
 
-export function userStatusFromValue(
-  value: number | undefined,
+/** Validate a raw wire/session value into a status, leniently (unknown → undefined). */
+export function statusFromValue(
+  value: string | undefined,
 ): UserStatus | undefined {
-  return value === undefined ? undefined : USER_STATUS_BY_VALUE[value];
+  return value !== undefined && ALL_STATUSES.has(value)
+    ? (value as UserStatus)
+    : undefined;
 }

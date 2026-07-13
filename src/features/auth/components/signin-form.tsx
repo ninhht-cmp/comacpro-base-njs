@@ -25,6 +25,7 @@ export function SigninForm({ redirect }: { redirect?: string }) {
         type="text"
         autoComplete="username"
         required
+        error={state.fieldErrors?.username}
       />
 
       <Field
@@ -33,6 +34,7 @@ export function SigninForm({ redirect }: { redirect?: string }) {
         type="password"
         autoComplete="current-password"
         required
+        error={state.fieldErrors?.password}
       />
 
       <Link

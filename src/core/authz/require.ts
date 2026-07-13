@@ -1,9 +1,9 @@
 import 'server-only';
 import { notFound } from 'next/navigation';
 import { requireSession } from '@/core/guard/require';
-import { type UserType, userTypeFromValue } from '@/core/identity';
+import { type UserRole, roleFromValue } from '@/core/identity';
 import type { SessionData } from '@/core/session';
-import { type Permission, can, hasAtLeast } from './policy';
+import { type Permission, can, isStaff } from './policy';
 
 /**
  * Server-side authorization guards for Server Components & actions. Build on
@@ -13,14 +13,14 @@ import { type Permission, can, hasAtLeast } from './policy';
  * 403.
  */
 
-function roleOf(session: SessionData): UserType | undefined {
-  return userTypeFromValue(session.user.userType);
+function roleOf(session: SessionData): UserRole | undefined {
+  return roleFromValue(session.user.role);
 }
 
-/** Require at least `min` role; returns the session or 404s. */
-export async function requireRole(min: UserType): Promise<SessionData> {
+/** Require a back-office staff role; returns the session or 404s. */
+export async function requireStaff(): Promise<SessionData> {
   const session = await requireSession();
-  if (!hasAtLeast(roleOf(session), min)) notFound();
+  if (!isStaff(roleOf(session))) notFound();
   return session;
 }
 

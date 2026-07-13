@@ -96,13 +96,11 @@ const featureBoundary = {
       {
         patterns: [
           {
-            group: [
-              '@/features/*/components',
-              '@/features/*/components/**',
-              '@/features/*/schema',
-              '@/features/*/schema/**',
-              '@/features/*/server/**',
-            ],
+            // Allow-list: ban every deep path under a feature by default and
+            // re-allow only the server barrel (the client barrel
+            // `@/features/<name>` is one segment, never matched by `*/**`) —
+            // new internal directories are blocked without touching the rule.
+            group: ['@/features/*/**', '!@/features/*/server'],
             message:
               'Import features via their public barrels: `@/features/<name>` or `@/features/<name>/server`.',
           },

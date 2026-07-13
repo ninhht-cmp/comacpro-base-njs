@@ -1,27 +1,37 @@
 import { describe, expect, it } from 'vitest';
+import type { NotificationResDto } from '@/lib/api/generated/model';
 import { toNotification } from './mapper';
-import { NotificationStatus, NotificationType } from './types';
 
 describe('toNotification', () => {
-  it('maps numeric type/status to domain enums and defaults isRead', () => {
-    const n = toNotification({
-      id: 1,
-      title: 'Welcome',
-      content: 'Xin chào',
-      type: 1, // USER
-      status: 0, // ACTIVE
-    });
+  it('maps the wire DTO to the domain notification', () => {
+    const dto: NotificationResDto = {
+      id: 'n-1',
+      isRead: false,
+      event: 'WELCOME_TO_NEW_MEMBER',
+      pageUrl: '/tai-khoan',
+      description: 'Chào mừng bạn đến với SaleNet',
+      createdAt: '2026-07-13T08:00:00.000Z',
+    };
 
-    expect(n.type).toBe(NotificationType.User);
-    expect(n.status).toBe(NotificationStatus.Active);
-    expect(n.isRead).toBe(false);
-    expect(n.content).toBe('Xin chào');
+    expect(toNotification(dto)).toEqual({
+      id: 'n-1',
+      description: 'Chào mừng bạn đến với SaleNet',
+      pageUrl: '/tai-khoan',
+      event: 'WELCOME_TO_NEW_MEMBER',
+      createdAt: '2026-07-13T08:00:00.000Z',
+      isRead: false,
+    });
   });
 
-  it('preserves an explicit isRead and leaves missing enums undefined', () => {
-    const n = toNotification({ id: 2, isRead: true });
-    expect(n.isRead).toBe(true);
-    expect(n.type).toBeUndefined();
-    expect(n.status).toBeUndefined();
+  it('preserves an explicit isRead', () => {
+    const dto: NotificationResDto = {
+      id: 'n-2',
+      isRead: true,
+      event: 'DEAL_UPDATED_SUCCESS',
+      pageUrl: '/deals/1',
+      description: 'Deal đã cập nhật',
+      createdAt: '2026-07-13T08:00:00.000Z',
+    };
+    expect(toNotification(dto).isRead).toBe(true);
   });
 });

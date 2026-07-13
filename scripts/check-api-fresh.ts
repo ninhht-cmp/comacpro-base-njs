@@ -25,18 +25,18 @@ function main(): void {
   console.log('Regenerating API client from the spec…');
   run('pnpm gen:api');
 
-  // `--quiet --exit-code` returns non-zero when the generated dir differs.
-  try {
-    execSync(`git diff --quiet --exit-code -- ${GENERATED_DIR}`, {
-      stdio: 'ignore',
-    });
-  } catch {
+  // `git status --porcelain` (unlike `git diff`) also reports UNTRACKED files,
+  // so a spec change that adds a brand-new generated file fails the check too.
+  const drift = execSync(`git status --porcelain -- ${GENERATED_DIR}`, {
+    encoding: 'utf-8',
+  }).trim();
+  if (drift) {
     console.error(
       `\n✗ Generated API client is out of date.\n` +
         `  ${GENERATED_DIR} changed after regeneration — commit the result of \`pnpm gen:api\`.\n`,
     );
     // Show what drifted to make the failure actionable.
-    run(`git --no-pager diff --stat -- ${GENERATED_DIR}`);
+    console.error(drift);
     process.exit(1);
   }
 

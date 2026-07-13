@@ -4,5 +4,7 @@
   "empty": "You have no notifications.",
   "markRead": "Mark as read",
   "marking": "Marking…",
+  "markReadError": "Could not mark the notification as read. Please try again.",
+  "loadError": "Notifications could not be loaded. Please try again later.",
   "bell": "Notifications"
 }

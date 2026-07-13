@@ -8,6 +8,24 @@ describe('Field', () => {
     expect(screen.getByText('Username')).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toHaveAttribute('name', 'username');
   });
+
+  it('is not marked invalid without an error', () => {
+    render(<Field label="Username" name="username" />);
+    const input = screen.getByRole('textbox');
+    expect(input).not.toHaveAttribute('aria-invalid');
+    expect(input).not.toHaveAttribute('aria-describedby');
+  });
+
+  it('renders the error and wires up the a11y attributes', () => {
+    render(<Field label="Username" name="username" error="Required" />);
+    const input = screen.getByRole('textbox');
+    expect(input).toHaveAttribute('aria-invalid', 'true');
+    expect(input).toHaveAttribute('aria-describedby', 'username-error');
+    expect(screen.getByText('Required')).toHaveAttribute(
+      'id',
+      'username-error',
+    );
+  });
 });
 
 describe('FormError', () => {

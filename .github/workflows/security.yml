@@ -7,6 +7,11 @@ on:
     branches: [main]
   pull_request:
 
+# Read-only: both jobs only fetch the repo and report via job status. No SARIF
+# upload here (CodeQL owns security-events in its own workflow).
+permissions:
+  contents: read
+
 concurrency:
   group: security-${{ github.ref }}
   cancel-in-progress: true

@@ -1,7 +1,8 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useTransition } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useTransition } from 'react';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing, type Locale } from '@/i18n/routing';
 import { LOCALE_LABELS } from '@/i18n/config';
@@ -13,16 +14,22 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
-export function LocaleSwitcher() {
+function LocaleSwitcherMenu() {
   const t = useTranslations('Common.locale');
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
   function switchTo(next: Locale) {
     startTransition(() => {
-      router.replace(pathname, { locale: next });
+      // Carry the query string over so flows that live in it (?email=,
+      // ?redirect=, ?token=…) survive a language switch.
+      router.replace(
+        { pathname, query: Object.fromEntries(searchParams) },
+        { locale: next },
+      );
     });
   }
 
@@ -42,5 +49,22 @@ export function LocaleSwitcher() {
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+export function LocaleSwitcher() {
+  const locale = useLocale();
+  return (
+    // `useSearchParams` requires a Suspense boundary on statically rendered
+    // pages; the fallback mirrors the trigger button to avoid layout shift.
+    <Suspense
+      fallback={
+        <Button variant="outline" size="sm" disabled>
+          {LOCALE_LABELS[locale].native}
+        </Button>
+      }
+    >
+      <LocaleSwitcherMenu />
+    </Suspense>
   );
 }

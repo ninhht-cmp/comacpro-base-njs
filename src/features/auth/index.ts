@@ -9,9 +9,7 @@
 export { AuthCard } from './components/auth-card';
 export { AuthToast } from './components/auth-toast';
 export { ForgotPasswordForm } from './components/forgot-password-form';
-export { GoogleSigninButton } from './components/google-signin-button';
 export { LogoutButton } from './components/logout-button';
-export { OtpForm } from './components/otp-form';
 export { ResetPasswordForm } from './components/reset-password-form';
 export { SigninForm } from './components/signin-form';
 export { SignupForm } from './components/signup-form';

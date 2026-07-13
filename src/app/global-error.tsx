@@ -9,6 +9,8 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
+    // lang="en" is deliberate: this fallback renders without i18n (which may be
+    // what failed) and its copy is hardcoded English, so "en" is accurate.
     <html lang="en">
       <body
         style={{

@@ -7,8 +7,8 @@
 export type { UserFormState } from './actions';
 export { cancelAccount, changePassword, updateProfile } from './actions';
 export {
-  UserApiError,
-  cancelAccount as cancelAccountRequest,
+  ApiError,
   changePassword as changePasswordRequest,
+  fetchReferralUser,
   updateProfile as updateProfileRequest,
 } from './service';

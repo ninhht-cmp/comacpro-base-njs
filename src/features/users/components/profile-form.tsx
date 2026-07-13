@@ -29,6 +29,7 @@ export function ProfileForm({
         autoComplete="name"
         defaultValue={defaultValues.fullName ?? ''}
         required
+        error={state.fieldErrors?.fullName}
       />
 
       <Field
@@ -38,6 +39,7 @@ export function ProfileForm({
         autoComplete="email"
         defaultValue={defaultValues.email ?? ''}
         required
+        error={state.fieldErrors?.email}
       />
 
       <Field
@@ -46,6 +48,7 @@ export function ProfileForm({
         type="text"
         autoComplete="street-address"
         defaultValue={defaultValues.address ?? ''}
+        error={state.fieldErrors?.address}
       />
 
       <FormError message={state.error} />

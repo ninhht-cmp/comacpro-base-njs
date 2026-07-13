@@ -14,7 +14,7 @@ import { toast } from '@/components/ui/sonner';
 // `@/components/ui/sonner` (not 'sonner') so both share one library instance.
 const MESSAGE_KEYS = {
   otp_sent: 'toast.otpSent',
-  verified: 'toast.verified',
+  registered: 'toast.registered',
   password_reset: 'toast.passwordReset',
 } as const;
 
@@ -24,8 +24,12 @@ export function AuthToast({ status }: { status?: string }) {
   useEffect(() => {
     if (!status) return;
     const key = MESSAGE_KEYS[status as keyof typeof MESSAGE_KEYS];
-    // `id` dedupes against React strict-mode's double-invoked effect in dev.
-    if (key) toast.success(t(key), { id: status });
+    if (!key) return;
+    const timer = setTimeout(() => {
+      // `id` dedupes against React strict-mode's double-invoked effect in dev.
+      toast.success(t(key), { id: status });
+    });
+    return () => clearTimeout(timer);
   }, [status, t]);
 
   return null;

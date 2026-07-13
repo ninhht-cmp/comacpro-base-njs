@@ -4,5 +4,7 @@
   "empty": "Bạn chưa có thông báo nào.",
   "markRead": "Đánh dấu đã đọc",
   "marking": "Đang đánh dấu…",
+  "markReadError": "Không thể đánh dấu đã đọc. Vui lòng thử lại.",
+  "loadError": "Không thể tải thông báo. Vui lòng thử lại sau.",
   "bell": "Thông báo"
 }

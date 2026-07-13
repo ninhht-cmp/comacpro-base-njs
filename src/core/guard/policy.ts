@@ -23,9 +23,7 @@ export const PROTECTED_HREFS = [
 export const AUTH_HREFS = [
   '/signin',
   '/signup',
-  '/verify-otp',
   '/forgot-password',
-  '/verify-forgot-otp',
   '/reset-password',
 ] as const satisfies PathKey[];
 

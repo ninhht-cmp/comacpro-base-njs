@@ -8,13 +8,18 @@ import 'server-only';
  */
 
 export {
-  authorizedRequest,
   clearSession,
   getAccessToken,
   getSession,
+  refreshSessionAndPersist,
   setSession,
+  withAuthRetry,
 } from './cookies';
 
-export { AuthError, fetchProfile, refreshTokens } from './identity';
+export { fetchProfile, refreshSession, refreshTokens } from './identity';
+
+// Single error type for backend API failures (`@/lib/api`), re-exported for
+// convenience next to the session helpers whose calls throw it.
+export { ApiError } from '@/lib/api/server-fetch';
 
 export type { SessionData, SessionUser } from './session';

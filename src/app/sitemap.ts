@@ -1,21 +1,22 @@
 import type { MetadataRoute } from 'next';
 import { env } from '@/config/env';
-import { routing } from '@/i18n/routing';
+import { getPathname } from '@/i18n/navigation';
+import { routing, type Locale } from '@/i18n/routing';
 
 const FALLBACK = 'http://localhost:3000';
 
+/** Public, parameterless routes to list — keys of `routing.pathnames`. */
 const STATIC_PATHS = ['/'] as const;
 
 function origin() {
   return env.NEXT_PUBLIC_APP_URL ?? FALLBACK;
 }
 
-function localized(path: string, locale: string) {
-  const prefix =
-    locale === routing.defaultLocale && routing.localePrefix === 'as-needed'
-      ? ''
-      : `/${locale}`;
-  return `${origin()}${prefix}${path === '/' ? '' : path}` || `${origin()}/`;
+// `getPathname` applies both the per-locale pathname translations and the
+// locale-prefix rules from the routing config, so translated paths added to
+// `routing.pathnames` emit correct URLs without touching this file.
+function localized(href: (typeof STATIC_PATHS)[number], locale: Locale) {
+  return `${origin()}${getPathname({ href, locale })}`;
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {

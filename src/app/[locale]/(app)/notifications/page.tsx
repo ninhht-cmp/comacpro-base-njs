@@ -4,9 +4,11 @@ import { notFound } from 'next/navigation';
 import { requireSession } from '@/core/guard/require';
 import { type Notification, NotificationList } from '@/features/notifications';
 import {
+  ApiError,
   fetchMyNotifications,
   fetchUnreadCount,
 } from '@/features/notifications/server';
+import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 
 export default async function NotificationsPage({
@@ -24,6 +26,7 @@ export default async function NotificationsPage({
   // The locale drives `Content-Language` so the backend returns localized text.
   let items: Notification[] = [];
   let unread = 0;
+  let failed = false;
   try {
     const [page, count] = await Promise.all([
       fetchMyNotifications(session.accessToken, locale, { perPage: 50 }),
@@ -31,8 +34,12 @@ export default async function NotificationsPage({
     ]);
     items = page.items;
     unread = count;
-  } catch {
-    // Best-effort: render an empty feed if the backend is unavailable.
+  } catch (error) {
+    // A 401 means the session no longer satisfies the backend — re-auth.
+    if (error instanceof ApiError && error.status === 401) {
+      redirect({ href: '/signin', locale });
+    }
+    failed = true;
   }
 
   return (
@@ -45,7 +52,16 @@ export default async function NotificationsPage({
           </span>
         ) : null}
       </div>
-      <NotificationList items={items} />
+      {failed ? (
+        <p
+          role="alert"
+          className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive"
+        >
+          {t('loadError')}
+        </p>
+      ) : (
+        <NotificationList items={items} />
+      )}
     </main>
   );
 }

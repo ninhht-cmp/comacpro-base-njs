@@ -17,7 +17,7 @@ import {
   ChangePasswordForm,
   ProfileForm,
   type User,
-  UserType,
+  UserRole,
   toUser,
 } from '@/features/users';
 import { routing } from '@/i18n/routing';
@@ -53,10 +53,22 @@ export default async function AccountPage({
     // Keep the session snapshot.
   }
 
-  const roleLabel: Record<UserType, string> = {
-    [UserType.SuperAdmin]: t('account.roles.super_admin'),
-    [UserType.Admin]: t('account.roles.admin'),
-    [UserType.User]: t('account.roles.user'),
+  // Exhaustive over the generated role union — a new backend role fails to
+  // compile here until it gets a label (and a translation in both locales).
+  const roleLabel: Record<UserRole, string> = {
+    [UserRole['sm-admin']]: t('account.roles.sm-admin'),
+    [UserRole['sm-system']]: t('account.roles.sm-system'),
+    [UserRole['sm-marketing']]: t('account.roles.sm-marketing'),
+    [UserRole['sm-support-user']]: t('account.roles.sm-support-user'),
+    [UserRole['sm-support-supplier']]: t('account.roles.sm-support-supplier'),
+    [UserRole['sm-support-customer']]: t('account.roles.sm-support-customer'),
+    [UserRole['sm-support-deal']]: t('account.roles.sm-support-deal'),
+    [UserRole['sm-support-product']]: t('account.roles.sm-support-product'),
+    [UserRole['sm-boss']]: t('account.roles.sm-boss'),
+    [UserRole['sm-manager']]: t('account.roles.sm-manager'),
+    [UserRole['sm-leader']]: t('account.roles.sm-leader'),
+    [UserRole['sm-saler']]: t('account.roles.sm-saler'),
+    [UserRole['sm-member']]: t('account.roles.sm-member'),
   };
 
   return (
@@ -67,7 +79,7 @@ export default async function AccountPage({
           {user.username ? (
             <CardDescription>
               {t('account.username')}: {user.username}
-              {user.type ? ` · ${roleLabel[user.type]}` : ''}
+              {user.role ? ` · ${roleLabel[user.role]}` : ''}
             </CardDescription>
           ) : null}
         </CardHeader>

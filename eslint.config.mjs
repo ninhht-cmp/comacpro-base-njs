@@ -32,20 +32,13 @@ const eslintConfig = defineConfig([
           ],
           patterns: [
             {
-              // Allowed public entrypoints: `@/features/<name>` (client-safe
-              // barrel) and `@/features/<name>/server` (server barrel). Every
-              // other internal path is forbidden.
-              group: [
-                '@/features/*/components',
-                '@/features/*/components/**',
-                '@/features/*/schema',
-                '@/features/*/schema/**',
-                '@/features/*/api',
-                '@/features/*/api/**',
-                '@/features/*/hooks',
-                '@/features/*/hooks/**',
-                '@/features/*/server/**',
-              ],
+              // Allow-list: the ONLY public entrypoints are `@/features/<name>`
+              // (client-safe barrel — one segment, never matched by `*/**`) and
+              // `@/features/<name>/server` (server barrel — re-allowed via the
+              // `!` negation). Every other internal path — including directories
+              // that don't exist yet — is forbidden by default, so new feature
+              // subfolders can't silently leak.
+              group: ['@/features/*/**', '!@/features/*/server'],
               message:
                 'Import features through their public barrels: `@/features/<name>` (client) or `@/features/<name>/server` (server). Deep imports are forbidden.',
             },
@@ -82,19 +75,11 @@ const eslintConfig = defineConfig([
           patterns: [
             {
               // A feature uses relative paths for its own internals; it may
-              // reach a sibling only through that sibling's public barrels
-              // (`@/features/<name>` or `@/features/<name>/server`).
-              group: [
-                '@/features/*/components',
-                '@/features/*/components/**',
-                '@/features/*/schema',
-                '@/features/*/schema/**',
-                '@/features/*/api',
-                '@/features/*/api/**',
-                '@/features/*/hooks',
-                '@/features/*/hooks/**',
-                '@/features/*/server/**',
-              ],
+              // reach a sibling only through that sibling's public barrels.
+              // Same allow-list as above: everything under `@/features/*/` is
+              // banned except the `server` barrel (`@/features/<name>` itself
+              // is a single segment, so `*/**` never matches it).
+              group: ['@/features/*/**', '!@/features/*/server'],
               message:
                 'Cross-feature imports must use the sibling barrel: `@/features/<name>` or `@/features/<name>/server`.',
             },
@@ -123,7 +108,7 @@ const eslintConfig = defineConfig([
     'next-env.d.ts',
     'src/lib/api/generated/**',
     'public/mockServiceWorker.js',
-    // Generated coverage report (Vitest/Codecov output).
+    // Generated coverage report (Vitest output).
     'coverage/**',
     // Storybook build output.
     'storybook-static/**',

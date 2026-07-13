@@ -1,6 +1,8 @@
 {
   "brand": "Comacpro",
+  "loading": "Đang tải",
   "nav": {
+    "main": "Chính",
     "home": "Trang chủ",
     "products": "Sản phẩm",
     "cart": "Giỏ hàng",

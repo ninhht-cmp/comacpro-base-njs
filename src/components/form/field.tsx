@@ -7,14 +7,29 @@ export function Field({
   label,
   id,
   name,
+  error,
   ...props
-}: { label: string } & ComponentProps<typeof Input>) {
+}: { label: string; error?: string } & ComponentProps<typeof Input>) {
   // Field names are unique per form, so they make stable input ids.
   const fieldId = id ?? name;
+  const errorId = `${fieldId}-error`;
   return (
     <div className="flex flex-col gap-1.5">
       <Label htmlFor={fieldId}>{label}</Label>
-      <Input id={fieldId} name={name} {...props} />
+      <Input
+        id={fieldId}
+        name={name}
+        {...props}
+        // After the spread so a per-field error always wins these attributes.
+        {...(error
+          ? { 'aria-invalid': true, 'aria-describedby': errorId }
+          : null)}
+      />
+      {error ? (
+        <p id={errorId} className="text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

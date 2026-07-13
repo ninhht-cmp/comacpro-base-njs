@@ -1,109 +1,34 @@
 import type {
   LoginResponseDto,
+  ProfileMeResDto,
   TokenResponseDto,
-  UserResDto,
 } from '@/lib/api/generated/model';
-import { env } from '@/config/env';
+import { ApiError, serverFetch } from '@/lib/api/server-fetch';
 import type { SessionData, SessionUser } from './session';
 
 /**
- * Identity transport — talks to the NestJS auth/identity endpoints with a plain
- * `fetch` (NOT the orval mutator: this runs in edge/proxy contexts without
- * `next/headers` and must not depend on the session-reading mutator). It owns
- * the raw request helper plus session-building so both the auth feature
- * (sign-in flows) and the middleware (token refresh) share one implementation.
+ * Identity flows — token refresh and session building on top of the shared
+ * `serverFetch` transport. Edge-safe (no `next/headers`) so both the auth
+ * feature (sign-in flows) and `proxy.ts` (token refresh) share one
+ * implementation.
  *
- * Endpoints live under `/api/v1` — see the generated client in
- * `src/lib/api/generated`.
+ * Endpoints live under `/api/v1` — see the generated model types in
+ * `src/lib/api/generated/model`.
  */
-
-const API_PREFIX = '/api/v1';
-
-export class AuthError extends Error {
-  override readonly name = 'AuthError';
-  constructor(
-    message: string,
-    readonly status?: number,
-  ) {
-    super(message);
-  }
-}
-
-function apiBaseUrl(): string {
-  const base = env.API_BASE_URL ?? env.NEXT_PUBLIC_API_BASE_URL;
-  if (!base) throw new AuthError('API base URL is not configured.');
-  return base.replace(/\/+$/, '');
-}
-
-/**
- * Extract a human message from the backend error envelope. The API returns
- * `{ statusCode, messages, data }`; we also fall back to the older
- * `{ errors: [{ messages }] }` and NestJS's default `{ message, error }`.
- */
-function errorMessageFrom(body: unknown): string {
-  if (body && typeof body === 'object') {
-    const b = body as {
-      errors?: Array<{ messages?: string[] }>;
-      messages?: string | string[];
-      message?: string | string[];
-      error?: string;
-    };
-    const fromErrors = b.errors
-      ?.flatMap((entry) => entry.messages ?? [])
-      .filter(Boolean);
-    if (fromErrors && fromErrors.length > 0) return fromErrors.join(', ');
-    if (b.messages) {
-      return Array.isArray(b.messages) ? b.messages.join(', ') : b.messages;
-    }
-    if (b.message) {
-      return Array.isArray(b.message) ? b.message.join(', ') : b.message;
-    }
-    if (b.error) return b.error;
-  }
-  return 'Request failed';
-}
-
-export async function apiRequest<T>(
-  path: string,
-  init: RequestInit,
-): Promise<T> {
-  const response = await fetch(`${apiBaseUrl()}${API_PREFIX}${path}`, {
-    cache: 'no-store',
-    ...init,
-  });
-  const text = await response.text();
-  const body: unknown = text ? JSON.parse(text) : undefined;
-
-  if (!response.ok) {
-    throw new AuthError(errorMessageFrom(body), response.status);
-  }
-  // NOTE: the OpenAPI spec declares a `BaseResDto` envelope (`{ data, ... }`),
-  // but the live auth endpoints return the payload at the top level (verified
-  // against the running backend — e.g. signin → `{ accessToken, ... }`). So we
-  // return the parsed body as-is rather than unwrapping a non-existent `.data`.
-  return body as T;
-}
-
-export function jsonPost(body: unknown): RequestInit {
-  return {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  };
-}
 
 function toExpiresAt(expiresIn: number): number {
   return Date.now() + expiresIn * 1000;
 }
 
-function toSessionUser(profile: UserResDto): SessionUser {
+function toSessionUser(profile: ProfileMeResDto): SessionUser {
   return {
     id: profile.id,
-    username: profile.username,
+    // SaleNet usernames are phone numbers; the profile exposes `phoneNumber`.
+    username: profile.phoneNumber,
     email: profile.email,
     fullName: profile.fullName,
-    avatar: profile.avatar,
-    userType: profile.type,
+    avatar: profile.avatarUrl,
+    role: profile.role,
   };
 }
 
@@ -124,10 +49,10 @@ export async function sessionFromTokens(
 export async function refreshTokens(
   refreshToken: string,
 ): Promise<Pick<SessionData, 'accessToken' | 'refreshToken' | 'expiresAt'>> {
-  const tokens = await apiRequest<TokenResponseDto>(
-    '/auth/refresh',
-    jsonPost({ refreshToken }),
-  );
+  const tokens = await serverFetch<TokenResponseDto>('/auth/refresh', {
+    method: 'POST',
+    json: { refreshToken },
+  });
   return {
     accessToken: tokens.accessToken,
     refreshToken: tokens.refreshToken ?? refreshToken,
@@ -135,10 +60,65 @@ export async function refreshTokens(
   };
 }
 
-/** GET /api/v1/users/me with a bearer token. */
-export async function fetchProfile(accessToken: string): Promise<UserResDto> {
-  return apiRequest<UserResDto>('/users/me', {
+/** GET /v1/users/me with a bearer token. */
+export async function fetchProfile(
+  accessToken: string,
+): Promise<ProfileMeResDto> {
+  return serverFetch<ProfileMeResDto>('/users/me', {
     method: 'GET',
-    headers: { Authorization: `Bearer ${accessToken}` },
+    accessToken,
   });
+}
+
+/**
+ * In-flight refreshes keyed by the refresh token, so concurrent requests that
+ * all hit the refresh window (page + parallel RSC/prefetch requests) share ONE
+ * backend call instead of racing. Without this, a backend that rotates and
+ * invalidates refresh tokens on use would reject every call after the first
+ * and log the user out mid-navigation. Module state is per server instance —
+ * exactly the scope on which the concurrent requests contend.
+ */
+const inflightRefreshes = new Map<string, Promise<SessionData>>();
+
+/**
+ * Refresh a session's tokens AND its user snapshot. Re-fetching `/users/me`
+ * on every refresh is what propagates backend-side role/identity changes
+ * (demotion, profile edits) into the sealed cookie — without it the snapshot
+ * would live as long as the cookie. A transient profile failure keeps the
+ * stale snapshot (tokens still rotate); an auth rejection bubbles so the
+ * caller drops the session.
+ */
+export function refreshSession(session: SessionData): Promise<SessionData> {
+  const { refreshToken } = session;
+  if (!refreshToken) {
+    return Promise.reject(new ApiError('No refresh token in session.', 401));
+  }
+
+  const existing = inflightRefreshes.get(refreshToken);
+  if (existing) return existing;
+
+  const promise = (async (): Promise<SessionData> => {
+    const tokens = await refreshTokens(refreshToken);
+    let user = session.user;
+    try {
+      user = toSessionUser(await fetchProfile(tokens.accessToken));
+    } catch (error) {
+      if (
+        error instanceof ApiError &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        throw error; // fresh token rejected → the session is genuinely dead
+      }
+      console.error(
+        '[session] profile refresh failed; keeping stale snapshot',
+        error,
+      );
+    }
+    return { ...session, ...tokens, user };
+  })().finally(() => {
+    inflightRefreshes.delete(refreshToken);
+  });
+
+  inflightRefreshes.set(refreshToken, promise);
+  return promise;
 }

@@ -12,19 +12,26 @@ import { env } from '@/config/env';
  * in Server Components/Actions (via `./cookies`) and in `proxy.ts`.
  */
 
-export const SESSION_COOKIE = 'cmp_session';
+// `__Host-` in production locks the cookie to this exact host over HTTPS with
+// no Domain attribute — a subdomain can never plant/fixate a session cookie.
+// The prefix requires `secure`, which localhost dev over http can't satisfy,
+// hence the plain name outside production.
+export const SESSION_COOKIE =
+  env.NODE_ENV === 'production' ? '__Host-cmp_session' : 'cmp_session';
 
 /** Refresh the access token once it is within this window of expiring. */
 export const REFRESH_THRESHOLD_MS = 60_000;
 
 export interface SessionUser {
-  id: number;
+  /** SaleNet user id (UUID string). */
+  id: string;
+  /** SaleNet usernames are VN phone numbers. */
   username?: string;
   email?: string;
   fullName?: string;
   avatar?: string;
-  /** Numeric account type from the API (`UserResDto.type`). */
-  userType?: number;
+  /** Role string from the API (`ProfileMeResDto.role`, e.g. `sm-saler`). */
+  role?: string;
 }
 
 export interface SessionData {

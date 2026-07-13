@@ -16,6 +16,17 @@ describe('safeRedirect', () => {
     expect(safeRedirect('')).toBeNull();
   });
 
+  it('rejects normalization bypasses of the prefix checks', () => {
+    expect(safeRedirect('/\t/evil.com')).toBeNull(); // tab stripped by URL parser → //evil.com
+    expect(safeRedirect('/ /evil.com')).toBeNull(); // whitespace variant
+    expect(safeRedirect('/\u0000//evil.com')).toBeNull(); // NUL control char
+    expect(safeRedirect('/x/\\evil.com')).toBeNull(); // backslash beyond the prefix
+    expect(safeRedirect('/\r\n/evil.com')).toBeNull(); // CRLF
+    // Percent-encoded forms are NOT decoded during URL resolution, so this
+    // stays an on-origin path and is safe to allow verbatim.
+    expect(safeRedirect('/%09/evil.com')).toBe('/%09/evil.com');
+  });
+
   it('rejects non-string input', () => {
     expect(safeRedirect(null)).toBeNull();
     expect(safeRedirect(undefined)).toBeNull();

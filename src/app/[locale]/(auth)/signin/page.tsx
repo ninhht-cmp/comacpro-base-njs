@@ -1,12 +1,7 @@
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import {
-  AuthCard,
-  AuthToast,
-  GoogleSigninButton,
-  SigninForm,
-} from '@/features/auth';
+import { AuthCard, AuthToast, SigninForm } from '@/features/auth';
 import { routing } from '@/i18n/routing';
 
 export default async function SigninPage({
@@ -26,7 +21,6 @@ export default async function SigninPage({
     <AuthCard title={t('signInTitle')} description={t('signInSubtitle')}>
       <AuthToast status={status} />
       <SigninForm redirect={redirect} />
-      <GoogleSigninButton redirectTo={redirect} />
     </AuthCard>
   );
 }

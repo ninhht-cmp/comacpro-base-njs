@@ -24,6 +24,7 @@ export function ChangePasswordForm() {
         type="password"
         autoComplete="current-password"
         required
+        error={state.fieldErrors?.oldPassword}
       />
 
       <Field
@@ -32,6 +33,7 @@ export function ChangePasswordForm() {
         type="password"
         autoComplete="new-password"
         required
+        error={state.fieldErrors?.newPassword}
       />
 
       <Field
@@ -40,6 +42,7 @@ export function ChangePasswordForm() {
         type="password"
         autoComplete="new-password"
         required
+        error={state.fieldErrors?.confirmPassword}
       />
 
       <FormError message={state.error} />

@@ -1,6 +1,6 @@
 # ADR 0001 — Architecture & platform foundations
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-18
 - **Deciders:** Frontend Platform, Staff Eng
 - **Context tags:** structure, session, guard, observability, security, CI

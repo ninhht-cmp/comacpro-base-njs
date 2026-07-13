@@ -29,14 +29,23 @@ export default defineConfig({
     },
     coverage: {
       provider: 'v8',
-      // `lcov` for Codecov, `text` for local runs, `json-summary` for tooling.
+      // `text` for local runs, `lcov` for editor/tooling integrations,
+      // `json-summary` feeds the threshold ratchet below.
       reporter: ['text', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
       include: ['src/**/*.{ts,tsx}'],
+      // Fail-safe floors, not targets: set ~5 points below the current totals
+      // (lines ~9.8%, statements ~9.7%, functions ~11.2%, branches ~11.7% at
+      // the time of writing) so coverage can never silently regress. Ratchet
+      // these up as the suite fills in — never down.
+      thresholds: {
+        lines: 5,
+        statements: 5,
+        functions: 6,
+        branches: 6,
+      },
       // Exclude generated code, mocks, type-only and barrel/boilerplate files —
-      // they'd dilute the signal. Coverage is gated on *new* code via Codecov
-      // patch status (see codecov.yml), so no hard global thresholds yet; ratchet
-      // them up here once the suite fills in.
+      // they'd dilute the signal.
       exclude: [
         'src/lib/api/generated/**',
         'src/mocks/**',

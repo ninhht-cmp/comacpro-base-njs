@@ -9,45 +9,48 @@ import { Field, FormError } from '@/components/form/field';
 
 const initialState: AuthFormState = {};
 
-export function SignupForm() {
+export function SignupForm({
+  referralCode,
+}: {
+  /**
+   * From the invite link (`?referral=<phone>`); travels as a hidden input —
+   * there is no visible field, signup is invite-only (see the signup page for
+   * the invalid/missing-invite states). The backend re-validates on submit.
+   */
+  referralCode: string;
+}) {
   const t = useTranslations('Auth');
   const [state, formAction, pending] = useActionState(signup, initialState);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="referralCode" value={referralCode} />
+
       <Field
         label={t('fullName')}
         name="fullName"
         type="text"
         autoComplete="name"
         required
+        error={state.fieldErrors?.fullName}
       />
 
       <Field
         label={t('username')}
         name="username"
-        type="text"
-        autoComplete="username"
+        type="tel"
+        inputMode="numeric"
+        autoComplete="tel"
+        placeholder="09xxxxxxxx"
         required
+        error={state.fieldErrors?.username}
       />
 
-      <Field
-        label={t('email')}
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-      />
+      <p className="text-sm text-muted-foreground">{t('signup.credentials')}</p>
 
-      <Field
-        label={t('password')}
-        name="password"
-        type="password"
-        autoComplete="new-password"
-        required
-      />
-
-      <FormError message={state.error} />
+      {/* The referral travels hidden, so a backend rejection of it must
+          surface at form level — merge it with the general error slot. */}
+      <FormError message={state.fieldErrors?.referralCode ?? state.error} />
 
       <Button type="submit" disabled={pending} className="mt-2">
         {pending ? t('signup.submitting') : t('signup.submit')}

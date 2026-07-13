@@ -1,32 +1,23 @@
 /**
- * Curated domain model for notifications — readable enums + a flat shape the UI
- * consumes, decoupled from the generated `NotificationResDto` (numeric enums).
- * The DTO → domain mapping lives in `./mapper`.
+ * Curated domain model for notifications — a flat shape the UI consumes,
+ * decoupled from the generated `NotificationResDto`. The DTO → domain mapping
+ * lives in `./mapper`.
  */
 
-export const NotificationType = {
-  All: 'all',
-  User: 'user',
-} as const;
-export type NotificationType =
-  (typeof NotificationType)[keyof typeof NotificationType];
+import type { NotificationResDtoEvent } from '@/lib/api/generated/model';
 
-export const NotificationStatus = {
-  Active: 'active',
-  Inactive: 'inactive',
-} as const;
-export type NotificationStatus =
-  (typeof NotificationStatus)[keyof typeof NotificationStatus];
+/** SaleNet notification event kinds (re-exported generated union). */
+export type NotificationEvent = NotificationResDtoEvent;
 
 export interface Notification {
-  id: number;
-  title?: string;
+  /** SaleNet notification id (UUID string). */
+  id: string;
   /** Localized by the backend via the `Content-Language` request header. */
-  content?: string;
-  sendDate?: string;
+  description: string;
+  /** In-app destination the notification points at. */
+  pageUrl?: string;
+  event?: NotificationEvent;
   createdAt?: string;
-  type?: NotificationType;
-  status?: NotificationStatus;
   isRead: boolean;
 }
 

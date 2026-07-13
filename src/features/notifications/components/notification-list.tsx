@@ -35,7 +35,7 @@ export function NotificationList({ items }: { items: Notification[] }) {
                     : 'font-medium text-foreground'
                 }`}
               >
-                {n.title}
+                {n.description}
               </p>
               {n.createdAt ? (
                 <time className="shrink-0 text-xs text-muted-foreground">
@@ -45,9 +45,6 @@ export function NotificationList({ items }: { items: Notification[] }) {
                 </time>
               ) : null}
             </div>
-            {n.content ? (
-              <p className="text-sm text-muted-foreground">{n.content}</p>
-            ) : null}
             {!n.isRead ? (
               <div className="mt-1">
                 <MarkReadButton id={n.id} />

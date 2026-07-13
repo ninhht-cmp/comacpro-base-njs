@@ -1,43 +1,42 @@
-import {
-  EUserStatus,
-  EUserType,
-  type UserResDto,
-} from '@/lib/api/generated/model';
-import { type User, UserStatus, UserType } from './types';
+import type { ProfileMeResDto, UserRefResDto } from '@/lib/api/generated/model';
+import { roleFromValue, statusFromValue } from '@/core/identity';
+import type { ReferralUser, User } from './types';
 
 /**
- * Anti-corruption layer: maps the generated wire DTO → the domain {@link User}.
- * This is the **one** module allowed to import `@/lib/api/generated`. Because the
- * lookup tables are keyed by the generated enums, a backend contract change (e.g.
- * a new role) breaks this file at compile time — drift is caught here, not in the
- * UI. App code imports `User`/`UserType`/`UserStatus`, never the DTO.
+ * Anti-corruption layer: maps the generated wire DTOs → the domain types.
+ * This is the **one** module in the feature allowed to import
+ * `@/lib/api/generated`. SaleNet's role/status values are already readable
+ * strings; the `*FromValue` helpers validate them (unknown → undefined) so a
+ * value the frontend doesn't know yet degrades instead of leaking raw strings
+ * into the UI. App code imports `User`/`ReferralUser`, never the DTOs.
  */
 
-const USER_TYPE_BY_DTO: Record<EUserType, UserType> = {
-  [EUserType.NUMBER_0]: UserType.SuperAdmin,
-  [EUserType.NUMBER_1]: UserType.Admin,
-  [EUserType.NUMBER_2]: UserType.User,
-};
+export function toUser(dto: ProfileMeResDto): User {
+  return {
+    id: dto.id,
+    username: dto.phoneNumber,
+    email: dto.email,
+    fullName: dto.fullName,
+    avatar: dto.avatarUrl,
+    address: dto.address,
+    phone: dto.phoneNumber,
+    role: roleFromValue(dto.role),
+    referralCode: dto.referralCode,
+    referralUrl: dto.referralUrl,
+    needsProfileUpdate: dto.isNeedUpdateProfile,
+    needsPasswordChange: dto.isNeedChangePassword,
+  };
+}
 
-const USER_STATUS_BY_DTO: Record<EUserStatus, UserStatus> = {
-  [EUserStatus.NUMBER_0]: UserStatus.Active,
-  [EUserStatus.NUMBER_1]: UserStatus.Inactive,
-  [EUserStatus.NUMBER_2]: UserStatus.Blocked,
-};
-
-export function toUser(dto: UserResDto): User {
+export function toReferralUser(dto: UserRefResDto): ReferralUser {
   return {
     id: dto.id,
     username: dto.username,
-    email: dto.email,
-    fullName: dto.fullName,
-    avatar: dto.avatar,
-    address: dto.address,
-    phone: dto.phone,
-    type: dto.type === undefined ? undefined : USER_TYPE_BY_DTO[dto.type],
-    status:
-      dto.status === undefined ? undefined : USER_STATUS_BY_DTO[dto.status],
-    createdAt: dto.createdAt,
-    lastLoginAt: dto.lastLoginAt,
+    fullName: dto.profile?.fullName,
+    phone: dto.profile?.phoneNumber,
+    avatar: dto.profile?.avatarUrl,
+    role: roleFromValue(dto.role),
+    status: statusFromValue(dto.status),
+    code: dto.code,
   };
 }

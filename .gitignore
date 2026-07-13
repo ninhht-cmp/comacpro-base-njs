@@ -46,3 +46,8 @@ next-env.d.ts
 
 *storybook.log
 storybook-static
+
+# AI agent runtime state (settings.json/hooks stay tracked)
+.claude/settings.local.json
+.claude/drafts/
+plans/*.md

@@ -1,4 +1,7 @@
-export default function Loading() {
+import { getTranslations } from 'next-intl/server';
+
+export default async function Loading() {
+  const t = await getTranslations('Common');
   return (
     <div
       role="status"
@@ -9,7 +12,7 @@ export default function Loading() {
         aria-hidden
         className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground"
       />
-      <span className="sr-only">Loading</span>
+      <span className="sr-only">{t('loading')}</span>
     </div>
   );
 }

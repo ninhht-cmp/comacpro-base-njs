@@ -1,6 +1,8 @@
 {
   "brand": "Comacpro",
+  "loading": "Loading",
   "nav": {
+    "main": "Main",
     "home": "Home",
     "products": "Products",
     "cart": "Cart",

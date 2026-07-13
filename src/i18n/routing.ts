@@ -15,17 +15,9 @@ export const routing = defineRouting({
       vi: '/dang-ky',
       en: '/signup',
     },
-    '/verify-otp': {
-      vi: '/xac-thuc-otp',
-      en: '/verify-otp',
-    },
     '/forgot-password': {
       vi: '/quen-mat-khau',
       en: '/forgot-password',
-    },
-    '/verify-forgot-otp': {
-      vi: '/xac-thuc-otp-quen-mat-khau',
-      en: '/verify-forgot-otp',
     },
     '/reset-password': {
       vi: '/dat-lai-mat-khau',

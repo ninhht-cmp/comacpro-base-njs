@@ -1,5 +1,5 @@
 import type { routing } from './routing';
-import type { formats } from './formats';
+import type { getFormats } from './formats';
 import type Common from './messages/vi/Common.json';
 import type Home from './messages/vi/Home.json';
 import type Errors from './messages/vi/Errors.json';
@@ -18,6 +18,6 @@ declare module 'next-intl' {
   interface AppConfig {
     Locale: (typeof routing.locales)[number];
     Messages: Messages;
-    Formats: typeof formats;
+    Formats: ReturnType<typeof getFormats>;
   }
 }

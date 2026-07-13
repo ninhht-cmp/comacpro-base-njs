@@ -14,16 +14,22 @@ repository:
 branches:
   - name: main
     protection:
+      # Deliberate for a SOLO maintainer + Renovate automerge: requiring human
+      # approvals (or code-owner review) would leave Renovate PRs unmergeable —
+      # there is no second human to approve. The required status checks below
+      # are the real gate; bump the count back up when a second dev joins.
       required_pull_request_reviews:
-        required_approving_review_count: 1
-        require_code_owner_reviews: true
+        required_approving_review_count: 0
         dismiss_stale_reviews: true
       required_status_checks:
         strict: true
+        # Contexts must exactly match the CI job `name:`s. Lighthouse is
+        # deliberately absent — advisory only until real pages exist (see
+        # .github/workflows/ci.yml).
         contexts:
           - 'Typecheck · Lint · Format · i18n · Test · Build'
           - 'E2E (Playwright)'
-          - 'Lighthouse CI'
+          - 'PR title (Conventional Commits)'
           - 'Analyze (javascript-typescript)'
           - 'Secret scan (gitleaks)'
           - 'Dependency audit'
