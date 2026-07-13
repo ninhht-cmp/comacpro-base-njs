@@ -12,7 +12,7 @@ import type { SessionData, SessionUser } from './session';
  * feature (sign-in flows) and `proxy.ts` (token refresh) share one
  * implementation.
  *
- * Endpoints live under `/api/v1` — see the generated model types in
+ * Endpoints live under `/v1` — see the generated model types in
  * `src/lib/api/generated/model`.
  */
 
@@ -45,7 +45,7 @@ export async function sessionFromTokens(
   };
 }
 
-/** POST /api/v1/auth/refresh → new tokens (keeps the old refresh if none returned). */
+/** POST /v1/auth/refresh → new tokens (keeps the old refresh if none returned). */
 export async function refreshTokens(
   refreshToken: string,
 ): Promise<Pick<SessionData, 'accessToken' | 'refreshToken' | 'expiresAt'>> {
@@ -71,22 +71,17 @@ export async function fetchProfile(
 }
 
 /**
- * In-flight refreshes keyed by the refresh token, so concurrent requests that
- * all hit the refresh window (page + parallel RSC/prefetch requests) share ONE
- * backend call instead of racing. Without this, a backend that rotates and
- * invalidates refresh tokens on use would reject every call after the first
- * and log the user out mid-navigation. Module state is per server instance —
- * exactly the scope on which the concurrent requests contend.
+ * Single-flight: concurrent requests hitting the refresh window share one
+ * backend call. Without this, rotate-and-invalidate refresh tokens would
+ * reject every racer after the first and log the user out mid-navigation.
  */
 const inflightRefreshes = new Map<string, Promise<SessionData>>();
 
 /**
- * Refresh a session's tokens AND its user snapshot. Re-fetching `/users/me`
- * on every refresh is what propagates backend-side role/identity changes
- * (demotion, profile edits) into the sealed cookie — without it the snapshot
- * would live as long as the cookie. A transient profile failure keeps the
- * stale snapshot (tokens still rotate); an auth rejection bubbles so the
- * caller drops the session.
+ * Refresh tokens AND the user snapshot — re-fetching `/users/me` here is what
+ * propagates backend-side role/identity changes into the sealed cookie. A
+ * transient profile failure keeps the stale snapshot (tokens still rotate);
+ * an auth rejection bubbles so the caller drops the session.
  */
 export function refreshSession(session: SessionData): Promise<SessionData> {
   const { refreshToken } = session;

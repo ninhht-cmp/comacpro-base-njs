@@ -31,8 +31,5 @@ export default defineConfig({
         reuseExistingServer: !process.env.CI,
         // Generous in CI: the timeout has to cover `next build`, not just boot.
         timeout: process.env.CI ? 300_000 : 120_000,
-        // A dummy client id so <GoogleSigninButton/> renders for the GIS-stubbed
-        // e2e (the real verification is faked via a fulfilled GIS script).
-        env: { NEXT_PUBLIC_GOOGLE_CLIENT_ID: 'e2e-test-client-id' },
       },
 });

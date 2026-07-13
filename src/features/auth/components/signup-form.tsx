@@ -31,6 +31,9 @@ export function SignupForm({
         name="fullName"
         type="text"
         autoComplete="name"
+        // Single-purpose page reached from an invite link — focus goes
+        // straight to the first field (deliberate a11y trade-off).
+        autoFocus
         required
         error={state.fieldErrors?.fullName}
       />

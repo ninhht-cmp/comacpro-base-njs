@@ -21,7 +21,7 @@ import {
  * authenticated calls go through `withAuthRetry`, which retries once after a
  * token refresh when the API answers 401 (covers a tab that sat open past the
  * token TTL). Each action returns `{ error, fieldErrors }` on failure or
- * `{ success: true }` on success (cancel-account redirects instead).
+ * `{ success: true }` on success.
  */
 
 export interface UserFormState {
@@ -135,14 +135,4 @@ export async function changePassword(
   }
 
   return { success: true };
-}
-
-// No params: invoked via `useActionState`, but neither the previous state nor
-// the form payload is needed (extra args from the dispatcher are ignored).
-export async function cancelAccount(): Promise<UserFormState> {
-  const t = await userT();
-  // ⚠️ PARKED: SaleNet exposes no self-service account deletion endpoint, so
-  // this action only reports the gap. Restore the delete-then-sign-out flow
-  // (see git history) once the backend ships one.
-  return { error: t('account.danger.unavailable') };
 }

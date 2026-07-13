@@ -24,9 +24,11 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_APP_URL: z.url().optional(),
     NEXT_PUBLIC_API_BASE_URL: z.url().optional(),
-    NEXT_PUBLIC_API_MOCKING: z.enum(['enabled', 'disabled']).optional(),
-    // Google Sign-In client id (public). When unset, the Google button hides.
-    NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional(),
+    // `paid-only` mocks just the money-costing endpoints (ZaloOA/SMS sends)
+    // and lets everything else hit the live API — see src/instrumentation.ts.
+    NEXT_PUBLIC_API_MOCKING: z
+      .enum(['enabled', 'paid-only', 'disabled'])
+      .optional(),
     // Observability (client). RUM/Web-Vitals beacon target (e.g. a Route
     // Handler forwarding to Datadog RUM). Unset → the reporter no-ops.
     NEXT_PUBLIC_VITALS_ENDPOINT: z.url().optional(),
@@ -44,7 +46,6 @@ export const env = createEnv({
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_API_MOCKING: process.env.NEXT_PUBLIC_API_MOCKING,
-    NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     NEXT_PUBLIC_VITALS_ENDPOINT: process.env.NEXT_PUBLIC_VITALS_ENDPOINT,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS,

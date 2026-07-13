@@ -36,3 +36,40 @@ export function statusFromValue(
     ? (value as UserStatus)
     : undefined;
 }
+
+/**
+ * Canonical display grouping of the 13 wire roles: product defines ONE title
+ * for all `sm-support-*` variants. UI resolves labels/icons by this key
+ * (translations live under `Auth.roles.<key>`); the exhaustive Record keeps
+ * the compile-time guarantee — a new backend role must be classified here.
+ */
+export type RoleKey =
+  | 'admin'
+  | 'system'
+  | 'marketing'
+  | 'support'
+  | 'boss'
+  | 'manager'
+  | 'leader'
+  | 'saler'
+  | 'member';
+
+const ROLE_KEYS: Record<UserRole, RoleKey> = {
+  [UserRole['sm-admin']]: 'admin',
+  [UserRole['sm-system']]: 'system',
+  [UserRole['sm-marketing']]: 'marketing',
+  [UserRole['sm-support-user']]: 'support',
+  [UserRole['sm-support-supplier']]: 'support',
+  [UserRole['sm-support-customer']]: 'support',
+  [UserRole['sm-support-deal']]: 'support',
+  [UserRole['sm-support-product']]: 'support',
+  [UserRole['sm-boss']]: 'boss',
+  [UserRole['sm-manager']]: 'manager',
+  [UserRole['sm-leader']]: 'leader',
+  [UserRole['sm-saler']]: 'saler',
+  [UserRole['sm-member']]: 'member',
+};
+
+export function roleKeyOf(role: UserRole): RoleKey {
+  return ROLE_KEYS[role];
+}

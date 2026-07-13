@@ -80,6 +80,12 @@ Adopt SaleNet as the template's backend. Concretely:
   (the referral lookup's required `sessionId`) can't be joined to the
   eventual signup from web. If attribution is the goal, add an optional
   `sessionId` to signup — the web visitor cookie is already in place.
+- **User enumeration on the referral lookup**: `GET /v1/users/referral/{code}`
+  is public, keyed by phone number, and returns the full name/avatar of any
+  registered user — sweeping the VN phone-number space harvests the member
+  list. The web can't mitigate this (the endpoint must stay public for invite
+  links); the backend should rate-limit it per IP/sessionId and return the
+  minimum fields an invite card needs.
 
 ## Consequences
 

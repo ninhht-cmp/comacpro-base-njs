@@ -6,7 +6,6 @@
  * `@/features/users/server`.
  */
 
-export { CancelAccountButton } from './components/cancel-account-button';
 export { ChangePasswordForm } from './components/change-password-form';
 export { ProfileForm } from './components/profile-form';
 

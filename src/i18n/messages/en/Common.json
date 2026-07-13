@@ -4,25 +4,17 @@
   "nav": {
     "main": "Main",
     "home": "Home",
-    "products": "Products",
-    "cart": "Cart",
     "account": "Account",
     "signin": "Sign in",
     "logout": "Log out"
   },
   "actions": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "submit": "Submit",
     "retry": "Retry"
   },
   "locale": {
     "switch": "Switch language"
   },
   "theme": {
-    "toggle": "Toggle theme",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
+    "toggle": "Toggle theme"
   }
 }

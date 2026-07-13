@@ -17,3 +17,4 @@ export {
   signin,
   signup,
 } from './actions';
+export { readSignupSuccess } from './signup-success';

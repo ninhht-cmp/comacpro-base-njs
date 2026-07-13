@@ -2,15 +2,25 @@
  * Next.js instrumentation hook. Runs once when the server process boots.
  *
  * Starts the MSW node server so server-side requests (RSC fetches, Route
- * Handlers) are mocked too, but only when API mocking is enabled and only in
- * the Node.js runtime (never the edge/proxy runtime).
+ * Handlers) are mocked, only in the Node.js runtime (never the edge/proxy
+ * runtime). Two modes:
+ *   `enabled`   — every handled endpoint is mocked (no backend needed).
+ *   `paid-only` — ONLY the endpoints whose real invocation costs money
+ *                 (ZaloOA/SMS sends: signup, forgot-password OTP) are mocked;
+ *                 everything else hits the live API. Unhandled requests
+ *                 bypass to the network in both modes.
  */
 export async function register() {
+  const mocking = process.env.NEXT_PUBLIC_API_MOCKING;
   if (
     process.env.NEXT_RUNTIME === 'nodejs' &&
-    process.env.NEXT_PUBLIC_API_MOCKING === 'enabled'
+    (mocking === 'enabled' || mocking === 'paid-only')
   ) {
-    const { server } = await import('@/mocks/server');
+    const { setupServer } = await import('msw/node');
+    const { handlers, paidEndpointHandlers } = await import('@/mocks/handlers');
+    const server = setupServer(
+      ...(mocking === 'paid-only' ? paidEndpointHandlers : handlers),
+    );
     server.listen({ onUnhandledRequest: 'bypass' });
   }
 

@@ -1,16 +1,14 @@
 import { defineConfig } from 'orval';
 
 /**
- * Codegen from the NestJS OpenAPI spec → TypeScript model types under
+ * Codegen from the SaleNet OpenAPI spec → TypeScript model types under
  * `src/lib/api/generated/model`. Models are the ONLY generated artifact: the
- * app is RSC-first and talks to the backend through the hand-rolled
- * `serverFetch` transport (`src/lib/api/server-fetch.ts`), because the live
- * API's response envelopes deviate from the spec — see
- * docs/adr/0002-rsc-first-data-layer.md and docs/api-spec-issue.md. Client
- * generation (hooks/fetchers/zod) can come back once the spec is trustworthy.
+ * app is RSC-first and talks to the backend through the shared `serverFetch`
+ * transport — see docs/adr/0002-rsc-first-data-layer.md (why no generated
+ * client) and docs/adr/0003-salenet-backend.md (re-entry conditions).
  *
- * Run with `pnpm gen:api`. Override the spec source (URL or path) for the real
- * backend: `OPENAPI_SPEC=https://api.example.com/v1/openapi.json pnpm gen:api`.
+ * Run with `pnpm gen:api`. `OPENAPI_SPEC` (URL or path) overrides the
+ * committed snapshot in ./openapi/openapi.json.
  *
  * Generated output is committed (so CI can typecheck/build without reaching the
  * backend) but lint- and prettier-ignored — orval owns its formatting, and the

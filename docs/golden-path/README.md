@@ -123,7 +123,6 @@ export default function comacproNext(opts = {}) {
       'out/**',
       'coverage/**',
       'src/lib/api/**', // generated
-      'public/mockServiceWorker.js',
       ...(opts.ignores ?? []),
     ]),
   ]);

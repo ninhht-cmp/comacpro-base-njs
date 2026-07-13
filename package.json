@@ -92,10 +92,5 @@
     "*.{json,jsonc,md,css,yml,yaml}": [
       "prettier --write"
     ]
-  },
-  "msw": {
-    "workerDirectory": [
-      "public"
-    ]
   }
 }

@@ -25,7 +25,6 @@ export default defineConfig({
       SKIP_ENV_VALIDATION: 'true',
       API_BASE_URL: 'http://test.local',
       NEXT_PUBLIC_API_BASE_URL: 'http://test.local',
-      NEXT_PUBLIC_GOOGLE_CLIENT_ID: 'test-client-id',
     },
     coverage: {
       provider: 'v8',

@@ -5,7 +5,7 @@
  */
 
 export type { UserFormState } from './actions';
-export { cancelAccount, changePassword, updateProfile } from './actions';
+export { changePassword, updateProfile } from './actions';
 export {
   ApiError,
   changePassword as changePasswordRequest,

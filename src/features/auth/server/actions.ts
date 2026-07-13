@@ -9,6 +9,7 @@ import { clearSession, setSession } from '@/core/session/server';
 import { redirect } from '@/i18n/navigation';
 import { fieldErrorsFrom } from '@/lib/forms/field-errors';
 import { safeRedirect } from './redirect';
+import { setSignupSuccess } from './signup-success';
 import {
   forgotPasswordSchema,
   resetPasswordSchema,
@@ -117,11 +118,17 @@ export async function signup(
     return { error: messageFor(error, t('errors.unknown')) };
   }
 
-  // SaleNet delivers credentials/activation out-of-band (SMS/Zalo); there is
-  // no public post-signup OTP step — send the user straight to sign-in.
+  // SaleNet delivers credentials out-of-band (ZaloOA) and the product lives
+  // in the mobile app — success swaps the form card for the app-download
+  // state on the SAME landing (referrer sections stay). PRG via redirect:
+  // refresh can't resubmit; the cookie proves the signup actually happened.
+  await setSignupSuccess(parsed.data.username);
   const locale = await getLocale();
   redirect({
-    href: { pathname: '/signin', query: { status: 'registered' } },
+    href: {
+      pathname: '/signup',
+      query: { referral: parsed.data.referralCode, status: 'success' },
+    },
     locale,
   });
   return {};

@@ -1,27 +1,37 @@
+import type { Metadata } from 'next';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { AuthCard, SignupForm } from '@/features/auth';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  AuthCard,
+  HonorCarousel,
+  ReferrerBlock,
+  SignupAboutSection,
+  SignupForm,
+  SignupSuccessCard,
+} from '@/features/auth';
+import { readSignupSuccess } from '@/features/auth/server';
 import { ApiError, fetchReferralUser } from '@/features/users/server';
 import type { ReferralUser } from '@/features/users';
+import { APP_STORE_ID } from '@/config/app-links';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { detectPlatform } from '@/lib/platform';
 import { newVisitorId, VISITOR_COOKIE } from '@/lib/visitor';
 
+/** Safari Smart App Banner — inert until the real App Store id is configured. */
+export const metadata: Metadata = APP_STORE_ID
+  ? { itunes: { appId: APP_STORE_ID } }
+  : {};
+
 /**
- * Signup is INVITE-ONLY: the referral code (the referrer's phone number)
- * comes exclusively from the app's invite links (`/signup?referral=<phone>`)
- * — there is no visible input. Resolution is a four-way decision:
- *
- * - resolved   → form + "invited by" card (social proof)
- * - invalid    → the code definitively doesn't exist (404) or the referrer is
- *                inactive: fail FAST — block the form in place with guidance,
- *                no redirect (keeps the URL inspectable, no extra page)
- * - missing    → no `?referral=` at all: explain that an invite is required
- * - unverified → the lookup failed transiently (timeout/5xx): fail OPEN —
- *                render the form without the card; the backend re-validates
- *                on submit. A hiccup on our side must not block signups.
+ * Signup is INVITE-ONLY: the referral code (= the referrer's phone number)
+ * comes exclusively from app invite links (`/signup?referral=<phone>`).
+ * Fail FAST when the code is definitively bad (blocked in place — no
+ * redirect, URL stays inspectable); fail OPEN on transient lookup errors
+ * (form renders, backend re-validates on submit).
  */
 type ReferralResolution =
   | { kind: 'resolved'; referrer: ReferralUser }
@@ -33,8 +43,7 @@ async function resolveReferral(
   referral: string | undefined,
 ): Promise<ReferralResolution> {
   if (!referral) return { kind: 'missing' };
-  // Required by the API for invite-open attribution. proxy.ts mints the
-  // cookie on this path; the fallback covers cookie-less agents.
+  // Required for invite-open attribution; fallback covers cookie-less agents.
   const sessionId =
     (await cookies()).get(VISITOR_COOKIE)?.value ?? newVisitorId();
   try {
@@ -60,17 +69,17 @@ export default async function SignupPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ referral?: string }>;
+  searchParams: Promise<{ referral?: string; status?: string }>;
 }) {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
-  const { referral } = await searchParams;
+  const { referral, status } = await searchParams;
   const t = await getTranslations('Auth');
 
   const resolution = await resolveReferral(referral);
 
-  // Blocked states render guidance instead of the form.
+  // Blocked states render guidance instead of the landing.
   if (resolution.kind === 'missing' || resolution.kind === 'invalid') {
     const variant = resolution.kind;
     return (
@@ -91,15 +100,44 @@ export default async function SignupPage({
     );
   }
 
+  // PRG success state: the action redirects back here with `?status=success`
+  // and a short-lived cookie (masked phone) proving a signup just happened —
+  // the bare query param alone (shared/bookmarked URL) shows the form.
+  const maskedPhone = status === 'success' ? await readSignupSuccess() : null;
+  const platform = detectPlatform((await headers()).get('user-agent'));
+
   return (
-    <AuthCard title={t('signup.title')} description={t('signup.subtitle')}>
-      {resolution.kind === 'resolved' && resolution.referrer.fullName ? (
-        <p className="rounded-md bg-muted px-3 py-2 text-sm text-muted-foreground">
-          {t('signup.invitedBy', { name: resolution.referrer.fullName })}
-        </p>
+    // Mobile is edge-to-edge (cards span the viewport, carousel bleeds off
+    // screen); the padded, centered column only kicks in from `sm`.
+    <main className="mx-auto flex w-full max-w-md flex-col gap-8 py-12 sm:max-w-2xl sm:px-6 sm:py-16">
+      {resolution.kind === 'resolved' ? (
+        // Card-less, but aligned to the form card's column below.
+        <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+          <ReferrerBlock referrer={resolution.referrer} />
+          <HonorCarousel />
+        </div>
       ) : null}
-      {/* `referral` is guaranteed here: 'missing' returned above. */}
-      <SignupForm referralCode={referral!} />
-    </AuthCard>
+
+      <Card className="mx-auto w-full max-w-md shadow-md max-sm:rounded-none">
+        <CardContent className="flex flex-col gap-4">
+          {maskedPhone ? (
+            <SignupSuccessCard maskedPhone={maskedPhone} platform={platform} />
+          ) : (
+            <>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-xl font-semibold">{t('signup.title')}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {t('signup.subtitle')}
+                </p>
+              </div>
+              {/* `referral` is guaranteed here: 'missing' returned above. */}
+              <SignupForm referralCode={referral!} />
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <SignupAboutSection />
+    </main>
   );
 }

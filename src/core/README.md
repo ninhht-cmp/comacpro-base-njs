@@ -21,9 +21,9 @@ reverse.
 
 Shared user-domain primitives — edge/client-safe, no I/O.
 
-| Entry             | Contents                                                                                            |
-| ----------------- | --------------------------------------------------------------------------------------------------- |
-| `@/core/identity` | `UserType` / `UserStatus` enums (readable, replace the API's `0/1/2`) + `userTypeFromValue` mappers |
+| Entry             | Contents                                                                                                                           |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `@/core/identity` | `UserRole` / `UserStatus` (re-exported generated unions — SaleNet's `sm-*` strings) + `roleFromValue`/`statusFromValue` validators |
 
 Consumed by `session`, `authz`, and the `users` feature facade — which is why it
 lives in `core` (more than one consumer) rather than inside a feature.
@@ -59,14 +59,14 @@ plumbing that resolves the decision into a localized redirect URL.
 Authorization — role hierarchy + permissions (consumes `identity` + `guard`).
 Authentication answers "who are you"; this answers "what may you do".
 
-| Entry                  | Runtime         | Contents                                                                                        |
-| ---------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
-| `@/core/authz`         | edge-safe       | pure `can(role, perm)` / `hasAtLeast(role, min)` + `Permission` (unit-tested) — usable in UI    |
-| `@/core/authz/require` | **server-only** | `requireRole(min)` / `requirePermission(p)` — build on `requireSession`, `notFound()` if denied |
+| Entry                  | Runtime         | Contents                                                                                      |
+| ---------------------- | --------------- | --------------------------------------------------------------------------------------------- |
+| `@/core/authz`         | edge-safe       | pure `can(role, perm)` / `isStaff(role)` + `Permission` (unit-tested) — usable in UI          |
+| `@/core/authz/require` | **server-only** | `requireStaff()` / `requirePermission(p)` — build on `requireSession`, `notFound()` if denied |
 
 Usage: gate an admin page with `await requirePermission('admin.access')`; hide a
-button with `can(role, 'users.manage')`. Roles come from `session.user.userType`
-via `userTypeFromValue`.
+button with `can(role, 'users.manage')`. Roles come from `session.user.role`
+via `roleFromValue`.
 
 ## When to add to core
 

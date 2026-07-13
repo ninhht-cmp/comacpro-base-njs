@@ -6,9 +6,11 @@ import { http, HttpResponse, type RequestHandler } from 'msw';
  * `pagination` sibling) — keep the mocks envelope-accurate or they'll pass
  * where the real API fails. See docs/adr/0003-salenet-backend.md.
  *
- * This set covers the vertical slice (signin → profile → notifications →
- * referral) so `NEXT_PUBLIC_API_MOCKING=enabled` gives a working app with no
- * backend. Tests override per-case with `server.use(...)`.
+ * Interception is SERVER-SIDE ONLY (node server via `instrumentation.ts`):
+ * the app is RSC-first, so every API call originates on the server — there is
+ * no browser worker. This set covers the vertical slice (signin → profile →
+ * notifications → referral) so `NEXT_PUBLIC_API_MOCKING=enabled` gives a
+ * working app with no backend; tests override per-case with `server.use(...)`.
  *
  * Use a leading `*` wildcard so a handler matches regardless of API origin.
  */
@@ -51,10 +53,32 @@ const mockNotifications = [
   },
 ];
 
+/**
+ * Endpoints whose REAL invocation costs money: signup and the forgot-password
+ * pair trigger ZaloOA/SMS sends on the backend. Kept as a separate set so
+ * `NEXT_PUBLIC_API_MOCKING=paid-only` can intercept just these while
+ * everything else (referral lookup, signin, profile…) hits the live API —
+ * realistic UI testing with a zero-đồng submit.
+ */
+export const paidEndpointHandlers: RequestHandler[] = [
+  http.post('*/v1/auth/signup', () => HttpResponse.json(envelope(null))),
+  http.post('*/v1/auth/forgot-password', () =>
+    HttpResponse.json(envelope(null)),
+  ),
+  http.post('*/v1/auth/forgot-password/resend-otp', () =>
+    HttpResponse.json(envelope(null)),
+  ),
+  // Doesn't send a message itself, but consumes the (mocked) OTP — the flow
+  // only completes free if this is mocked alongside the two above.
+  http.post('*/v1/auth/forgot-password/verify', () =>
+    HttpResponse.json(envelope(null)),
+  ),
+];
+
 export const handlers: RequestHandler[] = [
+  ...paidEndpointHandlers,
   http.post('*/v1/auth/signin', () => HttpResponse.json(envelope(mockTokens))),
   http.post('*/v1/auth/refresh', () => HttpResponse.json(envelope(mockTokens))),
-  http.post('*/v1/auth/signup', () => HttpResponse.json(envelope(null))),
   http.get('*/v1/users/me', () => HttpResponse.json(envelope(mockProfile))),
   http.patch('*/v1/users/me', () => HttpResponse.json(envelope(mockProfile))),
   http.get('*/v1/users/referral/:code', ({ params }) =>

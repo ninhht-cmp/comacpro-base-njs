@@ -10,14 +10,13 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { requireSession } from '@/core/guard/require';
+import { roleKeyOf } from '@/core/identity';
 import { fetchProfile } from '@/core/session/server';
 import { LogoutButton } from '@/features/auth';
 import {
-  CancelAccountButton,
   ChangePasswordForm,
   ProfileForm,
   type User,
-  UserRole,
   toUser,
 } from '@/features/users';
 import { routing } from '@/i18n/routing';
@@ -53,24 +52,6 @@ export default async function AccountPage({
     // Keep the session snapshot.
   }
 
-  // Exhaustive over the generated role union — a new backend role fails to
-  // compile here until it gets a label (and a translation in both locales).
-  const roleLabel: Record<UserRole, string> = {
-    [UserRole['sm-admin']]: t('account.roles.sm-admin'),
-    [UserRole['sm-system']]: t('account.roles.sm-system'),
-    [UserRole['sm-marketing']]: t('account.roles.sm-marketing'),
-    [UserRole['sm-support-user']]: t('account.roles.sm-support-user'),
-    [UserRole['sm-support-supplier']]: t('account.roles.sm-support-supplier'),
-    [UserRole['sm-support-customer']]: t('account.roles.sm-support-customer'),
-    [UserRole['sm-support-deal']]: t('account.roles.sm-support-deal'),
-    [UserRole['sm-support-product']]: t('account.roles.sm-support-product'),
-    [UserRole['sm-boss']]: t('account.roles.sm-boss'),
-    [UserRole['sm-manager']]: t('account.roles.sm-manager'),
-    [UserRole['sm-leader']]: t('account.roles.sm-leader'),
-    [UserRole['sm-saler']]: t('account.roles.sm-saler'),
-    [UserRole['sm-member']]: t('account.roles.sm-member'),
-  };
-
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-16">
       <Card>
@@ -79,7 +60,7 @@ export default async function AccountPage({
           {user.username ? (
             <CardDescription>
               {t('account.username')}: {user.username}
-              {user.role ? ` · ${roleLabel[user.role]}` : ''}
+              {user.role ? ` · ${t(`roles.${roleKeyOf(user.role)}`)}` : ''}
             </CardDescription>
           ) : null}
         </CardHeader>
@@ -114,20 +95,6 @@ export default async function AccountPage({
               </p>
             </div>
             <ChangePasswordForm />
-          </section>
-
-          <Separator />
-
-          <section className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold text-destructive">
-                {t('account.danger.title')}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t('account.danger.description')}
-              </p>
-            </div>
-            <CancelAccountButton />
           </section>
 
           <Separator />

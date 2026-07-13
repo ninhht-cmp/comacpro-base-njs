@@ -14,5 +14,4 @@ pnpm-lock.yaml
 pnpm-workspace.yaml
 src/lib/api/generated/
 src/styles/globals.css
-public/mockServiceWorker.js
 storybook-static/

@@ -78,15 +78,3 @@ export async function markNotificationRead(
     locale,
   });
 }
-
-/** PUT /v1/notifications/read-all — mark every notification as read. */
-export async function markAllNotificationsRead(
-  accessToken: string,
-  locale: string,
-): Promise<void> {
-  await serverFetch<boolean>('/notifications/read-all', {
-    method: 'PUT',
-    accessToken,
-    locale,
-  });
-}

@@ -14,7 +14,6 @@ import { toast } from '@/components/ui/sonner';
 // `@/components/ui/sonner` (not 'sonner') so both share one library instance.
 const MESSAGE_KEYS = {
   otp_sent: 'toast.otpSent',
-  registered: 'toast.registered',
   password_reset: 'toast.passwordReset',
 } as const;
 

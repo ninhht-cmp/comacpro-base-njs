@@ -107,7 +107,6 @@ const eslintConfig = defineConfig([
     'build/**',
     'next-env.d.ts',
     'src/lib/api/generated/**',
-    'public/mockServiceWorker.js',
     // Generated coverage report (Vitest output).
     'coverage/**',
     // Storybook build output.

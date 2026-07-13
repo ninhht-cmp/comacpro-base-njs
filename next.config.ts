@@ -10,8 +10,8 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
  * The baseline headers (HSTS, nosniff, frame/referrer/permissions policy) are
  * ENFORCED — they don't risk breaking the app. The Content-Security-Policy ships
  * in **Report-Only** mode on purpose: the app still relies on an inline theme
- * script and the Google Identity Services SDK, so enforcing a strict policy
- * blind would break them. Report-Only collects violations without blocking.
+ * script, so enforcing a strict policy blind would break it. Report-Only
+ * collects violations without blocking.
  *
  * Promotion path to an enforced, nonce-based CSP (the code is already prepped —
  * `ThemeScript`/`next/script` accept a `nonce`): generate a per-request nonce in
@@ -29,8 +29,6 @@ const apiOrigin = (() => {
   }
 })();
 
-const GOOGLE = 'https://accounts.google.com';
-
 const csp = [
   `default-src 'self'`,
   `base-uri 'self'`,
@@ -40,9 +38,8 @@ const csp = [
   `img-src 'self' data: https:`,
   `font-src 'self'`,
   `style-src 'self' 'unsafe-inline'`,
-  `script-src 'self' 'unsafe-inline' ${GOOGLE}`,
-  `connect-src 'self' ${GOOGLE} ${apiOrigin}`.trim(),
-  `frame-src ${GOOGLE}`,
+  `script-src 'self' 'unsafe-inline'`,
+  `connect-src 'self' ${apiOrigin}`.trim(),
 ]
   .join('; ')
   .replace(/\s+/g, ' ');
@@ -54,10 +51,10 @@ const securityHeaders = [
   },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'X-Frame-Options', value: 'DENY' },
-  // Keep COOP isolation but let popups we open (Google Sign-In) retain their
-  // opener handle, so GSI's popup↔opener `postMessage` works. `same-origin`
-  // would sever it and break/flood-warn the sign-in popup.
-  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin-allow-popups' },
+  // Nothing opens cross-origin popups anymore (Google Sign-In is gone), so
+  // full isolation is safe. Relax to `same-origin-allow-popups` if a popup
+  // flow (OAuth, payment) ever returns.
+  { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   {
     key: 'Permissions-Policy',

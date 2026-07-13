@@ -32,7 +32,11 @@ export async function fetchReferralUser(
   const query = new URLSearchParams({ sessionId });
   const dto = await serverFetch<UserRefResDto>(
     `/users/referral/${encodeURIComponent(code)}?${query}`,
-    { method: 'GET' },
+    // Tight timeout: this lookup gates the signup page's TTFB (the invitee is
+    // on mobile, fresh off an invite link). The page fails OPEN on timeout —
+    // form renders without the referrer card; submit re-validates — so being
+    // aggressive here costs correctness nothing.
+    { method: 'GET', timeoutMs: 3_000 },
   );
   return toReferralUser(dto);
 }

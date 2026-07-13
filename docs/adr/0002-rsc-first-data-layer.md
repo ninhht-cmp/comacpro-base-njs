@@ -2,7 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-07-13
-- **Relates to:** ADR 0001 (architecture & platform), docs/api-spec-issue.md
+- **Relates to:** ADR 0001 (architecture & platform); superseded in part by
+  ADR 0003 (the SaleNet backend honors its spec envelope)
 
 ## Context
 
@@ -17,7 +18,7 @@ The template originally shipped two parallel data layers:
 Only layer 2 was ever used. The generated client was blocked by a real
 problem: **the live NestJS API deviates from its own OpenAPI spec** — the spec
 declares a `BaseResDto<T>` envelope, but live endpoints return payloads at the
-top level (see docs/api-spec-issue.md). Meanwhile layer 2 grew three duplicated
+top level (documented and reported upstream at the time). Meanwhile layer 2 grew three duplicated
 copies of base-URL resolution and error-envelope parsing, with behavioral
 drift between them, and the unused layer confused every decision about "the
 blessed way" to fetch data.

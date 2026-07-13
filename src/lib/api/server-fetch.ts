@@ -40,11 +40,10 @@ function apiBaseUrl(): string {
 }
 
 /**
- * Extract a human message from the backend error envelope. The API returns
- * `{ statusCode, messages, data }`; we also fall back to the older
- * `{ errors: [{ messages }] }` and NestJS's default `{ message, error }`.
+ * Extract a human message from the error envelope, falling back to NestJS's
+ * default `{ message, error }` shapes.
  */
-export function errorMessageFrom(body: unknown): string {
+function errorMessageFrom(body: unknown): string {
   if (typeof body === 'string' && body) return body;
   if (body && typeof body === 'object') {
     const b = body as {
@@ -72,12 +71,9 @@ export interface ServerFetchOptions extends Omit<RequestInit, 'body'> {
   /** Session bearer token; sent as `Authorization: Bearer <token>`. */
   accessToken?: string;
   /**
-   * Active locale for endpoints whose payloads the backend localizes (today:
-   * notifications). ⚠️ UNVERIFIED CONTRACT: the SaleNet spec declares no
-   * localization header at all, so we send BOTH conventions — the standard
-   * `Accept-Language` and the previous backend's `Content-Language` — until
-   * the backend team confirms which (if either) is honored. Harmless when
-   * ignored. See docs/adr/0003-salenet-backend.md.
+   * Active locale for backend-localized payloads (today: notifications).
+   * The spec declares no localization header, so both `Accept-Language` and
+   * `Content-Language` are sent until the backend confirms one (ADR 0003).
    */
   locale?: string;
   /** JSON convenience: serialized as the body with the right Content-Type. */
