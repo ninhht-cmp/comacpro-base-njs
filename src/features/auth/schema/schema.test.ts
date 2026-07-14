@@ -55,6 +55,36 @@ describe('auth schemas', () => {
     ).toBe(false);
   });
 
+  it('flags a fullName with non-letter characters via the invalid_name sentinel', () => {
+    for (const fullName of ['%&HGVUJHCVDS__-/ Ạ', 'Văn A 9', 'a@b']) {
+      const result = signupSchema.safeParse({
+        fullName,
+        username: '0912345678',
+        referralCode: 'REF123',
+      });
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(
+          result.error.issues.some((i) => i.message === 'invalid_name'),
+        ).toBe(true);
+      }
+    }
+  });
+
+  it('normalizes fullName whitespace and unicode form before sending', () => {
+    const result = signupSchema.safeParse({
+      // Decomposed "ễ" (e + combining circumflex + tilde) + stray
+      // whitespace — escapes so no tool can silently precompose it.
+      fullName: '  Nguye\u0302\u0303n   V\u0103n A ',
+      username: '0912345678',
+      referralCode: 'REF123',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.fullName).toBe('Nguy\u1EC5n V\u0103n A');
+    }
+  });
+
   it('validates the phone on forgot-password', () => {
     expect(
       forgotPasswordSchema.safeParse({ username: '0355555555' }).success,

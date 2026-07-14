@@ -7,11 +7,30 @@ import { z } from 'zod';
  *
  * SaleNet usernames ARE Vietnamese phone numbers — the regex mirrors the
  * backend's own validation (`(\+84|84|0)[3|5|7|8|9]xxxxxxxx`). The
- * `invalid_phone` message is a sentinel mapped to a translated message by
- * `@/lib/forms/field-errors` (same mechanism as `passwords_mismatch`).
+ * `invalid_phone` / `invalid_name` messages are sentinels mapped to
+ * translated messages by `@/lib/forms/field-errors` (same mechanism as
+ * `passwords_mismatch`).
  */
 
 export const VN_PHONE_REGEX = /^(\+84|84|0)[35789][0-9]{8}$/;
+
+/**
+ * Letters (any script, so Vietnamese diacritics included; `\p{M}` keeps
+ * decomposed accents valid) separated by single spaces. Deliberately
+ * STRICTER than the backend, which only requires fullName to be a non-empty
+ * string — without this, junk like "%&HGVUJH__/" becomes an account name.
+ * Mirror it server-side when the backend adds a rule.
+ */
+export const FULL_NAME_REGEX = /^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$/u;
+
+const fullNameField = z
+  .string()
+  .trim()
+  // Canonicalize before judging: NFC merges decomposed Vietnamese accents,
+  // and doubled/odd whitespace collapses to single spaces — the backend
+  // then stores the clean form.
+  .transform((value) => value.normalize('NFC').replace(/\s+/g, ' '))
+  .pipe(z.string().min(1).regex(FULL_NAME_REGEX, { message: 'invalid_name' }));
 
 const phoneField = z
   .string()
@@ -28,7 +47,7 @@ export const signinSchema = z.object({
 });
 
 export const signupSchema = z.object({
-  fullName: z.string().trim().min(1),
+  fullName: fullNameField,
   username: phoneField,
   referralCode: z.string().trim().min(1),
 });

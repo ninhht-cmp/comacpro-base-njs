@@ -10,6 +10,7 @@ export type FieldErrorKey =
   | 'errors.field_required'
   | 'errors.invalid_email'
   | 'errors.invalid_phone'
+  | 'errors.invalid_name'
   | 'errors.field_invalid';
 
 /**
@@ -50,6 +51,9 @@ function messageFor(
   }
   if (issue.message === 'invalid_phone') {
     return t('errors.invalid_phone');
+  }
+  if (issue.message === 'invalid_name') {
+    return t('errors.invalid_name');
   }
   switch (issue.code) {
     case 'too_small':

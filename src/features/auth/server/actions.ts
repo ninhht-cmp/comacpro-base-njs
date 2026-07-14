@@ -40,6 +40,13 @@ export interface AuthFormState {
   error?: string;
   /** Per-field, ready-to-display messages keyed by input `name`. */
   fieldErrors?: Record<string, string>;
+  /**
+   * The submitted raw input, echoed back on failure. React resets
+   * uncontrolled inputs to `defaultValue` after every form action — forms
+   * seed `defaultValue` from here so a rejected submit keeps what the
+   * visitor typed instead of wiping the form.
+   */
+  values?: Record<string, string>;
 }
 
 /** Backwards-compatible alias for the signin form. */
@@ -58,6 +65,17 @@ async function authT() {
 function logAuthFailure(flow: string, error: unknown): void {
   if (error instanceof ApiError && error.status && error.status < 500) return;
   console.error(`[auth] ${flow} failed`, error);
+}
+
+/** Raw input for `AuthFormState.values`. Secrets never travel back. */
+function submittedValues(formData: FormData): Record<string, string> {
+  const values: Record<string, string> = {};
+  for (const [name, value] of formData) {
+    if (typeof value === 'string' && !/password/i.test(name)) {
+      values[name] = value;
+    }
+  }
+  return values;
 }
 
 export async function signin(
@@ -84,7 +102,7 @@ export async function signin(
       return { error: t('errors.invalid_credentials') };
     }
     logAuthFailure('signin', error);
-    return stateFromApiError(error, t);
+    return stateFromApiError(error, t, 'signin');
   }
 
   // Outside try/catch: redirect() throws NEXT_REDIRECT by design.
@@ -100,11 +118,13 @@ export async function signup(
   formData: FormData,
 ): Promise<AuthFormState> {
   const t = await authT();
+  const values = submittedValues(formData);
   const parsed = signupSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return {
       error: t('errors.missing_fields'),
       fieldErrors: fieldErrorsFrom(parsed.error, t),
+      values,
     };
   }
 
@@ -112,7 +132,7 @@ export async function signup(
     await signUp(parsed.data);
   } catch (error) {
     logAuthFailure('signup', error);
-    return stateFromApiError(error, t);
+    return { ...stateFromApiError(error, t, 'signup'), values };
   }
 
   // SaleNet delivers credentials out-of-band (ZaloOA) and the product lives
@@ -148,7 +168,7 @@ export async function forgotPassword(
     await forgotPasswordRequest(parsed.data.username);
   } catch (error) {
     logAuthFailure('forgot-password', error);
-    return stateFromApiError(error, t);
+    return stateFromApiError(error, t, 'forgot-password');
   }
 
   const locale = await getLocale();
@@ -177,7 +197,7 @@ export async function resendForgotOtp(
     await resendForgotOtpRequest(parsed.data.username);
   } catch (error) {
     logAuthFailure('resend-forgot-otp', error);
-    return stateFromApiError(error, t);
+    return stateFromApiError(error, t, 'forgot-password');
   }
   return {};
 }
@@ -209,7 +229,7 @@ export async function resetPassword(
     });
   } catch (error) {
     logAuthFailure('reset-password', error);
-    return stateFromApiError(error, t);
+    return stateFromApiError(error, t, 'reset-password');
   }
 
   const locale = await getLocale();

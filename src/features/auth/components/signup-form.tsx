@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, type FocusEvent } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { signup, type AuthFormState } from '../server/actions';
@@ -9,6 +9,17 @@ import { Field, FormError } from '@/components/form/field';
 import { useFormValidation } from '@/lib/forms/use-form-validation';
 
 const initialState: AuthFormState = {};
+
+/**
+ * Type-to-replace: a rejected value (a phone, a name) is usually retyped
+ * whole, so focusing a filled input selects its content — the first keystroke
+ * replaces it. A second click still places the caret for surgical edits
+ * (the input is already focused, so no new focus event fires).
+ */
+function selectOnFocus(event: FocusEvent<HTMLFormElement>) {
+  const target = event.target;
+  if (target instanceof HTMLInputElement && target.value) target.select();
+}
 
 export function SignupForm({
   referralCode,
@@ -29,7 +40,12 @@ export function SignupForm({
   });
 
   return (
-    <form action={formAction} {...formProps} className="flex flex-col gap-4">
+    <form
+      action={formAction}
+      {...formProps}
+      onFocus={selectOnFocus}
+      className="flex flex-col gap-4"
+    >
       <input type="hidden" name="referralCode" value={referralCode} />
 
       <Field
@@ -41,6 +57,9 @@ export function SignupForm({
         // straight to the first field (deliberate a11y trade-off).
         autoFocus
         required
+        // React resets the form to defaultValue after the action — seeding it
+        // from the echoed state keeps the input across a rejected submit.
+        defaultValue={state.values?.fullName}
         error={errors.fullName}
       />
 
@@ -52,6 +71,7 @@ export function SignupForm({
         autoComplete="tel"
         placeholder="09xxxxxxxx"
         required
+        defaultValue={state.values?.username}
         error={errors.username}
       />
 
