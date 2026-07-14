@@ -24,10 +24,18 @@ export async function register() {
     server.listen({ onUnhandledRequest: 'bypass' });
   }
 
-  // TODO(observability): initialise the Sentry/OpenTelemetry SDK here, e.g.
-  //   if (process.env.NEXT_RUNTIME === 'nodejs') await import('./sentry.server');
-  //   if (process.env.NEXT_RUNTIME === 'edge')   await import('./sentry.edge');
-  // Gated on SENTRY_DSN so unconfigured envs stay a no-op.
+  // Sentry (server + edge — `register` runs once per runtime and the SDK
+  // resolves the right build). Gated on the DSN so unconfigured envs stay a
+  // no-op with zero SDK cost. Errors-only on purpose: tracing/replay stay
+  // off until there's a decided budget for them.
+  if (process.env.SENTRY_DSN) {
+    const Sentry = await import('@sentry/nextjs');
+    Sentry.init({
+      dsn: process.env.SENTRY_DSN,
+      environment: process.env.NODE_ENV,
+      tracesSampleRate: 0,
+    });
+  }
 }
 
 /**
@@ -58,5 +66,14 @@ export async function onRequestError(
     }),
   );
 
-  // TODO(observability): Sentry.captureRequestError(error, request, context);
+  if (process.env.SENTRY_DSN) {
+    const Sentry = await import('@sentry/nextjs');
+    // Param shapes mirror Next's official hook types; the SDK's own
+    // signature is narrower than ours, hence the casts.
+    Sentry.captureRequestError(
+      error,
+      request as Parameters<typeof Sentry.captureRequestError>[1],
+      context as Parameters<typeof Sentry.captureRequestError>[2],
+    );
+  }
 }

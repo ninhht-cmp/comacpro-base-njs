@@ -1,14 +1,27 @@
+# Force-resolve transitive deps with known CVEs that parents haven't bumped
+# yet. Re-check with `pnpm audit --prod` after dependency updates; drop an
+# override once the parent ships the patched range itself.
+overrides:
+  # GHSA-qx2v-qp2m-jg93 — PostCSS XSS in stringify; `next` pins an older one.
+  'postcss@<8.5.10': '>=8.5.10'
+
 allowBuilds:
   '@parcel/watcher': false
+  # Binary download for source-map upload — not used (we don't upload source
+  # maps yet; see instrumentation notes). Flip to true alongside
+  # `withSentryConfig` if that changes.
+  '@sentry/cli': false
   '@swc/core': false
   esbuild: true
   msw: true
   sharp: true
   unrs-resolver: true
-# Supply-chain cooldown: refuse packages published less than 3 days ago
-# (minutes), mirroring Renovate's `minimumReleaseAge: "3 days"` — compromised
-# releases are usually yanked within that window. See SECURITY.md.
-minimumReleaseAge: 4320
+# Supply-chain cooldown: refuse packages published less than 7 days ago
+# (minutes) — compromised releases are usually yanked well within that
+# window; 7d (as used by dailydotdev/apps) trades slower patch uptake for a
+# wider safety margin, fitting a money-adjacent product. Keep Renovate's
+# `minimumReleaseAge` in sync. See SECURITY.md.
+minimumReleaseAge: 10080
 # Pinned exceptions to the cooldown (exact versions we deliberately adopted
 # before they aged out).
 minimumReleaseAgeExclude:

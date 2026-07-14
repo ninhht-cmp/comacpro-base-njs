@@ -44,7 +44,9 @@ const csp = [
   `style-src 'self' 'unsafe-inline'`,
   `script-src 'self' 'unsafe-inline' ${turnstileOrigin}`,
   `frame-src ${turnstileOrigin}`,
-  `connect-src 'self' ${apiOrigin}`.trim(),
+  // *.sentry.io covers the per-org ingest hosts (oNNN.ingest.*.sentry.io) —
+  // CSP host wildcards match any subdomain depth. Harmless when Sentry is off.
+  `connect-src 'self' ${apiOrigin} https://*.sentry.io`.trim(),
 ]
   .join('; ')
   .replace(/\s+/g, ' ');

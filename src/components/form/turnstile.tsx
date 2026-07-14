@@ -7,7 +7,7 @@ import { env } from '@/config/env';
 /**
  * Cloudflare Turnstile widget (managed anti-bot challenge). Renders nothing
  * when `NEXT_PUBLIC_TURNSTILE_SITE_KEY` is unset — the server side skips
- * verification too (`src/lib/turnstile.ts`), so the feature is one env pair
+ * verification too (`src/lib/security/turnstile.ts`), so the feature is one env pair
  * away from on/off with no code changes.
  *
  * Explicit rendering (not the `cf-turnstile` class) because tokens are

@@ -16,14 +16,28 @@ test.describe('signin page', () => {
     ).toBeVisible();
   });
 
-  test('links to signup and hints in-app password reset', async ({ page }) => {
+  test('routes account-less visitors to the app and hints in-app reset', async ({
+    page,
+  }) => {
     await page.goto('/signin');
 
+    // Signup is invite-only — the "no account" path points at the download.
     await expect(
-      page.getByRole('link', { name: /sign up|đăng ký/i }),
-    ).toBeVisible();
+      page.getByRole('main').getByRole('link', { name: /tải ứng dụng/i }),
+    ).toHaveAttribute('href', /\/download$/);
     // Recovery lives in the mobile app — a hint, deliberately NOT a link.
     await expect(page.getByText(/quên mật khẩu/i)).toBeVisible();
+  });
+
+  test('reveals the password on toggle', async ({ page }) => {
+    await page.goto('/signin');
+    const password = page.locator('input[name="password"]');
+    await password.fill('secret');
+    await page.getByRole('button', { name: /hiện mật khẩu/i }).click();
+    await expect(page.locator('input[name="password"]')).toHaveAttribute(
+      'type',
+      'text',
+    );
   });
 });
 

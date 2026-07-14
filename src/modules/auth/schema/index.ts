@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { normalizeFullName, validateFullName } from '@/lib/full-name';
+import {
+  normalizeFullName,
+  validateFullName,
+} from '@/lib/validation/full-name';
 
 /**
  * Input schemas for the auth flows. Shared by the server actions (boundary
@@ -17,7 +20,7 @@ const VN_PHONE_REGEX = /^(\+84|84|0)[35789][0-9]{8}$/;
 
 /**
  * Anti-junk name validation ported from the production referral app — see
- * `@/lib/full-name` for the rules (links, digits, profanity, spelled-out
+ * `@/lib/validation/full-name` for the rules (links, digits, profanity, spelled-out
  * numbers, gibberish…). Deliberately STRICTER than the backend, which only
  * requires fullName to be a non-empty string. The transform persists the
  * canonical form (NFC, smart quotes folded, whitespace collapsed) so the

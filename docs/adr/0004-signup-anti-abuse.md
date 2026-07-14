@@ -24,7 +24,7 @@ Three measures, all confined to the signup surface:
     token **before** calling the backend — a bot never costs a ZaloOA send.
     Failure policy: bad/missing token is rejected; a Cloudflare outage fails
     **open** (blocking every real signup costs more than one bot burst) with a
-    loud server log. `lib/turnstile.ts`, `components/form/turnstile.tsx`.
+    loud server log. `lib/security/turnstile.ts`, `components/form/turnstile.tsx`.
 
 - **End-user context forwarded to the backend** on signup and the referral
   lookup (`lib/api/client-context.ts`). Every request reaches SaleNet from
@@ -38,7 +38,7 @@ Three measures, all confined to the signup surface:
   app; Vietnamese carrier CGNAT makes the IP a signal, never an identity.
 
 - **Full-name anti-junk validation** ported from `cmp-sm-fe`
-  (`lib/full-name.ts`): links, digits, profanity, scam phrases, spelled-out
+  (`lib/validation/full-name.ts`): links, digits, profanity, scam phrases, spelled-out
   phone numbers, gibberish — while keeping ethnic-minority names ("H'Hen
   Niê") valid. Reason codes map to translated field errors; the four
   "not a real name" heuristics share one message so rejections don't teach

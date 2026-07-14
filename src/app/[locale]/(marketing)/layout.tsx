@@ -5,13 +5,11 @@ import { SiteShell } from '../shell';
 import { routing } from '@/i18n/routing';
 
 /**
- * Signed-in product surface (account, notifications — and the future
- * dashboard/deals/… screens as they migrate from the mobile app). Shares the
- * marketing shell TODAY; this is the seam where product chrome (sidebar,
- * in-app nav) lands without touching the marketing group. Access control
- * stays in `src/proxy.ts` + `core/guard`, not here.
+ * Public marketing surface (home, about, download, legal): the shared shell.
+ * Kept as its own group so this chrome stays top-nav-only when the signed-in
+ * `(app)` surface grows product chrome of its own.
  */
-export default async function AppLayout({
+export default async function MarketingLayout({
   children,
   params,
 }: {

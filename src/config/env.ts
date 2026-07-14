@@ -16,6 +16,9 @@ export const env = createEnv({
     // ≥32 chars: it is hashed into the AES-256 session key (see core/session).
     AUTH_SECRET: isProd ? z.string().min(32) : z.string().min(1).optional(),
     REVALIDATE_SECRET: z.string().min(16).optional(),
+    // Sentry error reporting (server/edge). Unset → the SDK never initializes
+    // (see src/instrumentation.ts) — dev/test stay silent.
+    SENTRY_DSN: z.url().optional(),
     // Cloudflare Turnstile (anti-bot on signup). Optional even in prod: the
     // check is opt-in — unset (either key) disables widget + verification.
     TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
@@ -32,6 +35,8 @@ export const env = createEnv({
     // Observability (client). RUM/Web-Vitals beacon target (e.g. a Route
     // Handler forwarding to Datadog RUM). Unset → the reporter no-ops.
     NEXT_PUBLIC_VITALS_ENDPOINT: z.url().optional(),
+    // Sentry error reporting (browser). Unset → no client init.
+    NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
     // Feature flags forced ON (comma-separated keys). See src/config/flags.ts.
     NEXT_PUBLIC_FEATURE_FLAGS: z.string().optional(),
     // Turnstile widget site key (pairs with TURNSTILE_SECRET_KEY above).
@@ -43,11 +48,13 @@ export const env = createEnv({
     API_BASE_URL: process.env.API_BASE_URL,
     AUTH_SECRET: process.env.AUTH_SECRET,
     REVALIDATE_SECRET: process.env.REVALIDATE_SECRET,
+    SENTRY_DSN: process.env.SENTRY_DSN,
     TURNSTILE_SECRET_KEY: process.env.TURNSTILE_SECRET_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
     NEXT_PUBLIC_API_MOCKING: process.env.NEXT_PUBLIC_API_MOCKING,
     NEXT_PUBLIC_VITALS_ENDPOINT: process.env.NEXT_PUBLIC_VITALS_ENDPOINT,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
   },

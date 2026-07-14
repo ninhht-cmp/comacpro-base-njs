@@ -1,5 +1,5 @@
 import type { ZodError } from 'zod';
-import type { FullNameReason } from '@/lib/full-name';
+import type { FullNameReason } from '@/lib/validation/full-name';
 
 /**
  * The generic field-message vocabulary, shared by all forms (`Auth` namespace).
@@ -22,7 +22,7 @@ export type FieldErrorKey =
 
 /**
  * `name_<reason>` sentinels from the signup schema's full-name validation
- * (`@/lib/full-name`), one message per actionable reason. The four "this
+ * (`@/lib/validation/full-name`), one message per actionable reason. The four "this
  * isn't a real name" reasons share one message on purpose: telling a spammer
  * WHICH heuristic caught them is a walkthrough for evading it.
  */

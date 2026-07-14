@@ -42,11 +42,70 @@ config/ = runtime configuration (env validation, constants like app-links).
 i18n/   = ALL user-facing strings (messages/vi/*.json) + routing registry.
 ```
 
+## The target tree (designed ahead — the future is in the OpenAPI spec)
+
+The backend spec already defines what's coming (285 operations across Deals,
+Products, Suppliers, Wallets, Dashboard, …), so the seams are cut NOW rather
+than after things sprawl.
+
+### Route groups — by audience
+
+```
+app/[locale]/
+├─ (marketing)/    # public: / · /about-us · /download · /terms · /privacy
+│  └─ layout.tsx   #   top-nav shell (shared SiteShell today)
+├─ (auth)/         # /signin · /signup — chrome-less funnel layout
+└─ (app)/          # signed-in product surface: /account · /notifications
+   └─ layout.tsx   #   THE seam: sidebar/product chrome lands here, and only
+                   #   here, when app screens (dashboard, deals…) migrate
+```
+
+Route groups don't change URLs — they exist so each audience's chrome can
+diverge without touching the others. Both groups render the shared
+`app/[locale]/shell.tsx` today; that file composes domain modules, which is
+why it lives in `app/`, not `components/`.
+
+### Module map — reserved names (BE tag → FE module)
+
+One FE module per backend domain; names are fixed here so growth is
+consistent. Don't invent variants (`deal`, `Deals`, `san-pham`) later.
+
+| Backend tag(s)                                                  | FE module (reserved)       |
+| --------------------------------------------------------------- | -------------------------- |
+| Auth                                                            | `modules/auth` ✅          |
+| Users, eKYC                                                     | `modules/users` ✅         |
+| Notifications                                                   | `modules/notifications` ✅ |
+| Deals, Deal Sources                                             | `modules/deals`            |
+| Products, Brands, Categories, Models, Attributes, Origins, Tags | `modules/catalog`          |
+| Customers                                                       | `modules/customers`        |
+| Suppliers                                                       | `modules/suppliers`        |
+| Contracts                                                       | `modules/contracts`        |
+| Wallets, Payments, Commissions                                  | `modules/wallet`           |
+| Dashboard, User Activity Analytics                              | `modules/dashboard`        |
+| Shops (Owner/Admin/Buyer)                                       | `modules/shops`            |
+| Posts                                                           | `modules/posts`            |
+| Addresses, Banks (reference data)                               | `modules/reference`        |
+
+### `lib/` — themed subfolders, no junk drawer
+
+Loose one-off files at `lib/` root are the exception, not the rule. Group by
+theme; create a folder the moment a second related file appears:
+
+```
+lib/
+├─ api/            # transport: server-fetch, client-context, generated/
+├─ forms/          # form wiring: field-errors, use-form-validation, …
+├─ security/       # turnstile, (future: rate-limit helpers, csp nonce)
+├─ validation/     # full-name, (future: address, bank account…)
+├─ observability/  # logging/vitals
+└─ platform.ts · utils.ts · visitor.ts   # true one-offs only
+```
+
 Two litmus tests when the tree feels ambiguous:
 
 - **Used by more than one module (or by the middleware)?** Then it does not
   belong in a module — push it down to `core/` (domain infra), `components/`
-  (UI) or `lib/` (pure util). Example: `lib/full-name.ts` is in `lib/` because
+  (UI) or `lib/` (pure util). Example: `lib/validation/full-name.ts` is in `lib/` because
   both signup and (future) profile editing validate names; if only auth ever
   used it, it would live in `modules/auth/`.
 - **Would this file still make sense if the SaleNet domain vanished?**

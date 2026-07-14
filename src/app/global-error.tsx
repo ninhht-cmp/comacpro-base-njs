@@ -1,13 +1,22 @@
 'use client';
 
+import { useEffect } from 'react';
+import * as Sentry from '@sentry/nextjs';
+
 // Renders when the root layout itself throws — it must own <html>/<body> and
 // avoid app-level dependencies (i18n, theme, providers) which may have failed.
 export default function GlobalError({
+  error,
   reset,
 }: {
   error: Error;
   reset: () => void;
 }) {
+  useEffect(() => {
+    // No-op unless the client SDK initialized (instrumentation-client.ts,
+    // DSN-gated) — safe to call unconditionally.
+    Sentry.captureException(error);
+  }, [error]);
   return (
     // lang="en" is deliberate: this fallback renders without i18n (which may be
     // what failed) and its copy is hardcoded English, so "en" is accurate.

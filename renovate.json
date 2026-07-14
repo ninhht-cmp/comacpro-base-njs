@@ -14,7 +14,7 @@
   "lockFileMaintenance": { "enabled": true },
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "minimumReleaseAge": "3 days",
+  "minimumReleaseAge": "7 days",
   "packageRules": [
     {
       "description": "Auto-merge safe dev-dependency patch/minor bumps once CI is green.",

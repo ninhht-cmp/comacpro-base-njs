@@ -14,7 +14,7 @@ import {
   TURNSTILE_FIELD,
   turnstileEnabled,
   verifyTurnstile,
-} from '@/lib/turnstile';
+} from '@/lib/security/turnstile';
 import { VISITOR_COOKIE } from '@/lib/visitor';
 import { stateFromApiError } from './api-error-map';
 import { safeRedirect } from './redirect';
@@ -158,7 +158,7 @@ export async function signup(
       `ref=<len:${parsed.data.referralCode.length}> ip=${context.ip ?? '<none>'}`,
   );
 
-  // Anti-bot gate (opt-in via env, see lib/turnstile): a failed challenge
+  // Anti-bot gate (opt-in via env, see lib/security/turnstile): a failed challenge
   // never reaches the backend — each signup call costs a paid ZaloOA send.
   if (turnstileEnabled()) {
     const token = formData.get(TURNSTILE_FIELD);
