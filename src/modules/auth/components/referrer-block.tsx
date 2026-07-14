@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { IconDeviceMobile } from '@tabler/icons-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { roleKeyOf } from '@/core/identity';
+import { initialsOf } from '@/lib/name';
 import type { ReferralUser } from '@/modules/users';
 import { ShareInviteButton } from './share-invite-button';
 
@@ -44,11 +45,4 @@ export function ReferrerBlock({ referrer }: { referrer: ReferralUser }) {
       <ShareInviteButton />
     </section>
   );
-}
-
-function initialsOf(name: string): string {
-  const words = name.trim().split(/\s+/);
-  const first = words[0]?.[0] ?? '';
-  const last = words.length > 1 ? (words[words.length - 1]?.[0] ?? '') : '';
-  return (first + last).toUpperCase() || '?';
 }

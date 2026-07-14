@@ -14,11 +14,11 @@ import {
   applyResolved,
   readStored,
   resolveTheme,
-  type Resolved,
+  type ResolvedTheme,
   type Theme,
 } from './dom';
 
-export type { Theme, Resolved };
+export type { Theme, ResolvedTheme };
 
 const useIsoLayoutEffect =
   typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -29,7 +29,7 @@ type Ctx = {
    * `null` during SSR / before mount. Consumers rendering branch-different
    * markup must guard for `null` or they will trigger a hydration mismatch.
    */
-  resolvedTheme: Resolved | null;
+  resolvedTheme: ResolvedTheme | null;
   setTheme: (t: Theme) => void;
 };
 
@@ -58,7 +58,7 @@ function subscribe(cb: () => void) {
 const getThemeSnapshot = () => readStored();
 const getResolvedSnapshot = () => resolveTheme(readStored());
 const themeServerSnapshot = (): Theme => 'system';
-const resolvedServerSnapshot = (): Resolved | null => null;
+const resolvedServerSnapshot = (): ResolvedTheme | null => null;
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const theme = useSyncExternalStore(
@@ -66,7 +66,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     getThemeSnapshot,
     themeServerSnapshot,
   );
-  const resolvedTheme = useSyncExternalStore<Resolved | null>(
+  const resolvedTheme = useSyncExternalStore<ResolvedTheme | null>(
     subscribe,
     getResolvedSnapshot,
     resolvedServerSnapshot,

@@ -1,8 +1,4 @@
-import type {
-  ChangePasswordDto,
-  UpdateProfileDto,
-  UserRefResDto,
-} from '@/lib/api/generated/model';
+import type { UserRefResDto } from '@/lib/api/generated/model';
 import {
   type ClientContext,
   clientContextHeaders,
@@ -48,30 +44,7 @@ export async function fetchReferralUser(
   return toReferralUser(dto);
 }
 
-/**
- * PATCH /v1/users/me — update the signed-in user's profile.
- *
- * ⚠️ PARKED: SaleNet's `UpdateProfileDto` requires `phoneNumber`,
- * `idCardNumber`, `provinceId` … which the current profile form doesn't
- * collect, so the backend may reject the partial payload (its message is
- * surfaced inline by the form). Extend the form to the full DTO when the
- * profile feature is properly migrated.
- */
-export async function updateProfile(
-  accessToken: string,
-  dto: Partial<UpdateProfileDto>,
-): Promise<void> {
-  await serverFetch('/users/me', { method: 'PATCH', json: dto, accessToken });
-}
-
-/** PATCH /v1/users/change-password — change the signed-in user's password. */
-export async function changePassword(
-  accessToken: string,
-  dto: ChangePasswordDto,
-): Promise<void> {
-  await serverFetch('/users/change-password', {
-    method: 'PATCH',
-    json: dto,
-    accessToken,
-  });
-}
+// Profile + password editing (PATCH /users/me, /users/change-password) lived
+// here but was never mounted — it belongs to the mobile app (ADR 0005) and
+// the backend's `UpdateProfileDto` never matched the parked form. Removed in
+// ADR 0006; restore from git history if a web flow is ever needed.

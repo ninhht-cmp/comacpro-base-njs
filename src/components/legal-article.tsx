@@ -11,7 +11,7 @@ import { getTranslations } from 'next-intl/server';
  */
 
 /** Bump when the copy changes — shown to the reader, not used for logic. */
-export const LEGAL_LAST_UPDATED = '14/07/2026';
+const LEGAL_LAST_UPDATED = '14/07/2026';
 
 export async function LegalArticle({
   document,

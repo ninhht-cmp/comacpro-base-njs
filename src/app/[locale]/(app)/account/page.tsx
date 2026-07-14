@@ -10,21 +10,8 @@ import { fetchProfile } from '@/core/session/server';
 import { LogoutButton } from '@/modules/auth';
 import { type User, toUser } from '@/modules/users';
 import { routing } from '@/i18n/routing';
-
-function initialsOf(name: string): string {
-  const words = name.trim().split(/\s+/);
-  const first = words[0]?.[0] ?? '';
-  const last = words.length > 1 ? (words[words.length - 1]?.[0] ?? '') : '';
-  return (first + last).toUpperCase() || '?';
-}
-
-/**
- * CCCD stays masked on screen (last 3 digits only): the owner already knows
- * it, so showing it in full only serves shoulder-surfers and screenshots.
- */
-function maskIdCard(idCard: string): string {
-  return idCard.length <= 3 ? idCard : `••• ••• ${idCard.slice(-3)}`;
-}
+import { maskIdCard } from '@/lib/mask';
+import { initialsOf } from '@/lib/name';
 
 export default async function AccountPage({
   params,
@@ -74,9 +61,8 @@ export default async function AccountPage({
         {t('account.title')}
       </h1>
 
-      {/* READ-ONLY by product decision (temporary): profile edits and password
-          changes live in the mobile app. Restore ProfileForm /
-          ChangePasswordForm from `@/modules/users` to re-enable. */}
+      {/* READ-ONLY: profile + password editing live in the mobile app
+          (ADR 0005 / ADR 0006) — this surface only displays the profile. */}
 
       {/* Identity header */}
       <Card>

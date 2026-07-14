@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
  * content aesthetic — only a subtle border tint on hover.
  */
 export function FeatureCard({
-  icon: IconCmp,
+  icon: Icon,
   title,
   body,
   className,
@@ -29,7 +29,7 @@ export function FeatureCard({
     >
       <CardContent className="flex flex-col gap-3">
         <span className="flex size-10 items-center justify-center rounded-lg bg-brand/10 text-brand">
-          <IconCmp size={20} aria-hidden />
+          <Icon size={20} aria-hidden />
         </span>
         <h3 className="text-base font-semibold text-foreground">{title}</h3>
         <p className="text-sm leading-6 text-muted-foreground">{body}</p>

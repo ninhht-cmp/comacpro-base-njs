@@ -1,6 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
-import { env } from '@/config/env';
+import { defineCookie } from '@/lib/cookies';
+import { maskPhoneForDisplay } from '@/lib/mask';
 
 /**
  * Post-signup handoff between the signup action and the success page (PRG:
@@ -9,25 +10,14 @@ import { env } from '@/config/env';
  * only the MASKED phone (no PII in URLs/logs) and lives for minutes.
  */
 
-const COOKIE =
-  env.NODE_ENV === 'production' ? '__Host-sn_signup_ok' : 'sn_signup_ok';
-
 const MAX_AGE_SECONDS = 60 * 10;
-
-/** `0981958280` → `09•••••280` — enough to confirm where the Zalo message went. */
-export function maskPhone(phone: string): string {
-  if (phone.length < 6) return phone;
-  return `${phone.slice(0, 2)}${'•'.repeat(phone.length - 5)}${phone.slice(-3)}`;
-}
+const { name: COOKIE, options: cookieOptions } = defineCookie(
+  'sn_signup_ok',
+  MAX_AGE_SECONDS,
+);
 
 export async function setSignupSuccess(phone: string): Promise<void> {
-  (await cookies()).set(COOKIE, maskPhone(phone), {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: env.NODE_ENV === 'production',
-    path: '/',
-    maxAge: MAX_AGE_SECONDS,
-  });
+  (await cookies()).set(COOKIE, maskPhoneForDisplay(phone), cookieOptions);
 }
 
 /** Masked phone of the just-registered account, or null on direct visits. */

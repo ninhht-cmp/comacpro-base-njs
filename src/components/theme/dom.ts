@@ -2,14 +2,14 @@
 import { THEME_STORAGE_KEY } from './constants';
 
 export type Theme = 'light' | 'dark' | 'system';
-export type Resolved = 'light' | 'dark';
+export type ResolvedTheme = 'light' | 'dark';
 
 export function readStored(): Theme {
   const v = window.localStorage.getItem(THEME_STORAGE_KEY);
   return v === 'light' || v === 'dark' ? v : 'system';
 }
 
-export function resolveTheme(theme: Theme): Resolved {
+export function resolveTheme(theme: Theme): ResolvedTheme {
   if (theme !== 'system') return theme;
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
@@ -29,7 +29,7 @@ function disableTransitionsOnce() {
   window.setTimeout(() => style.remove(), 0);
 }
 
-export function applyResolved(resolved: Resolved): void {
+export function applyResolved(resolved: ResolvedTheme): void {
   const root = document.documentElement;
   const wasDark = root.classList.contains('dark');
   const willBeDark = resolved === 'dark';

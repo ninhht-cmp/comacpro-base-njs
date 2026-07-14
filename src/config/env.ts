@@ -37,8 +37,6 @@ export const env = createEnv({
     NEXT_PUBLIC_VITALS_ENDPOINT: z.url().optional(),
     // Sentry error reporting (browser). Unset → no client init.
     NEXT_PUBLIC_SENTRY_DSN: z.url().optional(),
-    // Feature flags forced ON (comma-separated keys). See src/config/flags.ts.
-    NEXT_PUBLIC_FEATURE_FLAGS: z.string().optional(),
     // Turnstile widget site key (pairs with TURNSTILE_SECRET_KEY above).
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: z.string().min(1).optional(),
   },
@@ -55,7 +53,6 @@ export const env = createEnv({
     NEXT_PUBLIC_API_MOCKING: process.env.NEXT_PUBLIC_API_MOCKING,
     NEXT_PUBLIC_VITALS_ENDPOINT: process.env.NEXT_PUBLIC_VITALS_ENDPOINT,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
-    NEXT_PUBLIC_FEATURE_FLAGS: process.env.NEXT_PUBLIC_FEATURE_FLAGS,
     NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
   },
 

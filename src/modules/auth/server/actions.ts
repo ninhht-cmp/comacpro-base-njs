@@ -10,6 +10,7 @@ import { clearSession, setSession } from '@/core/session/server';
 import { redirect } from '@/i18n/navigation';
 import { clientContext } from '@/lib/api/client-context';
 import { fieldErrorsFrom } from '@/lib/forms/field-errors';
+import { maskPhoneForLog } from '@/lib/mask';
 import {
   TURNSTILE_FIELD,
   turnstileEnabled,
@@ -48,9 +49,6 @@ export interface AuthFormState {
   values?: Record<string, string>;
 }
 
-/** Backwards-compatible alias for the signin form. */
-export type SigninState = AuthFormState;
-
 async function authT() {
   const locale = await getLocale();
   return getTranslations({ locale, namespace: 'Auth' });
@@ -64,15 +62,6 @@ async function authT() {
 function logAuthFailure(flow: string, error: unknown): void {
   if (error instanceof ApiError && error.status && error.status < 500) return;
   console.error(`[auth] ${flow} failed`, error);
-}
-
-/**
- * PII-masked phone for the signup trail (pattern from cmp-sm-fe): the logs
- * must support a fraud-investigation timeline (who tried, when, from which
- * IP) without spraying raw phone numbers across log storage.
- */
-function maskPhone(phone: string): string {
-  return phone.length < 7 ? '***' : `${phone.slice(0, 4)}xxx${phone.slice(-3)}`;
 }
 
 /**
@@ -154,7 +143,7 @@ export async function signup(
   const context = await clientContext(sessionId);
 
   console.info(
-    `[auth] signup attempt phone=${maskPhone(parsed.data.username)} ` +
+    `[auth] signup attempt phone=${maskPhoneForLog(parsed.data.username)} ` +
       `ref=<len:${parsed.data.referralCode.length}> ip=${context.ip ?? '<none>'}`,
   );
 
@@ -183,7 +172,7 @@ export async function signup(
   }
 
   console.info(
-    `[auth] signup success phone=${maskPhone(parsed.data.username)}`,
+    `[auth] signup success phone=${maskPhoneForLog(parsed.data.username)}`,
   );
 
   // SaleNet delivers credentials out-of-band (ZaloOA) and the product lives

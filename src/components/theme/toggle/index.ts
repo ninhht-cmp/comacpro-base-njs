@@ -1,1 +1,0 @@
-export { ThemeToggleCompact } from './compact';

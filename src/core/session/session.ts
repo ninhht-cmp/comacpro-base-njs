@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { EncryptJWT, jwtDecrypt } from 'jose';
 import { env } from '@/config/env';
+import { defineCookie } from '@/lib/cookies';
 
 /**
  * Encrypted (JWE) session payload stored in an httpOnly cookie. The backend
@@ -12,12 +13,13 @@ import { env } from '@/config/env';
  * in Server Components/Actions (via `./cookies`) and in `proxy.ts`.
  */
 
-// `__Host-` in production locks the cookie to this exact host over HTTPS with
-// no Domain attribute — a subdomain can never plant/fixate a session cookie.
-// The prefix requires `secure`, which localhost dev over http can't satisfy,
-// hence the plain name outside production.
-export const SESSION_COOKIE =
-  env.NODE_ENV === 'production' ? '__Host-sn_session' : 'sn_session';
+const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
+
+// Name + options come from the shared cookie factory (`__Host-` locking in
+// prod, plain name in dev — see defineCookie).
+const sessionCookie = defineCookie('sn_session', SESSION_MAX_AGE_SECONDS);
+export const SESSION_COOKIE = sessionCookie.name;
+export const sessionCookieOptions = sessionCookie.options;
 
 /** Refresh the access token once it is within this window of expiring. */
 export const REFRESH_THRESHOLD_MS = 60_000;
@@ -41,8 +43,6 @@ export interface SessionData {
   /** Unix epoch (ms) at which the access token expires. */
   expiresAt: number;
 }
-
-const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // 30 days
 
 function getKey(): Uint8Array {
   const secret = env.AUTH_SECRET;
@@ -90,11 +90,3 @@ export function isAccessTokenExpiring(
 ): boolean {
   return session.expiresAt - now <= REFRESH_THRESHOLD_MS;
 }
-
-export const sessionCookieOptions = {
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  secure: env.NODE_ENV === 'production',
-  path: '/',
-  maxAge: SESSION_MAX_AGE_SECONDS,
-};

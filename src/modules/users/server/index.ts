@@ -1,14 +1,7 @@
 /**
- * Server-side public API of the users feature. The server *actions* carry their
- * own `'use server'` boundary, so client components import them directly from
- * `../server/actions`; this barrel is for Server Components / Route Handlers.
+ * Server-side public API of the users feature — the public referral lookup
+ * used by the signup page. (Profile/password editing lives in the mobile
+ * app — ADR 0005 / ADR 0006.)
  */
 
-export type { UserFormState } from './actions';
-export { changePassword, updateProfile } from './actions';
-export {
-  ApiError,
-  changePassword as changePasswordRequest,
-  fetchReferralUser,
-  updateProfile as updateProfileRequest,
-} from './service';
+export { ApiError, fetchReferralUser } from './service';

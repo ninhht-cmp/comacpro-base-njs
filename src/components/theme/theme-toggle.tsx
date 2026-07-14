@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { IconSun, IconMoon, IconDeviceDesktop } from '@tabler/icons-react';
-import { useTheme, type Theme } from '../provider';
+import { useTheme, type Theme } from './provider';
 import { Button } from '@/components/ui/button';
 
 const NEXT: Record<Theme, Theme> = {

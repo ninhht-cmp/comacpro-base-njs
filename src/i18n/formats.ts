@@ -2,8 +2,8 @@ import type { Formats } from 'next-intl';
 import { CURRENCY_BY_LOCALE } from './config';
 import type { Locale } from './routing';
 
-// A factory (not a constant) because the currency format depends on the
-// active locale — vi prices are VND, en prices are USD.
+// A factory (not a constant) so the currency tracks the active locale
+// (vi → VND). Kept locale-parametric so re-adding a locale stays config-only.
 export function getFormats(locale: Locale) {
   return {
     dateTime: {

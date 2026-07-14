@@ -12,16 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Link } from '@/i18n/navigation';
+import { initialsOf } from '@/lib/name';
 import { logout } from '../server/actions';
-
-function initialsOf(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  const first = parts[0] ?? '';
-  if (parts.length === 1) return first.slice(0, 2).toUpperCase();
-  const last = parts[parts.length - 1] ?? '';
-  return `${first[0] ?? ''}${last[0] ?? ''}`.toUpperCase();
-}
 
 /** Header avatar with a dropdown to the account page and sign-out. */
 export function UserMenu({

@@ -1,4 +1,4 @@
-import { env } from '@/config/env';
+import { defineCookie } from '@/lib/cookies';
 
 /**
  * Anonymous visitor id (random UUID, first-party cookie) — the web equivalent
@@ -7,19 +7,12 @@ import { env } from '@/config/env';
  * (Server Components can't set cookies); not an auth artifact. Edge-safe.
  */
 
-export const VISITOR_COOKIE =
-  env.NODE_ENV === 'production' ? '__Host-sn_visitor' : 'sn_visitor';
-
 /** Attribution window. */
 const VISITOR_MAX_AGE_SECONDS = 60 * 60 * 24 * 180; // 180 days
 
-export const visitorCookieOptions = {
-  httpOnly: true,
-  sameSite: 'lax' as const,
-  secure: env.NODE_ENV === 'production',
-  path: '/',
-  maxAge: VISITOR_MAX_AGE_SECONDS,
-};
+const visitor = defineCookie('sn_visitor', VISITOR_MAX_AGE_SECONDS);
+export const VISITOR_COOKIE = visitor.name;
+export const visitorCookieOptions = visitor.options;
 
 export function newVisitorId(): string {
   return crypto.randomUUID();

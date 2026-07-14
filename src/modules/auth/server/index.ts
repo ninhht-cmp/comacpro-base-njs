@@ -9,6 +9,6 @@
  * owns its flows.
  */
 
-export type { AuthFormState, SigninState } from './actions';
+export type { AuthFormState } from './actions';
 export { logout, signin, signup } from './actions';
 export { readSignupSuccess } from './signup-success';
