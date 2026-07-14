@@ -1,25 +1,30 @@
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { requireSession } from '@/core/guard/require';
 import { roleKeyOf } from '@/core/identity';
 import { fetchProfile } from '@/core/session/server';
 import { LogoutButton } from '@/features/auth';
-import {
-  ChangePasswordForm,
-  ProfileForm,
-  type User,
-  toUser,
-} from '@/features/users';
+import { type User, toUser } from '@/features/users';
 import { routing } from '@/i18n/routing';
+
+function initialsOf(name: string): string {
+  const words = name.trim().split(/\s+/);
+  const first = words[0]?.[0] ?? '';
+  const last = words.length > 1 ? (words[words.length - 1]?.[0] ?? '') : '';
+  return (first + last).toUpperCase() || '?';
+}
+
+/**
+ * CCCD stays masked on screen (last 3 digits only): the owner already knows
+ * it, so showing it in full only serves shoulder-surfers and screenshots.
+ */
+function maskIdCard(idCard: string): string {
+  return idCard.length <= 3 ? idCard : `*** *** ${idCard.slice(-3)}`;
+}
 
 export default async function AccountPage({
   params,
@@ -57,44 +62,88 @@ export default async function AccountPage({
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl">{t('account.title')}</CardTitle>
-          {user.username ? (
-            <CardDescription>
-              {t('account.username')}: {user.username}
-              {user.role ? ` · ${t(`roles.${roleKeyOf(user.role)}`)}` : ''}
-            </CardDescription>
-          ) : null}
         </CardHeader>
         <CardContent className="flex flex-col gap-8">
+          {/* READ-ONLY by product decision (temporary): profile edits and
+              password changes live in the mobile app for now. To re-enable,
+              restore ProfileForm / ChangePasswordForm from `@/features/users`
+              (kept intact, tests included) — see git history of this page. */}
           <section className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold">
-                {t('account.profile.title')}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t('account.profile.description')}
-              </p>
+            <div className="flex items-center gap-4">
+              <Avatar className="size-16">
+                <AvatarImage src={user.avatar} alt="" />
+                <AvatarFallback className="text-xl">
+                  {initialsOf(user.fullName ?? user.username ?? '')}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex min-w-0 flex-col">
+                <p className="truncate text-lg font-semibold text-foreground">
+                  {user.fullName ?? user.username}
+                </p>
+                {user.role ? (
+                  <p className="text-sm text-muted-foreground">
+                    {t(`roles.${roleKeyOf(user.role)}`)}
+                  </p>
+                ) : null}
+                {/* eKYC state only renders once the live profile answered —
+                    a session-snapshot fallback doesn't carry it, and showing
+                    "unverified" to a verified user is worse than silence. */}
+                {user.ekycVerified !== undefined ? (
+                  <span
+                    className={`mt-1 self-start rounded-full px-2 py-0.5 text-xs font-medium ${
+                      user.ekycVerified
+                        ? 'bg-primary/10 text-primary'
+                        : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {t(
+                      user.ekycVerified
+                        ? 'account.ekycVerified'
+                        : 'account.ekycUnverified',
+                    )}
+                  </span>
+                ) : null}
+              </div>
             </div>
-            <ProfileForm
-              defaultValues={{
-                fullName: user.fullName,
-                email: user.email,
-                address: user.address,
-              }}
-            />
-          </section>
 
-          <Separator />
+            <dl className="flex flex-col">
+              {(
+                [
+                  ['account.username', user.username],
+                  ['account.profile.email', user.email],
+                  [
+                    'account.idCard',
+                    user.idCardNumber && maskIdCard(user.idCardNumber),
+                  ],
+                  [
+                    'account.profile.address',
+                    // Street + ward + province, skipping absent parts.
+                    [user.address, user.ward, user.province]
+                      .filter(Boolean)
+                      .join(', ') || undefined,
+                  ],
+                  ['account.referralCode', user.referralCode],
+                ] as const
+              )
+                .filter(([, value]) => value)
+                .map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex items-baseline justify-between gap-4 border-b border-border py-3 last:border-b-0"
+                  >
+                    <dt className="shrink-0 text-sm text-muted-foreground">
+                      {t(key)}
+                    </dt>
+                    <dd className="text-right text-sm font-medium break-words text-foreground">
+                      {value}
+                    </dd>
+                  </div>
+                ))}
+            </dl>
 
-          <section className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold">
-                {t('account.password.title')}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {t('account.password.description')}
-              </p>
-            </div>
-            <ChangePasswordForm />
+            <p className="text-sm text-muted-foreground">
+              {t('account.manageInApp')}
+            </p>
           </section>
 
           <Separator />

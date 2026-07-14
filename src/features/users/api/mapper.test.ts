@@ -11,9 +11,13 @@ describe('toUser', () => {
       phoneNumber: '0912345678',
       email: 'a@example.com',
       avatarUrl: 'https://cdn/avatar.png',
-      address: 'Hà Nội',
+      address: '210 Lê Trọng Tấn',
+      ward: { id: 'w-1', name: 'Phường Phương Liệt', provinceId: 'p-1' },
+      province: { id: 'p-1', name: 'Hà Nội', countryId: 'vn' },
+      idCardNumber: '001203012345',
       role: 'sm-saler',
       referralCode: 'REF123',
+      isEKYCVerified: true,
       isNeedUpdateProfile: true,
     };
 
@@ -23,8 +27,14 @@ describe('toUser', () => {
       phone: '0912345678',
       email: 'a@example.com',
       avatar: 'https://cdn/avatar.png',
+      address: '210 Lê Trọng Tấn',
+      // Names only — the administrative ids stay behind the boundary.
+      ward: 'Phường Phương Liệt',
+      province: 'Hà Nội',
+      idCardNumber: '001203012345',
       role: UserRole['sm-saler'],
       referralCode: 'REF123',
+      ekycVerified: true,
       needsProfileUpdate: true,
     });
   });

@@ -52,11 +52,19 @@ export default async function AppLayout({
     <div className="flex min-h-svh flex-col">
       <SiteHeader
         brand={
-          <Link
-            href="/"
-            className="text-base font-semibold tracking-tight text-foreground"
-          >
-            {t('brand')}
+          <Link href="/" className="flex items-center">
+            {/* Brand wordmark (fixed-color artwork). dark:invert+grayscale
+                renders it as a white silhouette on dark — readable, if
+                off-brand. TODO(design): ship a real dark variant.
+                Plain <img>: local SVGs gain nothing from next/image. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/logo.svg"
+              alt={t('brand')}
+              width={180}
+              height={36}
+              className="h-7 w-auto dark:grayscale dark:invert"
+            />
           </Link>
         }
         navLabel={t('nav.main')}

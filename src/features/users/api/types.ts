@@ -18,11 +18,17 @@ export interface User {
   email?: string;
   fullName?: string;
   avatar?: string;
+  /** Street-level address; ward/province carry the administrative parts. */
   address?: string;
+  ward?: string;
+  province?: string;
   phone?: string;
+  /** National id (CCCD) — display MASKED (see `maskIdCard`), log never. */
+  idCardNumber?: string;
   role?: UserRole;
   referralCode?: string;
   referralUrl?: string;
+  ekycVerified?: boolean;
   /** Backend nudges: profile incomplete / password change required. */
   needsProfileUpdate?: boolean;
   needsPasswordChange?: boolean;

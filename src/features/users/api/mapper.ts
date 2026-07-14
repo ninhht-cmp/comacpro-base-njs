@@ -19,10 +19,16 @@ export function toUser(dto: ProfileMeResDto): User {
     fullName: dto.fullName,
     avatar: dto.avatarUrl,
     address: dto.address,
+    // Only the display names cross the boundary — the ids (`wardId`,
+    // `provinceId`) are form/API concerns the UI has no use for.
+    ward: dto.ward?.name,
+    province: dto.province?.name,
     phone: dto.phoneNumber,
+    idCardNumber: dto.idCardNumber,
     role: roleFromValue(dto.role),
     referralCode: dto.referralCode,
     referralUrl: dto.referralUrl,
+    ekycVerified: dto.isEKYCVerified,
     needsProfileUpdate: dto.isNeedUpdateProfile,
     needsPasswordChange: dto.isNeedChangePassword,
   };
