@@ -9,7 +9,6 @@ import 'server-only';
 
 export {
   clearSession,
-  getAccessToken,
   getSession,
   refreshSessionAndPersist,
   setSession,

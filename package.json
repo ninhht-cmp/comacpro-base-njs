@@ -22,6 +22,7 @@
     "doctor": "tsx scripts/doctor.ts",
     "check:i18n": "tsx scripts/check-i18n.ts",
     "check:api-fresh": "tsx scripts/check-api-fresh.ts",
+    "check:deadcode": "knip --include files,dependencies",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "gen:api:pick": "tsx scripts/gen-api-pick.ts",
@@ -51,7 +52,6 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@faker-js/faker": "^10.4.0",
     "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.61.0",
     "@size-limit/file": "^12.1.0",
@@ -76,6 +76,7 @@
     "eslint-plugin-storybook": "^10.4.6",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "knip": "^6.25.0",
     "lint-staged": "^17.0.7",
     "msw": "^2.14.6",
     "orval": "^8.14.0",

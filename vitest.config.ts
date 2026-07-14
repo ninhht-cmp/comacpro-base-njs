@@ -25,6 +25,9 @@ export default defineConfig({
       SKIP_ENV_VALIDATION: 'true',
       API_BASE_URL: 'http://test.local',
       NEXT_PUBLIC_API_BASE_URL: 'http://test.local',
+      // Hashed into the AES-256 session key (core/session) — needed by the
+      // session seal/open + middleware refresh tests.
+      AUTH_SECRET: 'test-only-secret-at-least-32-characters-long',
     },
     coverage: {
       provider: 'v8',

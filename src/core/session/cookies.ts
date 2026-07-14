@@ -32,15 +32,6 @@ export async function clearSession(): Promise<void> {
 }
 
 /**
- * Access token for outgoing API calls, or null. Does not refresh — `proxy.ts`
- * keeps the token fresh across requests.
- */
-export async function getAccessToken(): Promise<string | null> {
-  const session = await getSession();
-  return session?.accessToken ?? null;
-}
-
-/**
  * Refresh the session's tokens (+ user snapshot) and persist the resealed
  * cookie. Only callable where cookies are writable — Server Actions and Route
  * Handlers; Server Components can read but not write cookies. Returns the

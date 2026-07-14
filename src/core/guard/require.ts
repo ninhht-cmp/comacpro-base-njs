@@ -20,12 +20,3 @@ export async function requireSession(): Promise<SessionData> {
   // `redirect()` throws (NEXT_REDIRECT); this satisfies the non-null return type.
   throw new Error('requireSession: redirect did not halt execution');
 }
-
-/** Redirect a signed-in user away (e.g. off auth pages); otherwise no-op. */
-export async function requireGuest(): Promise<void> {
-  const session = await getSession();
-  if (!session) return;
-
-  const locale = await getLocale();
-  redirect({ href: '/account', locale });
-}

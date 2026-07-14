@@ -42,6 +42,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Guards against unused files / dependencies creeping back (exports are
+      # excluded: barrels + shadcn + generated types make them noisy here).
+      - name: Dead code (knip)
+        run: pnpm check:deadcode
+
       - name: Format check
         run: pnpm format:check
 
