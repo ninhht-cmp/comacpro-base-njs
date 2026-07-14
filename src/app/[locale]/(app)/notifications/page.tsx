@@ -2,12 +2,12 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { requireSession } from '@/core/guard/require';
-import { type Notification, NotificationList } from '@/features/notifications';
+import { type Notification, NotificationList } from '@/modules/notifications';
 import {
   ApiError,
   fetchMyNotifications,
   fetchUnreadCount,
-} from '@/features/notifications/server';
+} from '@/modules/notifications/server';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 

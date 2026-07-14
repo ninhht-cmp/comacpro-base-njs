@@ -1,9 +1,9 @@
 /**
  * Public (client-safe) API of the users feature. Import UI and isomorphic
- * schemas from `@/features/users`.
+ * schemas from `@/modules/users`.
  *
  * Server-only helpers (the `fetch`-based service) live behind
- * `@/features/users/server`.
+ * `@/modules/users/server`.
  */
 
 export { ChangePasswordForm } from './components/change-password-form';

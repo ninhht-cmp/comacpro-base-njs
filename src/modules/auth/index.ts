@@ -1,9 +1,9 @@
 /**
  * Public (client-safe) API of the auth feature. Import UI and isomorphic
- * schemas from `@/features/auth`.
+ * schemas from `@/modules/auth`.
  *
  * Server-only helpers (session cookies, the `fetch`-based service, server
- * actions used outside a form) live behind `@/features/auth/server`.
+ * actions used outside a form) live behind `@/modules/auth/server`.
  */
 
 export { AuthCard } from './components/auth-card';

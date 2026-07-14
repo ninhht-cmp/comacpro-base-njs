@@ -3,7 +3,7 @@
     "collect": {
       "startServerCommand": "pnpm start",
       "startServerReadyPattern": "Ready in|started server on|Local:",
-      "url": ["http://localhost:3000/en", "http://localhost:3000/en/signin"],
+      "url": ["http://localhost:3000", "http://localhost:3000/signin"],
       "numberOfRuns": 1,
       "settings": { "preset": "desktop" }
     },

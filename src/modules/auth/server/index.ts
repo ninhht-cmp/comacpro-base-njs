@@ -1,6 +1,6 @@
 /**
  * Server-side public API of the auth feature — the sign-in/up server
- * actions. Import from `@/features/auth/server` in Server Components, Route
+ * actions. Import from `@/modules/auth/server` in Server Components, Route
  * Handlers and Server Actions. (Password recovery lives in the mobile app —
  * ADR 0005.)
  *

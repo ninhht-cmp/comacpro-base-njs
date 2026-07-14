@@ -4,12 +4,14 @@
     "description": "Gia nhập mạng lưới Đại diện Thương mại của SaleNet — gia tăng thu nhập, phát triển sự nghiệp kinh doanh bền vững."
   },
   "hero": {
+    "eyebrow": "Nền tảng Đại diện Thương mại",
     "title": "Gia tăng thu nhập cùng SaleNet",
-    "subtitle": "Nền tảng dành cho Đại diện Thương mại: bán hàng, quản lý đơn và xây dựng đội nhóm — tất cả trong một ứng dụng.",
+    "subtitle": "Bán hàng, quản lý đơn và xây dựng đội nhóm — tất cả trong một ứng dụng dành cho Đại diện Thương mại.",
     "downloadCta": "Tải ứng dụng",
     "aboutCta": "Tìm hiểu thêm"
   },
   "values": {
+    "eyebrow": "Giá trị cốt lõi",
     "heading": "Vì sao chọn SaleNet",
     "income": {
       "title": "Thu nhập theo năng lực",
@@ -25,6 +27,7 @@
     }
   },
   "steps": {
+    "eyebrow": "Ba bước đơn giản",
     "heading": "Bắt đầu như thế nào?",
     "invite": {
       "title": "Nhận lời mời",

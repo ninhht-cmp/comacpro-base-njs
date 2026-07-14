@@ -46,11 +46,12 @@ pnpm dev             # http://localhost:3000
 
 ## Documentation
 
+- [`ARCHITECTURE.md`](ARCHITECTURE.md) — where code goes (decision tree + rules).
 - [`docs/tech-stack.md`](docs/tech-stack.md) — stack choices and rationale.
 - [`docs/adr/`](docs/adr/) — architecture decision records.
 - [`docs/golden-path/`](docs/golden-path/README.md) — shared-config blueprint.
 - [`docs/runbooks/`](docs/runbooks/) — operational runbooks (rollback, …).
-- [`src/features/README.md`](src/features/README.md) — feature-module rules.
+- [`src/modules/README.md`](src/modules/README.md) — feature-module rules.
 - [`CONTRIBUTING.md`](CONTRIBUTING.md) / [`SECURITY.md`](SECURITY.md)
 
 ## Docker

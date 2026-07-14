@@ -89,7 +89,7 @@ import prettierConfig from 'eslint-config-prettier';
 // Public-barrel-only rule for feature modules — the org's architecture invariant.
 const featureBoundary = {
   files: ['src/**/*.{ts,tsx}'],
-  ignores: ['src/features/**', 'src/i18n/navigation.ts', 'src/proxy.ts'],
+  ignores: ['src/modules/**', 'src/i18n/navigation.ts', 'src/proxy.ts'],
   rules: {
     'no-restricted-imports': [
       'error',
@@ -98,11 +98,11 @@ const featureBoundary = {
           {
             // Allow-list: ban every deep path under a feature by default and
             // re-allow only the server barrel (the client barrel
-            // `@/features/<name>` is one segment, never matched by `*/**`) —
+            // `@/modules/<name>` is one segment, never matched by `*/**`) —
             // new internal directories are blocked without touching the rule.
-            group: ['@/features/*/**', '!@/features/*/server'],
+            group: ['@/modules/*/**', '!@/modules/*/server'],
             message:
-              'Import features via their public barrels: `@/features/<name>` or `@/features/<name>/server`.',
+              'Import features via their public barrels: `@/modules/<name>` or `@/modules/<name>/server`.',
           },
           { group: ['next/navigation'], message: 'Use `@/i18n/navigation`.' },
         ],

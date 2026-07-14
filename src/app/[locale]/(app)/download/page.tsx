@@ -3,7 +3,12 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
-import { IconCircleCheck } from '@tabler/icons-react';
+import {
+  IconReceipt2,
+  IconTrendingUp,
+  IconUsersGroup,
+} from '@tabler/icons-react';
+import { FeatureCard } from '@/components/marketing/feature-card';
 import { StoreBadges } from '@/components/store-badges';
 import { APP_STORE_ID } from '@/config/app-links';
 import { Link } from '@/i18n/navigation';
@@ -15,7 +20,11 @@ export const metadata: Metadata = APP_STORE_ID
   ? { itunes: { appId: APP_STORE_ID } }
   : {};
 
-const FEATURES = ['orders', 'team', 'income'] as const;
+const FEATURES = [
+  { key: 'orders', icon: IconReceipt2 },
+  { key: 'team', icon: IconUsersGroup },
+  { key: 'income', icon: IconTrendingUp },
+] as const;
 
 /**
  * App download landing — the conversion target for every public page (the
@@ -35,46 +44,46 @@ export default async function DownloadPage({
   const platform = detectPlatform((await headers()).get('user-agent'));
 
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col items-center gap-10 px-6 py-20 text-center">
-      <div className="flex flex-col items-center gap-4">
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-14 px-6 py-20">
+      <div className="flex flex-col items-center gap-5 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/assets/2/launch.svg"
           alt=""
-          width={96}
-          height={96}
-          className="size-24"
+          width={80}
+          height={80}
+          className="size-20"
         />
-        <h1 className="text-3xl font-semibold tracking-tight text-balance text-foreground">
+        <span className="text-eyebrow">{t('eyebrow')}</span>
+        <h1 className="font-heading text-4xl font-medium tracking-tight text-balance text-foreground">
           {t('title')}
         </h1>
-        <p className="max-w-md text-muted-foreground">{t('subtitle')}</p>
+        <p className="max-w-md text-lg text-pretty text-muted-foreground">
+          {t('subtitle')}
+        </p>
+        <div className="pt-2">
+          <StoreBadges platform={platform} />
+        </div>
       </div>
 
-      <StoreBadges platform={platform} />
-
-      <ul className="flex flex-col items-start gap-3 text-left">
-        {FEATURES.map((feature) => (
-          <li key={feature} className="flex items-start gap-2.5">
-            <IconCircleCheck
-              aria-hidden
-              size={20}
-              className="mt-0.5 shrink-0 text-primary"
-            />
-            <span className="text-sm leading-6 text-foreground">
-              {t(`features.${feature}`)}
-            </span>
-          </li>
+      <div className="grid w-full gap-5 sm:grid-cols-3">
+        {FEATURES.map(({ key, icon }) => (
+          <FeatureCard
+            key={key}
+            icon={icon}
+            title={t(`features.${key}.title`)}
+            body={t(`features.${key}.body`)}
+          />
         ))}
-      </ul>
+      </div>
 
-      <div className="flex flex-col items-center gap-2 border-t border-border pt-8">
+      <div className="flex w-full flex-col items-center gap-2 border-t border-border pt-8 text-center">
         <p className="max-w-md text-sm leading-6 text-muted-foreground">
           {t('invite.note')}
         </p>
         <Link
           href="/about-us"
-          className="text-sm font-medium text-foreground underline"
+          className="text-sm font-medium text-foreground underline underline-offset-4"
         >
           {t('invite.about')}
         </Link>

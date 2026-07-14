@@ -12,7 +12,7 @@ The template originally shipped two parallel data layers:
 1. A generated client: orval → TanStack Query hooks + zod schemas, transported
    through a ky mutator, with SSR hydration helpers (`HydrateQuery`,
    per-request `QueryClient`).
-2. Hand-rolled server services (`features/*/server/service.ts`) called from
+2. Hand-rolled server services (`modules/*/server/service.ts`) called from
    RSCs and Server Actions, passing results to client components as props.
 
 Only layer 2 was ever used. The generated client was blocked by a real
@@ -38,7 +38,7 @@ blessed way" to fetch data.
   generated hook/zod files.
 - Kept: orval **model generation** (`src/lib/api/generated/model`) — the
   typed wire contract that powers the anti-corruption mappers
-  (`features/*/api/mapper.ts`) and their compile-time enum-drift detection.
+  (`modules/*/api/mapper.ts`) and their compile-time enum-drift detection.
   Orval cannot emit models without a client, so a minimal `fetch` client is
   quarantined in `generated/.reference/` (never imported).
 - MSW stays, with hand-written handlers covering the vertical slice.

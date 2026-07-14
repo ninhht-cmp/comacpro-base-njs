@@ -3,12 +3,22 @@
     "title": "Tải ứng dụng SaleNet",
     "description": "Tải ứng dụng SaleNet cho iOS và Android — bán hàng, quản lý đơn và phát triển đội nhóm ngay trên điện thoại."
   },
+  "eyebrow": "Ứng dụng SaleNet",
   "title": "Tải ứng dụng SaleNet",
   "subtitle": "Toàn bộ công việc của Đại diện Thương mại nằm trong ứng dụng: bán hàng, theo dõi đơn, đội nhóm và thông báo.",
   "features": {
-    "orders": "Đặt đơn và theo dõi trạng thái theo thời gian thực",
-    "team": "Quản lý đội nhóm và mời thành viên bằng link giới thiệu",
-    "income": "Theo dõi hoa hồng và đối soát thu nhập minh bạch"
+    "orders": {
+      "title": "Quản lý đơn hàng",
+      "body": "Đặt đơn và theo dõi trạng thái theo thời gian thực, không cần sổ sách."
+    },
+    "team": {
+      "title": "Xây dựng đội nhóm",
+      "body": "Mời thành viên bằng link giới thiệu và quản lý hệ thống kinh doanh."
+    },
+    "income": {
+      "title": "Theo dõi thu nhập",
+      "body": "Xem hoa hồng và đối soát thu nhập minh bạch trên từng đơn hàng."
+    }
   },
   "invite": {
     "note": "Chưa có tài khoản? Đăng ký chỉ dành cho người được giới thiệu — hãy nhờ một thành viên SaleNet gửi link mời từ ứng dụng.",

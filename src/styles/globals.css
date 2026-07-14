@@ -14,6 +14,8 @@
   --color-popover-foreground:          var(--popover-foreground);
   --color-primary:                     var(--primary);
   --color-primary-foreground:          var(--primary-foreground);
+  --color-brand:                       var(--brand);
+  --color-brand-foreground:            var(--brand-foreground);
   --color-secondary:                   var(--secondary);
   --color-secondary-foreground:        var(--secondary-foreground);
   --color-muted:                       var(--muted);
@@ -38,9 +40,9 @@
   --color-sidebar-accent-foreground:   var(--sidebar-accent-foreground);
   --color-sidebar-border:              var(--sidebar-border);
   --color-sidebar-ring:                var(--sidebar-ring);
-  --font-sans:                         var(--font-geist-sans);
-  --font-mono:                         var(--font-geist-mono);
-  --font-heading:                      var(--font-geist-sans);
+  --font-sans:                         var(--font-sans-local);
+  --font-mono:                         var(--font-mono-local);
+  --font-heading:                      var(--font-heading-local);
   --radius-sm:                         calc(var(--radius) * 0.6);
   --radius-md:                         calc(var(--radius) * 0.8);
   --radius-lg:                         var(--radius);
@@ -67,6 +69,13 @@
      cream neutrals and the gold medal artwork stay: navy × cream × gold. */
   --primary:                oklch(0.55 0.15 250);
   --primary-foreground:     oklch(1 0 0);
+
+  /* Brand orange (logo #F26722) — the energy accent that pairs with the navy.
+     Used sparingly: eyebrows, stat figures, underline markers, icon washes.
+     `-foreground` is dark since orange is mid-light (white text on it fails
+     AA); never used as a large text-on-fill surface. */
+  --brand:                  oklch(0.70 0.19 47);
+  --brand-foreground:       oklch(0.191 0.002 106.6);
 
   --secondary:              oklch(0.948 0.013 82.4);
   --secondary-foreground:   oklch(0.191 0.002 106.6);
@@ -114,6 +123,10 @@
   --primary:                oklch(0.68 0.12 250);
   --primary-foreground:     oklch(0.191 0.002 106.6);
 
+  /* Slightly lighter/brighter on dark so the accent keeps its pop. */
+  --brand:                  oklch(0.76 0.16 52);
+  --brand-foreground:       oklch(0.191 0.002 106.6);
+
   --secondary:              oklch(0.342 0.006 78.3);
   --secondary-foreground:   oklch(0.982 0.005 95.1);
   --muted:                  oklch(0.342 0.006 78.3);
@@ -156,6 +169,16 @@
     color-mix(in oklab, var(--primary) 10%, transparent),
     transparent 70%
   );
+}
+
+/* Section eyebrow: small, tracked, uppercase, brand-orange. */
+@utility text-eyebrow {
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brand);
 }
 
 @layer base {

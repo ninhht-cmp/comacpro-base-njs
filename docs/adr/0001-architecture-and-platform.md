@@ -23,8 +23,8 @@ One-directional dependency graph; **features never import features**.
 app → features → core → (components/ui, lib) → generated
 ```
 
-- `features/<name>/` — domain UI + server actions + schema; public surface only
-  via barrels (`@/features/<name>`, `@/features/<name>/server`).
+- `modules/<name>/` — domain UI + server actions + schema; public surface only
+  via barrels (`@/modules/<name>`, `@/modules/<name>/server`).
 - `core/` (**new**) — cross-cutting **domain** infra without UI:
   - `core/session/` — JWE seal/open, cookie store, token refresh, `GET /me`.
   - `core/guard/` — access-control policy + helpers (see Decision 2).
@@ -36,7 +36,7 @@ app → features → core → (components/ui, lib) → generated
   (ky mutator + `ApiError`, was `lib/fetcher`), `query-client.ts`, `hydrate.tsx`,
   `generated/`.
 
-**Why:** today `users` depends on `@/features/auth/server` for session, and
+**Why:** today `users` depends on `@/modules/auth/server` for session, and
 `proxy.ts` deep-imports `auth/server/{session,service}` behind an ESLint
 exception. Both are symptoms of session being misfiled inside a feature.
 Extracting `core/session` makes "features don't import features" honest and lets

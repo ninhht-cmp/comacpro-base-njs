@@ -1,7 +1,7 @@
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { AuthCard, SigninForm } from '@/features/auth';
+import { AuthCard, SigninForm } from '@/modules/auth';
 import { routing } from '@/i18n/routing';
 
 export default async function SigninPage({

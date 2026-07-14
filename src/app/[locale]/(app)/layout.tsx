@@ -1,26 +1,28 @@
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { BrandLogo } from '@/components/layout/brand-logo';
+import { HeaderNav, type HeaderNavItem } from '@/components/layout/header-nav';
+import { MobileMenu } from '@/components/layout/mobile-menu';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
+import { CtaLink } from '@/components/marketing/cta-link';
 import { ThemeToggleCompact } from '@/components/theme';
-import { Button } from '@/components/ui/button';
-import { UserMenu } from '@/features/auth';
+import { UserMenu } from '@/modules/auth';
 import { getSession } from '@/core/session/server';
-import { NotificationBell } from '@/features/notifications';
-import { fetchUnreadCount } from '@/features/notifications/server';
+import { NotificationBell } from '@/modules/notifications';
+import { fetchUnreadCount } from '@/modules/notifications/server';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 
 /**
- * Shell for the main application surface (home, account, …): the full sticky
- * `SiteHeader`. The `(auth)` group uses its own minimal layout instead, so auth
- * screens never render this chrome.
+ * App shell for the main surface (home, account, …): a clean single-row header
+ * + footer. The `(auth)` group uses its own minimal layout, so auth screens
+ * never render this chrome.
  *
  * NOTE: reading the session cookie opts this subtree into dynamic rendering —
- * acceptable for a personalized header. To keep marketing pages static, link
- * unconditionally to `/account` (the proxy redirects guests) or enable PPR to
- * stream just the auth action.
+ * acceptable for a personalized header. Enable PPR to stream just the
+ * auth-dependent bits if the marketing pages need to be static.
  */
 export default async function AppLayout({
   children,
@@ -36,69 +38,61 @@ export default async function AppLayout({
   const t = await getTranslations('Common');
   const session = await getSession();
 
-  // Unread badge for the header bell. Best-effort + resilient: a count failure
-  // must never break the shell. (One backend call per app page — fine while the
-  // shell is already dynamic; move to a BFF route + client polling if needed.)
   let unreadCount = 0;
   if (session) {
     try {
       unreadCount = await fetchUnreadCount(session.accessToken, locale);
     } catch {
-      // leave at 0
+      // A count failure must never break the shell.
     }
   }
+
+  // One source of truth for the public nav — desktop (`HeaderNav`) + mobile
+  // (`MobileMenu`). The brand logo is the "home" link, so it's not repeated.
+  const navItems: HeaderNavItem[] = [
+    { href: '/about-us', label: t('nav.about') },
+    { href: '/download', label: t('nav.download') },
+  ];
 
   return (
     <div className="flex min-h-svh flex-col">
       <SiteHeader
+        navLabel={t('nav.main')}
         brand={
           <Link href="/" className="flex items-center">
-            {/* Brand wordmark (fixed-color artwork). dark:invert+grayscale
-                renders it as a white silhouette on dark — readable, if
-                off-brand. TODO(design): ship a real dark variant.
-                Plain <img>: local SVGs gain nothing from next/image. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/brand/logo.svg"
-              alt={t('brand')}
-              width={180}
-              height={36}
-              className="h-7 w-auto dark:grayscale dark:invert"
-            />
+            <BrandLogo className="h-7" />
           </Link>
         }
-        navLabel={t('nav.main')}
-        nav={
-          // No "home" item — the brand link already goes there.
-          <ul className="hidden items-center sm:flex">
-            {(
-              [
-                ['/about-us', 'nav.about'],
-                ['/download', 'nav.download'],
-              ] as const
-            ).map(([href, key]) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  {t(key)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        }
+        nav={<HeaderNav items={navItems} />}
         actions={
           <>
-            {session ? <NotificationBell count={unreadCount} /> : null}
-            <ThemeToggleCompact />
             {session ? (
-              <UserMenu user={session.user} />
+              <>
+                <NotificationBell count={unreadCount} />
+                <UserMenu user={session.user} />
+              </>
             ) : (
-              <Button asChild size="sm">
-                <Link href="/signin">{t('nav.signin')}</Link>
-              </Button>
+              // Dark pill + chevron (Claude-docs CTA style); theme toggle
+              // sits AFTER it.
+              <CtaLink
+                href="/signin"
+                size="sm"
+                arrow
+                className="hidden md:inline-flex"
+              >
+                {t('nav.signin')}
+              </CtaLink>
             )}
+            <ThemeToggleCompact />
+            <MobileMenu
+              items={navItems}
+              menuLabel={t('nav.menu')}
+              signIn={
+                session
+                  ? undefined
+                  : { href: '/signin', label: t('nav.signin') }
+              }
+            />
           </>
         }
       />

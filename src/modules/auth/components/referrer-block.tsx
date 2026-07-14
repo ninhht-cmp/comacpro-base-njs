@@ -2,7 +2,7 @@ import { useTranslations } from 'next-intl';
 import { IconDeviceMobile } from '@tabler/icons-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { roleKeyOf } from '@/core/identity';
-import type { ReferralUser } from '@/features/users';
+import type { ReferralUser } from '@/modules/users';
 import { ShareInviteButton } from './share-invite-button';
 
 /**

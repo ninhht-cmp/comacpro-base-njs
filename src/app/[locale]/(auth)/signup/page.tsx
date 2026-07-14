@@ -12,10 +12,10 @@ import {
   SignupAboutSection,
   SignupForm,
   SignupSuccessCard,
-} from '@/features/auth';
-import { readSignupSuccess } from '@/features/auth/server';
-import { ApiError, fetchReferralUser } from '@/features/users/server';
-import type { ReferralUser } from '@/features/users';
+} from '@/modules/auth';
+import { readSignupSuccess } from '@/modules/auth/server';
+import { ApiError, fetchReferralUser } from '@/modules/users/server';
+import type { ReferralUser } from '@/modules/users';
 import { APP_STORE_ID } from '@/config/app-links';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';

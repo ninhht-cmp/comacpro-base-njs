@@ -39,23 +39,25 @@ RSC-first; there is deliberately NO client-side query cache — see
 `docs/adr/0002-rsc-first-data-layer.md`:
 
 - Data: session cookie → RSC → `serverFetch` (`src/lib/api/server-fetch.ts`,
-  unwraps the SaleNet envelope) → mapper (`features/*/api/mapper.ts`) → props
+  unwraps the SaleNet envelope) → mapper (`modules/*/api/mapper.ts`) → props
   to client components.
-- Mutations: client → Server Action (`features/*/server/actions.ts`, zod at
+- Mutations: client → Server Action (`modules/*/server/actions.ts`, zod at
   the boundary, returns `{ error, fieldErrors }`) → `router.refresh()`.
 - Auth: NestJS issues tokens; we seal them in an encrypted httpOnly cookie
   (`src/core/session`). `src/proxy.ts` refreshes proactively; Server Actions
   use `withAuthRetry` for 401-refresh-retry.
-- `src/core/` = app-agnostic kernel (session, guard, authz). `src/features/`
+- `src/core/` = app-agnostic kernel (session, guard, authz). `src/modules/`
   = vertical slices. `src/components/` = shared UI.
 
 ## Where should this code go?
 
+Full decision tree + smells: `ARCHITECTURE.md`. Quick version:
+
 ```
-Is it a NestJS API call?            → features/<name>/server/service.ts (via serverFetch)
-Is it a form mutation?              → features/<name>/server/actions.ts (Server Action)
-Is it a wire-type → domain mapping? → features/<name>/api/mapper.ts (+ test)
-Is it feature UI?                   → features/<name>/components/
+Is it a NestJS API call?            → modules/<name>/server/service.ts (via serverFetch)
+Is it a form mutation?              → modules/<name>/server/actions.ts (Server Action)
+Is it a wire-type → domain mapping? → modules/<name>/api/mapper.ts (+ test)
+Is it feature UI?                   → modules/<name>/components/
 Is it shared, feature-free UI?      → components/ (ui/ = shadcn primitives)
 Is it session/authz/routing policy? → core/ (keep it pure + tested)
 Is it a wire DTO type?              → generated: run `pnpm gen:api`, never hand-edit
@@ -63,8 +65,8 @@ Is it a wire DTO type?              → generated: run `pnpm gen:api`, never han
 
 ## Hard rules (ESLint-enforced — don't fight them)
 
-- Import features ONLY through barrels: `@/features/<name>` (client) or
-  `@/features/<name>/server`. Deep imports fail lint by default.
+- Import features ONLY through barrels: `@/modules/<name>` (client) or
+  `@/modules/<name>/server`. Deep imports fail lint by default.
 - Never import `next/link` or `redirect`/`useRouter` from `next/navigation` —
   use `@/i18n/navigation` (locale-aware wrappers).
 - `src/lib/api/generated/model` is the only supported generated import;
@@ -99,8 +101,11 @@ the dev server is running.
   are the 13 `sm-*` strings (generated unions re-exported by
   `@/core/identity`).
 - The committed `openapi/openapi.json` is a snapshot of the SaleNet spec;
-  regen with `pnpm gen:api` (codegen is tag-filtered in orval.config.ts —
-  widen the filter when migrating a new feature).
+  regen with `pnpm gen:api`. Scope is per-operation and lives in
+  `openapi/selection.json` — run `pnpm gen:api:pick` (interactive: search +
+  multi-select the operations to generate) to change it, then `pnpm gen:api`.
+  The selection file is committed, so `gen:api`/`check:api-fresh` stay
+  deterministic (the input transformer prunes the spec to it).
 - Tests colocate with source (`*.test.ts[x]`); mock HTTP with MSW
   (`server.use(...)`), never fetch stubs.
 

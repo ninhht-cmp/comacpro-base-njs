@@ -3,6 +3,7 @@
   "loading": "Đang tải",
   "nav": {
     "main": "Chính",
+    "menu": "Menu",
     "about": "Về chúng tôi",
     "download": "Tải ứng dụng",
     "account": "Tài khoản",
@@ -11,17 +12,29 @@
   },
   "footer": {
     "nav": "Liên kết",
+    "tagline": "Nền tảng dành cho Đại diện Thương mại — bán hàng, quản lý đơn và phát triển đội nhóm.",
+    "explore": "Khám phá",
+    "legal": "Pháp lý",
+    "contact": "Liên hệ",
+    "addressLabel": "Địa chỉ",
     "links": {
+      "/": "Trang chủ",
       "/about-us": "Về chúng tôi",
       "/download": "Tải ứng dụng",
       "/terms": "Điều khoản sử dụng",
       "/privacy": "Chính sách bảo mật"
     },
-    "identity": "Công ty Cổ phần SaleNet (SALENET JSC) — MST: 0111539358 — Địa chỉ: Tầng 5, tòa nhà ACCI, số 210 Lê Trọng Tấn, Phường Phương Liệt, TP. Hà Nội, Việt Nam",
+    "company": "Công ty Cổ phần SaleNet (SALENET JSC)",
+    "taxId": "MST: 0111539358",
+    "address": "Tầng 5, tòa nhà ACCI, số 210 Lê Trọng Tấn, Phường Phương Liệt, TP. Hà Nội, Việt Nam",
     "copyright": "© {year} Công ty Cổ phần SaleNet. Bảo lưu mọi quyền."
   },
   "actions": {
     "retry": "Thử lại"
+  },
+  "form": {
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu"
   },
   "stores": {
     "googlePlay": "Tải trên",

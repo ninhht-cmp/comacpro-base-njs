@@ -11,7 +11,7 @@ here instead of one feature reaching into another.
 app → features → core → (components/ui, lib) → generated
 ```
 
-`core/` may import `@/lib/*` and `@/config/*`. It MUST NOT import `@/features/*`
+`core/` may import `@/lib/*` and `@/config/*`. It MUST NOT import `@/modules/*`
 or `@/components/*` (no UI). Features and the middleware import `core`, never the
 reverse.
 

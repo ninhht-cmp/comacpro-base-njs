@@ -5,17 +5,16 @@ import { cn } from '@/lib/utils';
 import { useSmartHeader } from './use-smart-header';
 
 /**
- * Sticky app-shell header with smart show/hide:
- * - sticky at the top, hides on scroll-down, reveals on scroll-up, always shown
- *   near the top (see `useSmartHeader`);
- * - translucent + `backdrop-blur` with a border/shadow only once scrolled, so it
- *   sits flush over hero content at the top and lifts off the page below it;
- * - keyboard focus inside the header reveals it (CSS-only `focus-within`), so a
- *   hidden header can never trap a focused control;
- * - respects `prefers-reduced-motion` (transitions snap off).
+ * Clean single-row marketing header (Stripe/Linear-style): brand + inline nav
+ * on the left, a compact action cluster on the right. Deliberately minimal —
+ * no search/command palette, no placeholder buttons — the product is a
+ * five-page funnel, so the header's job is wayfinding + one clear CTA.
  *
- * Pure presentation: data-aware composition (auth state, nav) is passed in as
- * slots by the layout — this component imports no feature/core code.
+ * Behaviour: sticky, smart show/hide (`useSmartHeader`), a translucent +
+ * `backdrop-blur` lift once scrolled, `focus-within` reveal so a hidden
+ * header never traps focus, and `prefers-reduced-motion` support.
+ *
+ * Pure presentation: auth/nav data is passed in as slots by the layout.
  */
 export function SiteHeader({
   brand,
@@ -25,9 +24,7 @@ export function SiteHeader({
 }: {
   brand: ReactNode;
   nav?: ReactNode;
-  /** Accessible name for the main <nav> — translated by the caller, since
-   * this component stays i18n-agnostic (it also renders in Storybook without
-   * an intl provider). */
+  /** Accessible name for the main <nav> (translated by the caller). */
   navLabel?: string;
   actions?: ReactNode;
 }) {
@@ -42,17 +39,15 @@ export function SiteHeader({
         'will-change-transform focus-within:translate-y-0',
         hidden ? '-translate-y-full' : 'translate-y-0',
         scrolled
-          ? 'border-border bg-background/70 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/60'
-          : 'border-transparent bg-transparent',
+          ? 'border-border bg-background/80 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/70'
+          : 'border-border/60 bg-background',
       )}
     >
-      <div className="mx-auto flex h-14 max-w-6xl items-center gap-4 px-4 sm:px-6">
-        <div className="flex items-center gap-6">
-          {brand}
-          {nav ? <nav aria-label={navLabel}>{nav}</nav> : null}
-        </div>
+      <div className="mx-auto flex h-16 w-full max-w-[100rem] items-center gap-6 px-4 sm:px-6 lg:px-8">
+        {brand}
+        {nav ? <nav aria-label={navLabel}>{nav}</nav> : null}
         {actions ? (
-          <div className="ml-auto flex items-center gap-2">{actions}</div>
+          <div className="ml-auto flex items-center gap-1.5">{actions}</div>
         ) : null}
       </div>
     </header>

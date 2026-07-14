@@ -1,6 +1,6 @@
 /**
  * Server-side surface of the notifications feature. Import from
- * `@/features/notifications/server` in Server Components / Route Handlers.
+ * `@/modules/notifications/server` in Server Components / Route Handlers.
  */
 
 export type { NotificationActionState } from './actions';

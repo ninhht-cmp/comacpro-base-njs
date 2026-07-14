@@ -1,19 +1,21 @@
 /**
- * Public store listings for the SaleNet mobile app. Plain constants
- * (identical across environments), not env vars.
+ * Public store listings for the SaleNet mobile app. Plain constants, NOT env
+ * vars: these URLs are public and identical in every environment, so an env
+ * var would only add a way to misconfigure them with nothing gained.
  *
- * TODO(product): replace with the real listings once published. When the app
- * ships Universal Links / App Links, point the store URLs at the universal
- * link instead — installed apps will open directly, others fall through to
- * the store.
+ * When the app ships Universal Links / App Links, point the store URLs at the
+ * universal link instead — installed apps open directly, others fall through
+ * to the store.
  */
-export const APP_STORE_URL = 'https://apps.apple.com/app/salenet/id0000000000';
+export const APP_STORE_URL =
+  'https://apps.apple.com/vn/app/comacpro-salenet/id6749012709';
+// `&pli=1` (Play's "please log in" hint) dropped — not needed for a deep link.
 export const GOOGLE_PLAY_URL =
-  'https://play.google.com/store/apps/details?id=vn.salenet.app';
+  'https://play.google.com/store/apps/details?id=sm.comac.x';
 
 /**
- * Numeric App Store id for Safari's Smart App Banner (`apple-itunes-app`).
- * `null` disables the banner — set it together with APP_STORE_URL; an invalid
- * id renders a broken banner, so it must not ship as a placeholder.
+ * Numeric App Store id for Safari's Smart App Banner (`apple-itunes-app`),
+ * from the App Store URL above. Enables the banner on the signup/download
+ * pages (`metadata.itunes.appId`).
  */
-export const APP_STORE_ID: string | null = null;
+export const APP_STORE_ID: string | null = '6749012709';

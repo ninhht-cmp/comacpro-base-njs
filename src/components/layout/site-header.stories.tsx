@@ -13,12 +13,15 @@ const meta = {
     ),
     navLabel: 'Main',
     nav: (
-      <ul className="hidden items-center sm:flex">
-        <li>
-          <span className="rounded-md px-3 py-1.5 text-sm text-muted-foreground">
-            Home
-          </span>
-        </li>
+      <ul className="flex items-center gap-1">
+        {['About', 'Download'].map((label) => (
+          <li
+            key={label}
+            className="px-3 py-2 text-sm font-medium text-muted-foreground"
+          >
+            {label}
+          </li>
+        ))}
       </ul>
     ),
     actions: (

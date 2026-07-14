@@ -20,14 +20,11 @@ export default defineConfig({
   api: {
     input: {
       target: OPENAPI_SPEC,
-      // Deliberate scope: only the tags the app consumes today (auth flows,
-      // users/referral, notifications). Widen the list as features are
-      // migrated — an unfiltered run generates all 244 paths.
-      filters: {
-        mode: 'include',
-        tags: ['Auth', 'Users', 'Notifications'],
-      },
-      // Sanitize known spec defects (empty enums) before validation.
+      // Scope is operation-level and lives in `openapi/selection.json` (managed
+      // by `pnpm gen:api:pick`): the transformer prunes the spec to the
+      // selected operations before orval resolves it, so orval emits only the
+      // schemas they reference. This replaces orval's coarser tag `filters`
+      // with per-endpoint control while staying deterministic for CI.
       override: {
         transformer: './scripts/openapi-input-transformer.mjs',
       },

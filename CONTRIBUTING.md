@@ -27,11 +27,11 @@ pnpm dev
 
 ## Architecture rules (enforced)
 
-- **Feature modules** (`src/features/<name>/`) are self-contained and expose a
-  public surface only through **barrels** — `@/features/<name>` (client-safe)
-  and `@/features/<name>/server` (server-only). Deep imports are an ESLint error.
+- **Modules** (vertical slices) (`src/modules/<name>/`) are self-contained and expose a
+  public surface only through **barrels** — `@/modules/<name>` (client-safe)
+  and `@/modules/<name>/server` (server-only). Deep imports are an ESLint error.
 - **Features must not import each other.** Shared logic goes to a lower layer
-  (`core/`, `components/ui`, `lib/`). See `src/features/README.md` and
+  (`core/`, `components/ui`, `lib/`). See `src/modules/README.md` and
   `docs/adr/0001-architecture-and-platform.md`.
 - The generated client under `src/lib/api/generated/` is **codegen output** —
   never hand-edit; change the spec and run `pnpm gen:api`.

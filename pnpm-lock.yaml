@@ -111,6 +111,9 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^4.1.9
         version: 4.1.9(@vitest/browser@4.1.9)(vitest@4.1.9)
+      enquirer:
+        specifier: ^2.4.1
+        version: 2.4.1
       eslint:
         specifier: ^9
         version: 9.39.4(jiti@2.7.0)

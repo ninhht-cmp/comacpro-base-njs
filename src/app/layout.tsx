@@ -1,16 +1,24 @@
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Geist, Geist_Mono, Newsreader } from 'next/font/google';
 import { getLocale } from 'next-intl/server';
 import { ThemeScript } from '@/components/theme';
 import '@/styles/globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const sans = Geist({
+  variable: '--font-sans-local',
   subsets: ['latin'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const mono = Geist_Mono({
+  variable: '--font-mono-local',
   subsets: ['latin'],
+});
+
+// Editorial serif for display headings — the Claude-docs look. Their heading
+// face (Tiempos/Copernicus) is licensed; Newsreader is the closest free
+// match. `vietnamese` subset so diacritics render in the serif too.
+const heading = Newsreader({
+  variable: '--font-heading-local',
+  subsets: ['latin', 'vietnamese'],
 });
 
 // Must stay stable across locale changes so the <script> in <head> never
@@ -29,7 +37,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${sans.variable} ${heading.variable} ${mono.variable} h-full antialiased`}
     >
       <head>
         <ThemeScript />

@@ -18,7 +18,7 @@ const eslintConfig = defineConfig([
   // Feature boundary: outside code may only import a feature via its barrel.
   {
     files: ['src/**/*.{ts,tsx}'],
-    ignores: ['src/features/**', 'src/i18n/navigation.ts'],
+    ignores: ['src/modules/**', 'src/i18n/navigation.ts'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -32,15 +32,15 @@ const eslintConfig = defineConfig([
           ],
           patterns: [
             {
-              // Allow-list: the ONLY public entrypoints are `@/features/<name>`
+              // Allow-list: the ONLY public entrypoints are `@/modules/<name>`
               // (client-safe barrel — one segment, never matched by `*/**`) and
-              // `@/features/<name>/server` (server barrel — re-allowed via the
+              // `@/modules/<name>/server` (server barrel — re-allowed via the
               // `!` negation). Every other internal path — including directories
               // that don't exist yet — is forbidden by default, so new feature
               // subfolders can't silently leak.
-              group: ['@/features/*/**', '!@/features/*/server'],
+              group: ['@/modules/*/**', '!@/modules/*/server'],
               message:
-                'Import features through their public barrels: `@/features/<name>` (client) or `@/features/<name>/server` (server). Deep imports are forbidden.',
+                'Import features through their public barrels: `@/modules/<name>` (client) or `@/modules/<name>/server` (server). Deep imports are forbidden.',
             },
             {
               group: ['next/navigation'],
@@ -60,7 +60,7 @@ const eslintConfig = defineConfig([
   },
   // Inside a feature, forbid reaching into a sibling feature's internals.
   {
-    files: ['src/features/**/*.{ts,tsx}'],
+    files: ['src/modules/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -76,12 +76,12 @@ const eslintConfig = defineConfig([
             {
               // A feature uses relative paths for its own internals; it may
               // reach a sibling only through that sibling's public barrels.
-              // Same allow-list as above: everything under `@/features/*/` is
-              // banned except the `server` barrel (`@/features/<name>` itself
+              // Same allow-list as above: everything under `@/modules/*/` is
+              // banned except the `server` barrel (`@/modules/<name>` itself
               // is a single segment, so `*/**` never matches it).
-              group: ['@/features/*/**', '!@/features/*/server'],
+              group: ['@/modules/*/**', '!@/modules/*/server'],
               message:
-                'Cross-feature imports must use the sibling barrel: `@/features/<name>` or `@/features/<name>/server`.',
+                'Cross-feature imports must use the sibling barrel: `@/modules/<name>` or `@/modules/<name>/server`.',
             },
             {
               group: ['next/navigation'],
