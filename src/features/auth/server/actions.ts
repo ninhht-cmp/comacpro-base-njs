@@ -1,30 +1,26 @@
 'use server';
 
 import { getLocale, getTranslations } from 'next-intl/server';
+import { cookies } from 'next/headers';
 // The `?redirect=` target is an already-localized internal path; the i18n
 // redirect would try to re-localize it, so navigate there verbatim.
 // eslint-disable-next-line no-restricted-imports
 import { redirect as redirectToPath } from 'next/navigation';
 import { clearSession, setSession } from '@/core/session/server';
 import { redirect } from '@/i18n/navigation';
+import { clientContext } from '@/lib/api/client-context';
 import { fieldErrorsFrom } from '@/lib/forms/field-errors';
+import {
+  TURNSTILE_FIELD,
+  turnstileEnabled,
+  verifyTurnstile,
+} from '@/lib/turnstile';
+import { VISITOR_COOKIE } from '@/lib/visitor';
 import { stateFromApiError } from './api-error-map';
 import { safeRedirect } from './redirect';
 import { setSignupSuccess } from './signup-success';
-import {
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  signinSchema,
-  signupSchema,
-} from '../schema';
-import {
-  ApiError,
-  forgotPassword as forgotPasswordRequest,
-  resendForgotOtp as resendForgotOtpRequest,
-  signIn,
-  signUp,
-  verifyForgotPassword as verifyForgotPasswordRequest,
-} from './service';
+import { signinSchema, signupSchema } from '../schema';
+import { ApiError, signIn, signUp } from './service';
 
 /**
  * Server Actions for the auth forms (`useActionState`). Input is validated at
@@ -33,6 +29,9 @@ import {
  * `{ error, fieldErrors }` with ready-to-display, TRANSLATED messages.
  * Backend rejection texts are raw English internals — they never reach the
  * UI directly; `stateFromApiError` maps the known ones (see api-error-map).
+ *
+ * Password recovery is deliberately absent: the mobile app owns that flow
+ * (ADR 0005) — the web surface is the marketing/signup funnel.
  */
 
 export interface AuthFormState {
@@ -67,11 +66,28 @@ function logAuthFailure(flow: string, error: unknown): void {
   console.error(`[auth] ${flow} failed`, error);
 }
 
-/** Raw input for `AuthFormState.values`. Secrets never travel back. */
+/**
+ * PII-masked phone for the signup trail (pattern from cmp-sm-fe): the logs
+ * must support a fraud-investigation timeline (who tried, when, from which
+ * IP) without spraying raw phone numbers across log storage.
+ */
+function maskPhone(phone: string): string {
+  return phone.length < 7 ? '***' : `${phone.slice(0, 4)}xxx${phone.slice(-3)}`;
+}
+
+/**
+ * Raw input for `AuthFormState.values`. Secrets never travel back, and the
+ * Turnstile token is spent by the time the state renders — echoing either
+ * would be dead weight at best.
+ */
 function submittedValues(formData: FormData): Record<string, string> {
   const values: Record<string, string> = {};
   for (const [name, value] of formData) {
-    if (typeof value === 'string' && !/password/i.test(name)) {
+    if (
+      typeof value === 'string' &&
+      !/password/i.test(name) &&
+      name !== TURNSTILE_FIELD
+    ) {
       values[name] = value;
     }
   }
@@ -83,11 +99,15 @@ export async function signin(
   formData: FormData,
 ): Promise<AuthFormState> {
   const t = await authT();
+  // Echoed back on failure so the phone survives the post-action form reset
+  // (same pattern as signup); the password is filtered out by design.
+  const values = submittedValues(formData);
   const parsed = signinSchema.safeParse(Object.fromEntries(formData));
   if (!parsed.success) {
     return {
       error: t('errors.missing_fields'),
       fieldErrors: fieldErrorsFrom(parsed.error, t),
+      values,
     };
   }
 
@@ -99,10 +119,10 @@ export async function signin(
       error instanceof ApiError &&
       (error.status === 400 || error.status === 401)
     ) {
-      return { error: t('errors.invalid_credentials') };
+      return { error: t('errors.invalid_credentials'), values };
     }
     logAuthFailure('signin', error);
-    return stateFromApiError(error, t, 'signin');
+    return { ...stateFromApiError(error, t, 'signin'), values };
   }
 
   // Outside try/catch: redirect() throws NEXT_REDIRECT by design.
@@ -128,12 +148,43 @@ export async function signup(
     };
   }
 
+  // Visitor id ties this signup to the invite-link open that led here — the
+  // same correlation the fraud rules need (many signups, one visitor).
+  const sessionId = (await cookies()).get(VISITOR_COOKIE)?.value;
+  const context = await clientContext(sessionId);
+
+  console.info(
+    `[auth] signup attempt phone=${maskPhone(parsed.data.username)} ` +
+      `ref=<len:${parsed.data.referralCode.length}> ip=${context.ip ?? '<none>'}`,
+  );
+
+  // Anti-bot gate (opt-in via env, see lib/turnstile): a failed challenge
+  // never reaches the backend — each signup call costs a paid ZaloOA send.
+  if (turnstileEnabled()) {
+    const token = formData.get(TURNSTILE_FIELD);
+    const verdict = await verifyTurnstile(
+      typeof token === 'string' ? token : undefined,
+      context.ip,
+    );
+    if (verdict === 'rejected') {
+      return { error: t('errors.captcha_failed'), values };
+    }
+    if (verdict === 'unavailable') {
+      // Fail OPEN (Cloudflare outage must not block signups) — but loudly.
+      console.error('[auth] signup turnstile verify unavailable, failing open');
+    }
+  }
+
   try {
-    await signUp(parsed.data);
+    await signUp(parsed.data, context);
   } catch (error) {
     logAuthFailure('signup', error);
     return { ...stateFromApiError(error, t, 'signup'), values };
   }
+
+  console.info(
+    `[auth] signup success phone=${maskPhone(parsed.data.username)}`,
+  );
 
   // SaleNet delivers credentials out-of-band (ZaloOA) and the product lives
   // in the mobile app — success swaps the form card for the app-download
@@ -146,95 +197,6 @@ export async function signup(
       pathname: '/signup',
       query: { referral: parsed.data.referralCode, status: 'success' },
     },
-    locale,
-  });
-  return {};
-}
-
-export async function forgotPassword(
-  _prevState: AuthFormState,
-  formData: FormData,
-): Promise<AuthFormState> {
-  const t = await authT();
-  const parsed = forgotPasswordSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) {
-    return {
-      error: t('errors.missing_fields'),
-      fieldErrors: fieldErrorsFrom(parsed.error, t),
-    };
-  }
-
-  try {
-    await forgotPasswordRequest(parsed.data.username);
-  } catch (error) {
-    logAuthFailure('forgot-password', error);
-    return stateFromApiError(error, t, 'forgot-password');
-  }
-
-  const locale = await getLocale();
-  redirect({
-    href: {
-      pathname: '/reset-password',
-      query: { username: parsed.data.username, status: 'otp_sent' },
-    },
-    locale,
-  });
-  return {};
-}
-
-/**
- * Resend the reset OTP. Called imperatively from the reset form's "resend"
- * button — not via `useActionState` — so it takes the username directly.
- */
-export async function resendForgotOtp(
-  username: string,
-): Promise<AuthFormState> {
-  const t = await authT();
-  const parsed = forgotPasswordSchema.safeParse({ username });
-  if (!parsed.success) return { error: t('errors.unknown') };
-
-  try {
-    await resendForgotOtpRequest(parsed.data.username);
-  } catch (error) {
-    logAuthFailure('resend-forgot-otp', error);
-    return stateFromApiError(error, t, 'forgot-password');
-  }
-  return {};
-}
-
-/** One-shot OTP verification + new password (SaleNet's combined reset step). */
-export async function resetPassword(
-  _prevState: AuthFormState,
-  formData: FormData,
-): Promise<AuthFormState> {
-  const t = await authT();
-  const parsed = resetPasswordSchema.safeParse(Object.fromEntries(formData));
-  if (!parsed.success) {
-    const mismatch = parsed.error.issues.some(
-      (issue) => issue.message === 'passwords_mismatch',
-    );
-    return {
-      error: mismatch
-        ? t('errors.passwords_mismatch')
-        : t('errors.missing_fields'),
-      fieldErrors: fieldErrorsFrom(parsed.error, t),
-    };
-  }
-
-  try {
-    await verifyForgotPasswordRequest({
-      username: parsed.data.username,
-      otpCode: parsed.data.otpCode,
-      newPassword: parsed.data.newPassword,
-    });
-  } catch (error) {
-    logAuthFailure('reset-password', error);
-    return stateFromApiError(error, t, 'reset-password');
-  }
-
-  const locale = await getLocale();
-  redirect({
-    href: { pathname: '/signin', query: { status: 'password_reset' } },
     locale,
   });
   return {};

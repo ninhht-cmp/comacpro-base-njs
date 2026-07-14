@@ -9,7 +9,7 @@ const meta = {
   tags: ['autodocs'],
   args: {
     title: 'Sign in',
-    description: 'Sign in to your Comacpro account.',
+    description: 'Sign in to your SaleNet account.',
   },
   decorators: [
     (Story) => (

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeFullName, validateFullName } from '@/lib/full-name';
 
 /**
  * Input schemas for the auth flows. Shared by the server actions (boundary
@@ -7,30 +8,31 @@ import { z } from 'zod';
  *
  * SaleNet usernames ARE Vietnamese phone numbers — the regex mirrors the
  * backend's own validation (`(\+84|84|0)[3|5|7|8|9]xxxxxxxx`). The
- * `invalid_phone` / `invalid_name` messages are sentinels mapped to
- * translated messages by `@/lib/forms/field-errors` (same mechanism as
+ * `invalid_phone` / `name_*` messages are sentinels mapped to translated
+ * messages by `@/lib/forms/field-errors` (same mechanism as
  * `passwords_mismatch`).
  */
 
-export const VN_PHONE_REGEX = /^(\+84|84|0)[35789][0-9]{8}$/;
+const VN_PHONE_REGEX = /^(\+84|84|0)[35789][0-9]{8}$/;
 
 /**
- * Letters (any script, so Vietnamese diacritics included; `\p{M}` keeps
- * decomposed accents valid) separated by single spaces. Deliberately
- * STRICTER than the backend, which only requires fullName to be a non-empty
- * string — without this, junk like "%&HGVUJH__/" becomes an account name.
- * Mirror it server-side when the backend adds a rule.
+ * Anti-junk name validation ported from the production referral app — see
+ * `@/lib/full-name` for the rules (links, digits, profanity, spelled-out
+ * numbers, gibberish…). Deliberately STRICTER than the backend, which only
+ * requires fullName to be a non-empty string. The transform persists the
+ * canonical form (NFC, smart quotes folded, whitespace collapsed) so the
+ * backend stores what was validated.
  */
-export const FULL_NAME_REGEX = /^[\p{L}\p{M}]+(?: [\p{L}\p{M}]+)*$/u;
-
 const fullNameField = z
   .string()
-  .trim()
-  // Canonicalize before judging: NFC merges decomposed Vietnamese accents,
-  // and doubled/odd whitespace collapses to single spaces — the backend
-  // then stores the clean form.
-  .transform((value) => value.normalize('NFC').replace(/\s+/g, ' '))
-  .pipe(z.string().min(1).regex(FULL_NAME_REGEX, { message: 'invalid_name' }));
+  .transform(normalizeFullName)
+  .superRefine((value, ctx) => {
+    const { valid, reason } = validateFullName(value);
+    if (!valid && reason) {
+      // `name_<reason>` sentinels; translated in `@/lib/forms/field-errors`.
+      ctx.addIssue({ code: 'custom', message: `name_${reason}` });
+    }
+  });
 
 const phoneField = z
   .string()
@@ -52,29 +54,5 @@ export const signupSchema = z.object({
   referralCode: z.string().trim().min(1),
 });
 
-export const forgotPasswordSchema = z.object({
-  username: phoneField,
-});
-
-/**
- * SaleNet resets the password in ONE verify step:
- * `POST /v1/auth/forgot-password/verify` takes username + OTP + new password.
- */
-export const resetPasswordSchema = z
-  .object({
-    username: phoneField,
-    otpCode: z.string().trim().min(1),
-    newPassword: z.string().min(1),
-    confirmPassword: z.string().min(1),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    path: ['confirmPassword'],
-    // Distinguishes a mismatch from an empty field so the action can map it to
-    // the `passwords_mismatch` message rather than `missing_fields`.
-    message: 'passwords_mismatch',
-  });
-
 export type SigninInput = z.infer<typeof signinSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
-export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

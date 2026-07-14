@@ -14,11 +14,12 @@ here; keep this file vendor-neutral.
 
 ## Development philosophy
 
-Solo-maintained base template that new Comacpro apps are cloned from. Quality
-bar is high (this code gets copied), but don't over-engineer: prefer the
-simplest correct solution, delete dead code, and record real decisions in
-`docs/adr/`. Every non-obvious choice gets a short comment explaining _why_ —
-never comments that restate the code.
+Solo-maintained. Originally the Comacpro base template, now the standalone
+**SaleNet web product** (landing + invite-only signup funnel — ADR 0005).
+Quality bar stays high, but don't over-engineer: prefer the simplest correct
+solution, delete dead code, and record real decisions in `docs/adr/`. Every
+non-obvious choice gets a short comment explaining _why_ — never comments
+that restate the code.
 
 ## Tech stack (pinned)
 

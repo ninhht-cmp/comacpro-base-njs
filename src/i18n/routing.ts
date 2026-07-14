@@ -19,11 +19,12 @@ export const routing = defineRouting({
     '/': '/',
     '/signin': '/signin',
     '/signup': '/signup',
-    '/forgot-password': '/forgot-password',
-    '/reset-password': '/reset-password',
     '/account': '/account',
     '/notifications': '/notifications',
     '/about-us': '/about-us',
+    '/download': '/download',
+    '/terms': '/terms',
+    '/privacy': '/privacy',
   },
 });
 

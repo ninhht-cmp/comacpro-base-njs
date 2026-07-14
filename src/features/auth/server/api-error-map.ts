@@ -26,11 +26,7 @@ type KnownErrorKey =
   | 'errors.too_many_requests';
 
 /** Which auth form the failed call came from (see `stateFromApiError`). */
-export type AuthFlow =
-  | 'signin'
-  | 'signup'
-  | 'forgot-password'
-  | 'reset-password';
+export type AuthFlow = 'signin' | 'signup';
 
 interface Rule {
   /** Case-insensitive match against the backend's message text. */

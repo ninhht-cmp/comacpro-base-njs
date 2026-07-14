@@ -1,25 +1,16 @@
 'use client';
 
-import { useActionState, type FocusEvent } from 'react';
+import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { signup, type AuthFormState } from '../server/actions';
 import { signupSchema } from '../schema';
 import { Field, FormError } from '@/components/form/field';
+import { Turnstile } from '@/components/form/turnstile';
+import { selectOnFocus } from '@/lib/forms/select-on-focus';
 import { useFormValidation } from '@/lib/forms/use-form-validation';
 
 const initialState: AuthFormState = {};
-
-/**
- * Type-to-replace: a rejected value (a phone, a name) is usually retyped
- * whole, so focusing a filled input selects its content — the first keystroke
- * replaces it. A second click still places the caret for surgical edits
- * (the input is already focused, so no new focus event fires).
- */
-function selectOnFocus(event: FocusEvent<HTMLFormElement>) {
-  const target = event.target;
-  if (target instanceof HTMLInputElement && target.value) target.select();
-}
 
 export function SignupForm({
   referralCode,
@@ -76,6 +67,11 @@ export function SignupForm({
       />
 
       <p className="text-sm text-muted-foreground">{t('signup.credentials')}</p>
+
+      {/* Anti-bot (renders nothing until the Turnstile env keys are set).
+          `state` as resetKey: a new object per action return → fresh token
+          after every rejected submit (tokens are single-use). */}
+      <Turnstile resetKey={state} />
 
       {/* The referral travels hidden, so a backend rejection of it must
           surface at form level — merge it with the general error slot. */}

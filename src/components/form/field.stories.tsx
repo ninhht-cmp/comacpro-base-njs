@@ -21,7 +21,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithValue: Story = {
-  args: { defaultValue: 'ada@comacpro.com' },
+  args: { defaultValue: 'ada@salenet.vn' },
 };
 
 export const Password: Story = {

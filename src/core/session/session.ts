@@ -17,7 +17,7 @@ import { env } from '@/config/env';
 // The prefix requires `secure`, which localhost dev over http can't satisfy,
 // hence the plain name outside production.
 export const SESSION_COOKIE =
-  env.NODE_ENV === 'production' ? '__Host-cmp_session' : 'cmp_session';
+  env.NODE_ENV === 'production' ? '__Host-sn_session' : 'sn_session';
 
 /** Refresh the access token once it is within this window of expiring. */
 export const REFRESH_THRESHOLD_MS = 60_000;

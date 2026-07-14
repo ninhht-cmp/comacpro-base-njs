@@ -10,7 +10,7 @@ import { env } from '@/config/env';
  */
 
 const COOKIE =
-  env.NODE_ENV === 'production' ? '__Host-cmp_signup_ok' : 'cmp_signup_ok';
+  env.NODE_ENV === 'production' ? '__Host-sn_signup_ok' : 'sn_signup_ok';
 
 const MAX_AGE_SECONDS = 60 * 10;
 

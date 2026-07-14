@@ -9,7 +9,7 @@ const meta = {
   parameters: { layout: 'fullscreen' },
   args: {
     brand: (
-      <span className="text-base font-semibold tracking-tight">Comacpro</span>
+      <span className="text-base font-semibold tracking-tight">SaleNet</span>
     ),
     navLabel: 'Main',
     nav: (

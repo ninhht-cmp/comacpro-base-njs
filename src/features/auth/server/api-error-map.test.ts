@@ -48,11 +48,7 @@ describe('stateFromApiError', () => {
     // "User not found" outside signup means the visitor's own account — an
     // unmapped rejection until the backend's text per flow is confirmed.
     expect(
-      stateFromApiError(
-        new ApiError('User not found', 400),
-        t,
-        'forgot-password',
-      ),
+      stateFromApiError(new ApiError('User not found', 400), t, 'signin'),
     ).toEqual({ error: 'errors.unknown' });
     expect(warn).toHaveBeenCalledOnce();
     warn.mockRestore();

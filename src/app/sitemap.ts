@@ -5,8 +5,15 @@ import { routing, type Locale } from '@/i18n/routing';
 
 const FALLBACK = 'http://localhost:3000';
 
-/** Public, parameterless routes to list — keys of `routing.pathnames`. */
-const STATIC_PATHS = ['/', '/about-us'] as const;
+/** Public, parameterless routes to list — keys of `routing.pathnames`.
+ * `/signup` stays out on purpose: without a referral it's a dead-end. */
+const STATIC_PATHS = [
+  '/',
+  '/about-us',
+  '/download',
+  '/terms',
+  '/privacy',
+] as const;
 
 function origin() {
   return env.NEXT_PUBLIC_APP_URL ?? FALLBACK;

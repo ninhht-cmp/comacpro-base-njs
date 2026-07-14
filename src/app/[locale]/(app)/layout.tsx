@@ -1,6 +1,7 @@
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { ThemeToggleCompact } from '@/components/theme';
 import { Button } from '@/components/ui/button';
@@ -60,15 +61,23 @@ export default async function AppLayout({
         }
         navLabel={t('nav.main')}
         nav={
+          // No "home" item — the brand link already goes there.
           <ul className="hidden items-center sm:flex">
-            <li>
-              <Link
-                href="/"
-                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-              >
-                {t('nav.home')}
-              </Link>
-            </li>
+            {(
+              [
+                ['/about-us', 'nav.about'],
+                ['/download', 'nav.download'],
+              ] as const
+            ).map(([href, key]) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t(key)}
+                </Link>
+              </li>
+            ))}
           </ul>
         }
         actions={
@@ -86,6 +95,7 @@ export default async function AppLayout({
         }
       />
       <div className="flex flex-1 flex-col">{children}</div>
+      <SiteFooter />
     </div>
   );
 }

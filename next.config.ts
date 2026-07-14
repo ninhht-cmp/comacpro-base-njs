@@ -29,6 +29,10 @@ const apiOrigin = (() => {
   }
 })();
 
+// Cloudflare Turnstile (anti-bot on signup) loads its script and renders its
+// challenge iframe from this origin — see src/components/form/turnstile.tsx.
+const turnstileOrigin = 'https://challenges.cloudflare.com';
+
 const csp = [
   `default-src 'self'`,
   `base-uri 'self'`,
@@ -38,7 +42,8 @@ const csp = [
   `img-src 'self' data: https:`,
   `font-src 'self'`,
   `style-src 'self' 'unsafe-inline'`,
-  `script-src 'self' 'unsafe-inline'`,
+  `script-src 'self' 'unsafe-inline' ${turnstileOrigin}`,
+  `frame-src ${turnstileOrigin}`,
   `connect-src 'self' ${apiOrigin}`.trim(),
 ]
   .join('; ')

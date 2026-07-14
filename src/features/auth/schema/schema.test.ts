@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  forgotPasswordSchema,
-  resetPasswordSchema,
-  signinSchema,
-  signupSchema,
-} from './index';
+import { signinSchema, signupSchema } from './index';
 
 describe('auth schemas', () => {
   it('accepts valid signin credentials (VN phone username)', () => {
@@ -55,17 +50,34 @@ describe('auth schemas', () => {
     ).toBe(false);
   });
 
-  it('flags a fullName with non-letter characters via the invalid_name sentinel', () => {
-    for (const fullName of ['%&HGVUJHCVDS__-/ Ạ', 'Văn A 9', 'a@b']) {
+  it('accepts apostrophe/hyphen names (ethnic-minority names are real names)', () => {
+    expect(
+      signupSchema.safeParse({
+        fullName: "H'Hen Niê",
+        username: '0912345678',
+        referralCode: 'REF123',
+      }).success,
+    ).toBe(true);
+  });
+
+  it('flags junk fullName input with the per-reason name_* sentinel', () => {
+    const cases: Array<[string, string]> = [
+      ['%&HGVUJHCVDS_/ Ạ', 'name_invalid_chars'],
+      ['Văn A 9', 'name_contains_digits'],
+      ['nguyen@gmail.com', 'name_contains_link'],
+      ['Chó lừa đảo gọi t', 'name_not_a_name'],
+    ];
+    for (const [fullName, sentinel] of cases) {
       const result = signupSchema.safeParse({
         fullName,
         username: '0912345678',
         referralCode: 'REF123',
       });
-      expect(result.success).toBe(false);
+      expect(result.success, fullName).toBe(false);
       if (!result.success) {
         expect(
-          result.error.issues.some((i) => i.message === 'invalid_name'),
+          result.error.issues.some((i) => i.message === sentinel),
+          `${fullName} -> ${sentinel}`,
         ).toBe(true);
       }
     }
@@ -82,30 +94,6 @@ describe('auth schemas', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.fullName).toBe('Nguy\u1EC5n V\u0103n A');
-    }
-  });
-
-  it('validates the phone on forgot-password', () => {
-    expect(
-      forgotPasswordSchema.safeParse({ username: '0355555555' }).success,
-    ).toBe(true);
-    expect(forgotPasswordSchema.safeParse({ username: '012345' }).success).toBe(
-      false,
-    );
-  });
-
-  it('flags a password mismatch with a distinct message', () => {
-    const result = resetPasswordSchema.safeParse({
-      username: '0912345678',
-      otpCode: '123456',
-      newPassword: 'a',
-      confirmPassword: 'b',
-    });
-    expect(result.success).toBe(false);
-    if (!result.success) {
-      expect(
-        result.error.issues.some((i) => i.message === 'passwords_mismatch'),
-      ).toBe(true);
     }
   });
 });

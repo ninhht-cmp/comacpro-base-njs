@@ -1,4 +1,5 @@
 import type { ZodError } from 'zod';
+import type { FullNameReason } from '@/lib/full-name';
 
 /**
  * The generic field-message vocabulary, shared by all forms (`Auth` namespace).
@@ -10,8 +11,40 @@ export type FieldErrorKey =
   | 'errors.field_required'
   | 'errors.invalid_email'
   | 'errors.invalid_phone'
-  | 'errors.invalid_name'
-  | 'errors.field_invalid';
+  | 'errors.field_invalid'
+  | 'errors.name_too_short'
+  | 'errors.name_too_long'
+  | 'errors.name_contains_link'
+  | 'errors.name_contains_digits'
+  | 'errors.name_invalid_chars'
+  | 'errors.name_profanity'
+  | 'errors.name_not_real';
+
+/**
+ * `name_<reason>` sentinels from the signup schema's full-name validation
+ * (`@/lib/full-name`), one message per actionable reason. The four "this
+ * isn't a real name" reasons share one message on purpose: telling a spammer
+ * WHICH heuristic caught them is a walkthrough for evading it.
+ */
+const NAME_SENTINELS: Record<`name_${FullNameReason}`, FieldErrorKey> = {
+  name_empty: 'errors.field_required',
+  name_too_short: 'errors.name_too_short',
+  name_too_long: 'errors.name_too_long',
+  name_contains_link: 'errors.name_contains_link',
+  name_contains_digits: 'errors.name_contains_digits',
+  name_invalid_chars: 'errors.name_invalid_chars',
+  name_profanity: 'errors.name_profanity',
+  name_number_word_spam: 'errors.name_not_real',
+  name_repeated_chars: 'errors.name_not_real',
+  name_gibberish: 'errors.name_not_real',
+  name_not_a_name: 'errors.name_not_real',
+};
+
+function isNameSentinel(
+  message: string,
+): message is keyof typeof NAME_SENTINELS {
+  return message in NAME_SENTINELS;
+}
 
 /**
  * Translator shape `fieldErrorsFrom` needs — satisfied by next-intl's `t` on
@@ -52,8 +85,8 @@ function messageFor(
   if (issue.message === 'invalid_phone') {
     return t('errors.invalid_phone');
   }
-  if (issue.message === 'invalid_name') {
-    return t('errors.invalid_name');
+  if (isNameSentinel(issue.message)) {
+    return t(NAME_SENTINELS[issue.message]);
   }
   switch (issue.code) {
     case 'too_small':

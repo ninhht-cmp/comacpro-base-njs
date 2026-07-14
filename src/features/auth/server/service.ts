@@ -1,9 +1,12 @@
 import type {
-  ForgotPasswordVerificationDto,
   LoginResponseDto,
   RegistrationDto,
 } from '@/lib/api/generated/model';
 import type { SessionData } from '@/core/session';
+import {
+  type ClientContext,
+  clientContextHeaders,
+} from '@/lib/api/client-context';
 import { serverFetch } from '@/lib/api/server-fetch';
 import { sessionFromTokens } from '@/core/session/identity';
 
@@ -37,35 +40,19 @@ export async function signIn(
  * provisions the account (credential delivery/activation is its concern —
  * SMS/Zalo); there is no public post-signup OTP endpoint.
  */
-export async function signUp(dto: RegistrationDto): Promise<void> {
-  await serverFetch('/auth/signup', { method: 'POST', json: dto });
-}
-
-/** POST /v1/auth/forgot-password — sends an OTP to the account's phone. */
-export async function forgotPassword(username: string): Promise<void> {
-  await serverFetch('/auth/forgot-password', {
-    method: 'POST',
-    json: { username },
-  });
-}
-
-/** POST /v1/auth/forgot-password/resend-otp — resends the reset OTP. */
-export async function resendForgotOtp(username: string): Promise<void> {
-  await serverFetch('/auth/forgot-password/resend-otp', {
-    method: 'POST',
-    json: { username },
-  });
-}
-
-/**
- * POST /v1/auth/forgot-password/verify — one-shot: verifies the OTP AND sets
- * the new password.
- */
-export async function verifyForgotPassword(
-  dto: ForgotPasswordVerificationDto,
+export async function signUp(
+  dto: RegistrationDto,
+  // End-user ip/UA/visitor id for the backend's throttling + fraud rules —
+  // this call is anonymous AND paid (triggers a ZaloOA send), so it's the
+  // one that most needs real client attribution. See lib/api/client-context.
+  context?: ClientContext,
 ): Promise<void> {
-  await serverFetch('/auth/forgot-password/verify', {
+  await serverFetch('/auth/signup', {
     method: 'POST',
     json: dto,
+    headers: clientContextHeaders(context),
   });
 }
+
+// Password recovery deliberately has no web service calls: the mobile app
+// owns that flow (ADR 0005). Restore from git history if it ever returns.

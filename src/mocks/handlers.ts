@@ -54,25 +54,13 @@ const mockNotifications = [
 ];
 
 /**
- * Endpoints whose REAL invocation costs money: signup and the forgot-password
- * pair trigger ZaloOA/SMS sends on the backend. Kept as a separate set so
- * `NEXT_PUBLIC_API_MOCKING=paid-only` can intercept just these while
- * everything else (referral lookup, signin, profile…) hits the live API —
- * realistic UI testing with a zero-đồng submit.
+ * Endpoints whose REAL invocation costs money: signup triggers a ZaloOA send
+ * on the backend. Kept as a separate set so `NEXT_PUBLIC_API_MOCKING=paid-only`
+ * can intercept just these while everything else (referral lookup, signin,
+ * profile…) hits the live API — realistic UI testing with a zero-đồng submit.
  */
 export const paidEndpointHandlers: RequestHandler[] = [
   http.post('*/v1/auth/signup', () => HttpResponse.json(envelope(null))),
-  http.post('*/v1/auth/forgot-password', () =>
-    HttpResponse.json(envelope(null)),
-  ),
-  http.post('*/v1/auth/forgot-password/resend-otp', () =>
-    HttpResponse.json(envelope(null)),
-  ),
-  // Doesn't send a message itself, but consumes the (mocked) OTP — the flow
-  // only completes free if this is mocked alongside the two above.
-  http.post('*/v1/auth/forgot-password/verify', () =>
-    HttpResponse.json(envelope(null)),
-  ),
 ];
 
 export const handlers: RequestHandler[] = [

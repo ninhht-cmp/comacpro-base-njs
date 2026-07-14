@@ -19,12 +19,7 @@ export const PROTECTED_HREFS = [
   '/notifications',
 ] as const satisfies PathKey[];
 
-export const AUTH_HREFS = [
-  '/signin',
-  '/signup',
-  '/forgot-password',
-  '/reset-password',
-] as const satisfies PathKey[];
+export const AUTH_HREFS = ['/signin', '/signup'] as const satisfies PathKey[];
 
 /** The localized path for a logical href in a given locale (e.g. `/account`). */
 export function localizedFor(href: PathKey, locale: string): string {

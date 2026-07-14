@@ -8,7 +8,7 @@ import { env } from '@/config/env';
  */
 
 export const VISITOR_COOKIE =
-  env.NODE_ENV === 'production' ? '__Host-cmp_visitor' : 'cmp_visitor';
+  env.NODE_ENV === 'production' ? '__Host-sn_visitor' : 'sn_visitor';
 
 /** Attribution window. */
 const VISITOR_MAX_AGE_SECONDS = 60 * 60 * 24 * 180; // 180 days

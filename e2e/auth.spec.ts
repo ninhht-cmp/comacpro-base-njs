@@ -16,15 +16,14 @@ test.describe('signin page', () => {
     ).toBeVisible();
   });
 
-  test('links to signup and forgot-password', async ({ page }) => {
+  test('links to signup and hints in-app password reset', async ({ page }) => {
     await page.goto('/signin');
 
     await expect(
       page.getByRole('link', { name: /sign up|đăng ký/i }),
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: /forgot password|quên mật khẩu/i }),
-    ).toBeVisible();
+    // Recovery lives in the mobile app — a hint, deliberately NOT a link.
+    await expect(page.getByText(/quên mật khẩu/i)).toBeVisible();
   });
 });
 

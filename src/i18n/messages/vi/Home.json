@@ -1,10 +1,47 @@
 {
-  "title": "Để bắt đầu, sửa file page.tsx.",
-  "description": "Đang tìm điểm khởi đầu hoặc hướng dẫn thêm? Xem <templates>Templates</templates> hoặc trung tâm <learning>Học</learning>.",
-  "deploy": "Triển khai ngay",
-  "docs": "Tài liệu",
   "metadata": {
-    "title": "Comacpro — Trang chủ",
-    "description": "Nền tảng thương mại điện tử Comacpro."
+    "title": "SaleNet — Nền tảng Đại diện Thương mại",
+    "description": "Gia nhập mạng lưới Đại diện Thương mại của SaleNet — gia tăng thu nhập, phát triển sự nghiệp kinh doanh bền vững."
+  },
+  "hero": {
+    "title": "Gia tăng thu nhập cùng SaleNet",
+    "subtitle": "Nền tảng dành cho Đại diện Thương mại: bán hàng, quản lý đơn và xây dựng đội nhóm — tất cả trong một ứng dụng.",
+    "downloadCta": "Tải ứng dụng",
+    "aboutCta": "Tìm hiểu thêm"
+  },
+  "values": {
+    "heading": "Vì sao chọn SaleNet",
+    "income": {
+      "title": "Thu nhập theo năng lực",
+      "body": "Hoa hồng minh bạch trên từng đơn hàng, đối soát rõ ràng ngay trong ứng dụng."
+    },
+    "team": {
+      "title": "Phát triển đội nhóm",
+      "body": "Mời thành viên bằng link giới thiệu, đồng hành và hưởng quyền lợi theo hệ thống kinh doanh."
+    },
+    "tools": {
+      "title": "Công cụ bán hàng đầy đủ",
+      "body": "Danh mục sản phẩm, đặt đơn, theo dõi trạng thái và thông báo — không cần sổ sách."
+    }
+  },
+  "steps": {
+    "heading": "Bắt đầu như thế nào?",
+    "invite": {
+      "title": "Nhận lời mời",
+      "body": "Nhận link giới thiệu từ một thành viên SaleNet — hệ thống hoạt động theo hình thức giới thiệu."
+    },
+    "signup": {
+      "title": "Đăng ký bằng số điện thoại",
+      "body": "Điền họ tên và số điện thoại có Zalo. Thông tin đăng nhập được gửi qua Zalo ngay sau đó."
+    },
+    "work": {
+      "title": "Làm việc trên ứng dụng",
+      "body": "Tải ứng dụng SaleNet, đăng nhập và bắt đầu bán hàng cùng đội nhóm của bạn."
+    }
+  },
+  "finalCta": {
+    "title": "Sẵn sàng bắt đầu?",
+    "body": "Tải ứng dụng SaleNet — nếu bạn đã có link mời, mở link để đăng ký chỉ trong một phút.",
+    "download": "Tải ứng dụng SaleNet"
   }
 }

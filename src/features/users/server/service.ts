@@ -3,6 +3,10 @@ import type {
   UpdateProfileDto,
   UserRefResDto,
 } from '@/lib/api/generated/model';
+import {
+  type ClientContext,
+  clientContextHeaders,
+} from '@/lib/api/client-context';
 import { serverFetch } from '@/lib/api/server-fetch';
 import { type ReferralUser, toReferralUser } from '../api';
 
@@ -28,6 +32,9 @@ export { ApiError } from '@/lib/api/server-fetch';
 export async function fetchReferralUser(
   code: string,
   sessionId: string,
+  // End-user ip/UA so the backend can rate-limit and spot enumeration scans
+  // of this public endpoint. See lib/api/client-context.
+  context?: ClientContext,
 ): Promise<ReferralUser> {
   const query = new URLSearchParams({ sessionId });
   const dto = await serverFetch<UserRefResDto>(
@@ -36,7 +43,7 @@ export async function fetchReferralUser(
     // on mobile, fresh off an invite link). The page fails OPEN on timeout —
     // form renders without the referrer card; submit re-validates — so being
     // aggressive here costs correctness nothing.
-    { method: 'GET', timeoutMs: 3_000 },
+    { method: 'GET', timeoutMs: 3_000, headers: clientContextHeaders(context) },
   );
   return toReferralUser(dto);
 }

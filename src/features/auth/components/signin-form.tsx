@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import { signin, type AuthFormState } from '../server/actions';
 import { Field, FormError } from '@/components/form/field';
+import { selectOnFocus } from '@/lib/forms/select-on-focus';
 
 const initialState: AuthFormState = {};
 
@@ -14,7 +15,11 @@ export function SigninForm({ redirect }: { redirect?: string }) {
   const [state, formAction, pending] = useActionState(signin, initialState);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form
+      action={formAction}
+      onFocus={selectOnFocus}
+      className="flex flex-col gap-4"
+    >
       {redirect ? (
         <input type="hidden" name="redirect" value={redirect} />
       ) : null}
@@ -22,9 +27,13 @@ export function SigninForm({ redirect }: { redirect?: string }) {
       <Field
         label={t('username')}
         name="username"
-        type="text"
+        type="tel"
+        inputMode="numeric"
         autoComplete="username"
         required
+        // Survives the post-action form reset on a failed submit (the
+        // password is deliberately never echoed back).
+        defaultValue={state.values?.username}
         error={state.fieldErrors?.username}
       />
 
@@ -37,16 +46,16 @@ export function SigninForm({ redirect }: { redirect?: string }) {
         error={state.fieldErrors?.password}
       />
 
-      <Link
-        href="/forgot-password"
-        className="self-end text-sm text-muted-foreground hover:text-foreground"
-      >
-        {t('forgot.link')}
-      </Link>
+      {/* Password recovery lives in the mobile app (ADR 0005) — a static
+          hint, not a link: there is no web flow to send the user to. */}
+      <p className="self-end text-sm text-muted-foreground">
+        {t('forgot.inApp')}
+      </p>
 
       <FormError message={state.error} />
 
-      <Button type="submit" disabled={pending} className="mt-2">
+      {/* h-10: matches the input height, same as the signup CTA. */}
+      <Button type="submit" disabled={pending} className="mt-2 h-10">
         {pending ? t('signingIn') : t('signIn')}
       </Button>
 

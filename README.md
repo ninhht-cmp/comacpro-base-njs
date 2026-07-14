@@ -1,9 +1,9 @@
-# comacpro-base-njs
+# salenet-web
 
-Next.js 16 (App Router) base template for Comacpro frontends. It ships a
-working vertical slice — session auth against a NestJS backend, i18n, a typed
-API layer, and a full test/CI harness — so new apps start from a production
-posture instead of a blank `create-next-app`.
+The SaleNet web app — company landing, the invite-only signup funnel, and the
+app-download/legal pages (see `docs/adr/0005-web-as-marketing-funnel.md`).
+Built on Next.js 16 (App Router) with session auth against the SaleNet NestJS
+backend, i18n, a typed API layer, and a full test/CI harness.
 
 **What's inside**
 
@@ -58,8 +58,8 @@ pnpm dev             # http://localhost:3000
 Multi-stage build on the Next.js standalone output (small, non-root, healthchecked):
 
 ```bash
-docker build -t comacpro-base-njs .
-docker run --rm -p 3000:3000 --env-file .env comacpro-base-njs
+docker build -t salenet-web .
+docker run --rm -p 3000:3000 --env-file .env salenet-web
 ```
 
 CI publishes images to GHCR after the CI gate passes on `main` (staging) and on

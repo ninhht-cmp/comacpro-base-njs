@@ -1,0 +1,73 @@
+{
+  "updatedAt": "Cập nhật lần cuối: {date}",
+  "terms": {
+    "metadata": {
+      "title": "Điều khoản sử dụng — SaleNet",
+      "description": "Điều khoản sử dụng dịch vụ SaleNet."
+    },
+    "title": "Điều khoản sử dụng",
+    "sections": {
+      "scope": {
+        "title": "1. Phạm vi áp dụng",
+        "body": "Điều khoản này áp dụng cho việc sử dụng trang web và ứng dụng SaleNet. Bằng việc đăng ký tài khoản, bạn đồng ý với các điều khoản dưới đây."
+      },
+      "account": {
+        "title": "2. Tài khoản và đăng ký",
+        "body": "Tài khoản được đăng ký theo hình thức giới thiệu, gắn với số điện thoại cá nhân của bạn. Bạn có trách nhiệm cung cấp thông tin chính xác và bảo mật thông tin đăng nhập của mình."
+      },
+      "referral": {
+        "title": "3. Chương trình giới thiệu và hoa hồng",
+        "body": "Quyền lợi giới thiệu và hoa hồng được tính theo chính sách kinh doanh hiện hành. Chúng tôi có quyền tạm giữ hoặc thu hồi các khoản quyền lợi phát sinh từ hành vi gian lận (tài khoản ảo, tự giới thiệu, thao túng hệ thống)."
+      },
+      "conduct": {
+        "title": "4. Hành vi bị cấm",
+        "body": "Nghiêm cấm sử dụng dịch vụ để phát tán thông tin sai lệch, mạo danh, quấy rối, hoặc thực hiện hành vi gian lận dưới mọi hình thức."
+      },
+      "liability": {
+        "title": "5. Giới hạn trách nhiệm",
+        "body": "Dịch vụ được cung cấp trên cơ sở hiện có. Chúng tôi không chịu trách nhiệm với các thiệt hại gián tiếp phát sinh ngoài phạm vi kiểm soát hợp lý."
+      },
+      "changes": {
+        "title": "6. Thay đổi điều khoản",
+        "body": "Điều khoản có thể được cập nhật theo thời gian; phiên bản mới nhất được đăng tại trang này và có hiệu lực kể từ thời điểm đăng."
+      },
+      "contact": {
+        "title": "7. Liên hệ",
+        "body": "Mọi thắc mắc về điều khoản, vui lòng liên hệ qua thông tin ở cuối trang."
+      }
+    }
+  },
+  "privacy": {
+    "metadata": {
+      "title": "Chính sách bảo mật — SaleNet",
+      "description": "Chính sách bảo vệ dữ liệu cá nhân của SaleNet."
+    },
+    "title": "Chính sách bảo mật",
+    "sections": {
+      "collect": {
+        "title": "1. Dữ liệu chúng tôi thu thập",
+        "body": "Khi đăng ký, chúng tôi thu thập họ tên, số điện thoại và mã giới thiệu của bạn. Trong quá trình sử dụng, hệ thống ghi nhận thêm dữ liệu kỹ thuật (địa chỉ IP, loại thiết bị) phục vụ bảo mật và chống gian lận."
+      },
+      "use": {
+        "title": "2. Mục đích sử dụng",
+        "body": "Dữ liệu được dùng để tạo và quản lý tài khoản, gửi thông tin đăng nhập qua Zalo, tính quyền lợi giới thiệu, và phát hiện hành vi gian lận."
+      },
+      "share": {
+        "title": "3. Chia sẻ dữ liệu",
+        "body": "Chúng tôi không bán dữ liệu cá nhân. Dữ liệu chỉ được chia sẻ với đối tác hạ tầng phục vụ vận hành (ví dụ dịch vụ gửi tin nhắn) theo đúng mục đích nêu trên, hoặc khi pháp luật yêu cầu."
+      },
+      "retention": {
+        "title": "4. Lưu trữ và bảo vệ",
+        "body": "Dữ liệu được lưu trữ và bảo vệ theo quy định về bảo vệ dữ liệu cá nhân hiện hành (Nghị định 13/2023/NĐ-CP), và chỉ được giữ trong thời gian cần thiết cho các mục đích đã nêu."
+      },
+      "rights": {
+        "title": "5. Quyền của bạn",
+        "body": "Bạn có quyền yêu cầu truy cập, chỉnh sửa hoặc xoá dữ liệu cá nhân của mình bằng cách liên hệ với chúng tôi qua thông tin ở cuối trang."
+      },
+      "contact": {
+        "title": "6. Liên hệ",
+        "body": "Mọi yêu cầu liên quan tới dữ liệu cá nhân, vui lòng liên hệ qua thông tin ở cuối trang."
+      }
+    }
+  }
+}

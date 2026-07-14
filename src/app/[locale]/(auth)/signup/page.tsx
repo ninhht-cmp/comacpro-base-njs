@@ -3,6 +3,7 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cookies, headers } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   AuthCard,
@@ -18,6 +19,7 @@ import type { ReferralUser } from '@/features/users';
 import { APP_STORE_ID } from '@/config/app-links';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { clientContext } from '@/lib/api/client-context';
 import { detectPlatform } from '@/lib/platform';
 import { newVisitorId, VISITOR_COOKIE } from '@/lib/visitor';
 
@@ -47,7 +49,13 @@ async function resolveReferral(
   const sessionId =
     (await cookies()).get(VISITOR_COOKIE)?.value ?? newVisitorId();
   try {
-    const referrer = await fetchReferralUser(referral, sessionId);
+    // End-user ip/UA travel along so the backend can spot enumeration scans
+    // of this public lookup (the code space is guessable phone numbers).
+    const referrer = await fetchReferralUser(
+      referral,
+      sessionId,
+      await clientContext(sessionId),
+    );
     // An inactive referrer almost certainly can't refer — treat as invalid.
     // PRODUCT TODO: confirm against the backend's actual signup rule.
     if (referrer.status === 'inactive') return { kind: 'invalid' };
@@ -79,7 +87,8 @@ export default async function SignupPage({
 
   const resolution = await resolveReferral(referral);
 
-  // Blocked states render guidance instead of the landing.
+  // Blocked states render guidance instead of the landing. The download CTA
+  // keeps the visit productive: no invite → get the app, ask for one there.
   if (resolution.kind === 'missing' || resolution.kind === 'invalid') {
     const variant = resolution.kind;
     return (
@@ -87,6 +96,9 @@ export default async function SignupPage({
         title={t(`signup.inviteOnly.${variant}Title`)}
         description={t(`signup.inviteOnly.${variant}Body`)}
       >
+        <Button asChild className="w-full">
+          <Link href="/download">{t('signup.inviteOnly.download')}</Link>
+        </Button>
         <p className="text-center text-sm text-muted-foreground">
           {t('links.haveAccount')}{' '}
           <Link
