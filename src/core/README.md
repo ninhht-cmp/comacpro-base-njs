@@ -25,19 +25,19 @@ Shared user-domain primitives — edge/client-safe, no I/O.
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `@/core/identity` | `UserRole` / `UserStatus` (re-exported generated unions — SaleNet's `sm-*` strings) + `roleFromValue`/`statusFromValue` validators |
 
-Consumed by `session`, `authz`, and the `users` feature facade — which is why it
-lives in `core` (more than one consumer) rather than inside a feature.
+Consumed by `session`, the authz-to-be, and the `users` feature facade — which
+is why it lives in `core` (more than one consumer) rather than inside a feature.
 
 ### `session/`
 
-Identity & session infrastructure (was previously misfiled inside `features/auth`).
+Identity & session infrastructure.
 
-| Entry                     | Runtime         | Contents                                                                                                                                               |
-| ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `@/core/session`          | client-safe     | types only (`SessionData`, `SessionUser`)                                                                                                              |
-| `@/core/session/server`   | **server-only** | cookie store (`getSession`/`setSession`/`clearSession`/`getAccessToken`/`authorizedRequest`) + identity (`fetchProfile`, `refreshTokens`, `AuthError`) |
-| `@/core/session/session`  | edge-safe       | JWE seal/open, cookie constants, refresh threshold — imported directly by `src/proxy.ts`                                                               |
-| `@/core/session/identity` | edge-safe       | raw `fetch` transport + token refresh + `GET /me` — shared by auth flows and the middleware                                                            |
+| Entry                     | Runtime         | Contents                                                                                                                                    |
+| ------------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@/core/session`          | client-safe     | types only (`SessionData`, `SessionUser`)                                                                                                   |
+| `@/core/session/server`   | **server-only** | cookie store (`getSession`/`setSession`/`clearSession`) + `refreshSessionAndPersist`, `withAuthRetry`, identity re-exports (`fetchProfile`) |
+| `@/core/session/session`  | edge-safe       | JWE seal/open, cookie constants, refresh threshold — imported directly by `src/proxy.ts`                                                    |
+| `@/core/session/identity` | edge-safe       | token refresh (single-flight) + `GET /users/me` on `serverFetch` — shared by auth flows and the middleware                                  |
 
 The split mirrors the runtime boundary: `proxy.ts` runs at the edge and pulls the
 edge-safe modules directly; Server Components / actions use the `server` barrel.
@@ -46,27 +46,19 @@ edge-safe modules directly; Server Components / actions use the `server` barrel.
 
 Access-control policy + helpers (consumes `session/`).
 
-| Entry                  | Runtime         | Contents                                                                                            |
-| ---------------------- | --------------- | --------------------------------------------------------------------------------------------------- |
-| `@/core/guard`         | edge-safe       | pure `evaluateGuard(path, hasSession)` + `PROTECTED/AUTH` route policy — used by `src/proxy.ts`     |
-| `@/core/guard/require` | **server-only** | `requireSession()` / `requireGuest()` for Server Components & actions (defense-in-depth + redirect) |
+| Entry                  | Runtime         | Contents                                                                                        |
+| ---------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
+| `@/core/guard`         | edge-safe       | pure `evaluateGuard(path, hasSession)` + `PROTECTED/AUTH` route policy — used by `src/proxy.ts` |
+| `@/core/guard/require` | **server-only** | `requireSession()` for Server Components & actions (defense-in-depth + redirect)                |
 
-`evaluateGuard` is pure and unit-tested (`policy.test.ts`); `proxy.ts` is now thin
+`evaluateGuard` is pure and unit-tested (`policy.test.ts`); `proxy.ts` is thin
 plumbing that resolves the decision into a localized redirect URL.
 
-### `authz/`
-
-Authorization — role hierarchy + permissions (consumes `identity` + `guard`).
-Authentication answers "who are you"; this answers "what may you do".
-
-| Entry                  | Runtime         | Contents                                                                                      |
-| ---------------------- | --------------- | --------------------------------------------------------------------------------------------- |
-| `@/core/authz`         | edge-safe       | pure `can(role, perm)` / `isStaff(role)` + `Permission` (unit-tested) — usable in UI          |
-| `@/core/authz/require` | **server-only** | `requireStaff()` / `requirePermission(p)` — build on `requireSession`, `notFound()` if denied |
-
-Usage: gate an admin page with `await requirePermission('admin.access')`; hide a
-button with `can(role, 'users.manage')`. Roles come from `session.user.role`
-via `roleFromValue`.
+There is deliberately no `authz/` module: role→permission policy was removed
+with no admin surface to consume it (an unconfirmed permission matrix is a
+liability, not a head start). When admin features land, rebuild it here on
+`identity`'s `UserRole` — an exhaustive `Record<UserRole, Permission[]>` keeps
+new backend roles a compile error. Git history has the previous cut.
 
 ## When to add to core
 

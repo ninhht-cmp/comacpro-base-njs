@@ -19,8 +19,7 @@ export default defineConfig({
     exclude: ['e2e/**', 'node_modules/**', '.next/**'],
     // Provide the env the app reads at import time (t3-env). `SKIP_ENV_VALIDATION`
     // lets `@/config/env` pass process.env through without zod validation; the
-    // base URL feeds the `fetch`-based services (intercepted by MSW), and the
-    // Google client id makes <GoogleSigninButton/> render under test.
+    // base URL feeds the `fetch`-based services (intercepted by MSW).
     env: {
       SKIP_ENV_VALIDATION: 'true',
       // Exercise the development-mode branches (readable logger output, the
@@ -39,15 +38,14 @@ export default defineConfig({
       reporter: ['text', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
       include: ['src/**/*.{ts,tsx}'],
-      // Fail-safe floors, not targets: set ~5 points below the current totals
-      // (lines ~9.8%, statements ~9.7%, functions ~11.2%, branches ~11.7% at
-      // the time of writing) so coverage can never silently regress. Ratchet
-      // these up as the suite fills in — never down.
+      // Fail-safe floors, not targets: kept ~5 points below the current totals
+      // so coverage can never silently regress. Ratchet up as the suite fills
+      // in — never down.
       thresholds: {
-        lines: 5,
-        statements: 5,
-        functions: 6,
-        branches: 6,
+        lines: 33,
+        statements: 33,
+        functions: 27,
+        branches: 34,
       },
       // Exclude generated code, mocks, type-only and barrel/boilerplate files —
       // they'd dilute the signal.

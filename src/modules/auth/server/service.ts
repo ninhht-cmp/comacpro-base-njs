@@ -11,7 +11,7 @@ import { serverFetch } from '@/lib/api/server-fetch';
 import { sessionFromTokens } from '@/core/session/identity';
 
 /**
- * SaleNet auth-flow endpoints (sign in/up, forgot-password OTP reset). The
+ * SaleNet auth-flow endpoints (sign in/up). The
  * transport is the shared `serverFetch`; session-building lives in
  * `@/core/session/identity` (shared with the middleware's token refresh), so
  * this file is just the flows.

@@ -45,7 +45,8 @@ Remove the web account-editing surface, following the ADR 0005 precedent
 - The generated `UpdateProfileDto` / `ChangePasswordDto` model types remain in
   `openapi/selection.json` (harmless, unused). Drop them from the selection if
   a future cleanup wants the generated surface to match usage.
-- Unused `Auth.account.profile.*` / `Auth.account.password.*` message keys are
-  left in place (single-locale, no parity cost); remove alongside a copy pass.
+- The `Auth.account.profile.*` / `Auth.account.password.*` message keys the
+  forms consumed were removed with them (typed keys make this safe — deleting
+  a still-used key fails typecheck).
 - Restoring a web editing flow means re-adding the forms/actions/schemas AND
   aligning the payload with the full `UpdateProfileDto`.

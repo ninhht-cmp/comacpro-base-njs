@@ -6,9 +6,9 @@
  * runtime). Two modes:
  *   `enabled`   — every handled endpoint is mocked (no backend needed).
  *   `paid-only` — ONLY the endpoints whose real invocation costs money
- *                 (ZaloOA/SMS sends: signup, forgot-password OTP) are mocked;
- *                 everything else hits the live API. Unhandled requests
- *                 bypass to the network in both modes.
+ *                 (ZaloOA/SMS sends: signup) are mocked; everything else hits
+ *                 the live API. Unhandled requests bypass to the network in
+ *                 both modes.
  */
 export async function register() {
   const mocking = process.env.NEXT_PUBLIC_API_MOCKING;

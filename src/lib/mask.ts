@@ -1,7 +1,6 @@
 /**
  * PII masking — one home so "how do we mask a value before logging or showing
- * it" has a single obvious answer (previously three copies drifted apart, two
- * of them same-named `maskPhone` with different output).
+ * it" has a single obvious answer.
  *
  * Phone masking has two variants on purpose: log masking keeps more of the
  * prefix so a fraud-investigation timeline stays legible; display masking

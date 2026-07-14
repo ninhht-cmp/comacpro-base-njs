@@ -1,7 +1,6 @@
 /**
  * Initials for an avatar fallback: first + last word initial, or the first two
- * letters of a single-word name; blank input → "?". One shared implementation
- * (three copies had drifted — one didn't handle single-word names).
+ * letters of a single-word name; blank input → "?".
  */
 export function initialsOf(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);

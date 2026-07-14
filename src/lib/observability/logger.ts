@@ -1,9 +1,8 @@
 import { env } from '@/config/env';
 
 /**
- * Minimal server/edge logger — the single place log formatting lives (every
- * module previously hand-rolled a `console.*` with its own `[scope]` prefix,
- * drifting in shape).
+ * Minimal server/edge logger — the single place log formatting lives, so every
+ * scope prefix and level routes the same way.
  *
  * NOT client-safe: it reads the server-only `NODE_ENV`. Use it in RSC, Server
  * Actions, Route Handlers, services and the middleware — never in a client
