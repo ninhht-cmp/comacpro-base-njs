@@ -39,7 +39,12 @@ export async function fetchReferralUser(
     // on mobile, fresh off an invite link). The page fails OPEN on timeout —
     // form renders without the referrer card; submit re-validates — so being
     // aggressive here costs correctness nothing.
-    { method: 'GET', timeoutMs: 3_000, headers: clientContextHeaders(context) },
+    {
+      method: 'GET',
+      timeoutMs: 3_000,
+      headers: clientContextHeaders(context),
+      label: 'users:referral',
+    },
   );
   return toReferralUser(dto);
 }

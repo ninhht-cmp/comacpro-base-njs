@@ -1,3 +1,4 @@
+import { logger } from '@/lib/observability/logger';
 import type { AuthFormState } from './actions';
 import { ApiError } from './service';
 
@@ -108,7 +109,7 @@ export function stateFromApiError(
       }
     }
     // Expected rejection we don't know yet — the log line is the TODO.
-    console.warn(`[auth] unmapped backend rejection: "${error.message}"`);
+    logger.warn('auth', `unmapped backend rejection: "${error.message}"`);
   }
   return { error: t('errors.unknown') };
 }

@@ -23,6 +23,9 @@ export default defineConfig({
     // Google client id makes <GoogleSigninButton/> render under test.
     env: {
       SKIP_ENV_VALIDATION: 'true',
+      // Exercise the development-mode branches (readable logger output, the
+      // verbose serverFetch cURL repro) — the observable paths a dev debugs.
+      NODE_ENV: 'development',
       API_BASE_URL: 'http://test.local',
       NEXT_PUBLIC_API_BASE_URL: 'http://test.local',
       // Hashed into the AES-256 session key (core/session) — needed by the

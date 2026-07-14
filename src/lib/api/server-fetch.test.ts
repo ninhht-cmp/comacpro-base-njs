@@ -2,7 +2,7 @@
 // Server transport — needs Node's fetch/DOMException (jsdom's realm breaks the
 // timeout-abort instanceof check).
 import { delay, http, HttpResponse } from 'msw';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { server } from '@/mocks/server';
 import { ApiError, serverFetch, serverFetchPage } from './server-fetch';
 
@@ -108,6 +108,29 @@ describe('serverFetch', () => {
         status: 504,
       },
     );
+  });
+});
+
+describe('serverFetch observability', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('logs a token-redacted cURL repro on failure (never the live token)', async () => {
+    const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+    server.use(
+      http.get('*/v1/boom', () =>
+        HttpResponse.json({ message: 'nope' }, { status: 500 }),
+      ),
+    );
+    await expect(
+      serverFetch('/boom', { accessToken: 'live-secret-token', label: 'x' }),
+    ).rejects.toBeInstanceOf(ApiError);
+
+    const output = errorLog.mock.calls.flat().join('\n');
+    expect(output).toContain('✗ 500'); // failure line
+    expect(output).toContain('[x]'); // the call label
+    expect(output).toContain('curl -X GET'); // repro
+    expect(output).not.toContain('live-secret-token'); // redacted
+    expect(output).toContain('$TOKEN');
   });
 });
 

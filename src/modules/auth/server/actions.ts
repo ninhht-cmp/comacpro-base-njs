@@ -11,6 +11,7 @@ import { redirect } from '@/i18n/navigation';
 import { clientContext } from '@/lib/api/client-context';
 import { fieldErrorsFrom } from '@/lib/forms/field-errors';
 import { maskPhoneForLog } from '@/lib/mask';
+import { logger } from '@/lib/observability/logger';
 import {
   TURNSTILE_FIELD,
   turnstileEnabled,
@@ -61,7 +62,7 @@ async function authT() {
  */
 function logAuthFailure(flow: string, error: unknown): void {
   if (error instanceof ApiError && error.status && error.status < 500) return;
-  console.error(`[auth] ${flow} failed`, error);
+  logger.error('auth', `${flow} failed`, error);
 }
 
 /**
@@ -142,8 +143,9 @@ export async function signup(
   const sessionId = (await cookies()).get(VISITOR_COOKIE)?.value;
   const context = await clientContext(sessionId);
 
-  console.info(
-    `[auth] signup attempt phone=${maskPhoneForLog(parsed.data.username)} ` +
+  logger.info(
+    'auth',
+    `signup attempt phone=${maskPhoneForLog(parsed.data.username)} ` +
       `ref=<len:${parsed.data.referralCode.length}> ip=${context.ip ?? '<none>'}`,
   );
 
@@ -160,7 +162,7 @@ export async function signup(
     }
     if (verdict === 'unavailable') {
       // Fail OPEN (Cloudflare outage must not block signups) — but loudly.
-      console.error('[auth] signup turnstile verify unavailable, failing open');
+      logger.error('auth', 'signup turnstile verify unavailable, failing open');
     }
   }
 
@@ -171,8 +173,9 @@ export async function signup(
     return { ...stateFromApiError(error, t, 'signup'), values };
   }
 
-  console.info(
-    `[auth] signup success phone=${maskPhoneForLog(parsed.data.username)}`,
+  logger.info(
+    'auth',
+    `signup success phone=${maskPhoneForLog(parsed.data.username)}`,
   );
 
   // SaleNet delivers credentials out-of-band (ZaloOA) and the product lives

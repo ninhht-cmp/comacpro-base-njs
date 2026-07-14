@@ -4,6 +4,7 @@ import type {
   TokenResponseDto,
 } from '@/lib/api/generated/model';
 import { ApiError, serverFetch } from '@/lib/api/server-fetch';
+import { logger } from '@/lib/observability/logger';
 import type { SessionData, SessionUser } from './session';
 
 /**
@@ -52,6 +53,7 @@ export async function refreshTokens(
   const tokens = await serverFetch<TokenResponseDto>('/auth/refresh', {
     method: 'POST',
     json: { refreshToken },
+    label: 'auth:refresh',
   });
   return {
     accessToken: tokens.accessToken,
@@ -67,6 +69,7 @@ export async function fetchProfile(
   return serverFetch<ProfileMeResDto>('/users/me', {
     method: 'GET',
     accessToken,
+    label: 'users:me',
   });
 }
 
@@ -104,8 +107,9 @@ export function refreshSession(session: SessionData): Promise<SessionData> {
       ) {
         throw error; // fresh token rejected → the session is genuinely dead
       }
-      console.error(
-        '[session] profile refresh failed; keeping stale snapshot',
+      logger.error(
+        'session',
+        'profile refresh failed; keeping stale snapshot',
         error,
       );
     }

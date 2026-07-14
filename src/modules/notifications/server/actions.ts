@@ -2,6 +2,7 @@
 
 import { getLocale } from 'next-intl/server';
 import { ApiError, withAuthRetry } from '@/core/session/server';
+import { logger } from '@/lib/observability/logger';
 import { markNotificationRead } from './service';
 
 export interface NotificationActionState {
@@ -25,7 +26,7 @@ export async function markNotificationAsRead(
     if (error instanceof ApiError && error.status === 401) {
       return { error: 'unauthenticated' };
     }
-    console.error('[notifications] mark-as-read failed', error);
+    logger.error('notifications', 'mark-as-read failed', error);
     return { error: 'failed' };
   }
   return {};

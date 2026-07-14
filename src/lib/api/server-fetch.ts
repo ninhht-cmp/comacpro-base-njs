@@ -1,4 +1,6 @@
 import { env } from '@/config/env';
+import { logger } from '@/lib/observability/logger';
+import { buildCurl } from './debug';
 
 /**
  * The single server-side transport for the SaleNet (BE SM Service) API. Every
@@ -22,6 +24,17 @@ const API_PREFIX = '/v1';
 
 /** A hung backend must fail the request, not hang the RSC render. */
 const DEFAULT_TIMEOUT_MS = 10_000;
+
+/**
+ * Verbose API logging (every call + a token-redacted cURL repro) is a dev-only
+ * debugging aid — failures are always logged, but the success chatter and the
+ * cURL stay off in production to keep log volume (and cost) sane. Backend calls
+ * are server-side (RSC-first), so this console output is the only place they're
+ * observable; watch the `pnpm dev` terminal, not the browser Network tab.
+ */
+function verboseApi(): boolean {
+  return env.NODE_ENV === 'development';
+}
 
 export class ApiError extends Error {
   override readonly name = 'ApiError';
@@ -80,6 +93,11 @@ export interface ServerFetchOptions extends Omit<RequestInit, 'body'> {
   json?: unknown;
   body?: BodyInit | null;
   timeoutMs?: number;
+  /**
+   * Short label for the observability log (e.g. `users:me`) — tags which
+   * feature/call this is, so the server console shows what each page hit.
+   */
+  label?: string;
 }
 
 interface Envelope {
@@ -122,34 +140,63 @@ async function fetchEnvelope(
     accessToken,
     locale,
     json,
+    label,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     headers,
     ...init
   } = options;
 
+  const method = (init.method ?? 'GET').toUpperCase();
+  const url = `${apiBaseUrl()}${API_PREFIX}${path}`;
+  // Built once so the same header set feeds both the request and the cURL repro.
+  const outgoingHeaders: Record<string, string> = {
+    ...(json !== undefined ? { 'Content-Type': 'application/json' } : {}),
+    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+    ...(locale
+      ? { 'Accept-Language': locale, 'Content-Language': locale }
+      : {}),
+    ...(headers as Record<string, string> | undefined),
+  };
+  const tag = label ? `${method} ${path} [${label}]` : `${method} ${path}`;
+  const startedAt = Date.now();
+  const elapsed = () => Date.now() - startedAt;
+
+  // Errors are always logged (structured JSON in prod); the paste-ready,
+  // token-redacted cURL repro is dev-only — see `verboseApi`.
+  const logFailure = (status: number | undefined, message: string): void => {
+    logger.error(
+      'api',
+      `✗ ${status ?? 'ERR'} ${tag} · ${elapsed()}ms — ${message}`,
+    );
+    if (verboseApi()) {
+      logger.error(
+        'api',
+        `↳ repro:\n  ${buildCurl(method, url, outgoingHeaders, json)}`,
+      );
+    }
+  };
+
   let response: Response;
   try {
-    response = await fetch(`${apiBaseUrl()}${API_PREFIX}${path}`, {
+    response = await fetch(url, {
       cache: 'no-store',
       signal: AbortSignal.timeout(timeoutMs),
       ...init,
       ...(json !== undefined ? { body: JSON.stringify(json) } : {}),
-      headers: {
-        ...(json !== undefined ? { 'Content-Type': 'application/json' } : {}),
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-        ...(locale
-          ? { 'Accept-Language': locale, 'Content-Language': locale }
-          : {}),
-        ...headers,
-      },
+      headers: outgoingHeaders,
     });
   } catch (error) {
     // Normalize the timeout abort so callers can treat it like any upstream
     // failure (a DOMException would otherwise leak through catch blocks that
     // only understand ApiError).
     if (error instanceof DOMException && error.name === 'TimeoutError') {
+      logFailure(504, `upstream timed out after ${timeoutMs}ms`);
       throw new ApiError('Upstream API timed out', 504);
     }
+    logFailure(
+      undefined,
+      error instanceof Error ? error.message : String(error),
+    );
     throw error;
   }
 
@@ -162,22 +209,29 @@ async function fetchEnvelope(
   }
 
   if (!response.ok) {
-    throw new ApiError(errorMessageFrom(body), response.status);
+    const message = errorMessageFrom(body);
+    logFailure(response.status, message);
+    throw new ApiError(message, response.status);
   }
 
-  if (isEnvelope(body)) {
-    // `success: false` with HTTP 200 hasn't been observed on the live API but
-    // the field exists for a reason — treat it as an error rather than
-    // handing the UI an envelope-shaped payload.
-    if (body.success === false) {
-      throw new ApiError(
-        errorMessageFrom(body),
-        typeof body.statusCode === 'number' ? body.statusCode : response.status,
-      );
-    }
-    return { body, envelope: body };
+  const envelope = isEnvelope(body) ? body : null;
+  // `success: false` with HTTP 200 hasn't been observed on the live API but
+  // the field exists for a reason — treat it as an error rather than handing
+  // the UI an envelope-shaped payload.
+  if (envelope?.success === false) {
+    const status =
+      typeof envelope.statusCode === 'number'
+        ? envelope.statusCode
+        : response.status;
+    const message = errorMessageFrom(body);
+    logFailure(status, message);
+    throw new ApiError(message, status);
   }
-  return { body, envelope: null };
+
+  if (verboseApi()) {
+    logger.debug('api', `✓ ${response.status} ${tag} · ${elapsed()}ms`);
+  }
+  return { body, envelope };
 }
 
 /** Request + unwrap: returns the envelope's `data` (or the raw body). */

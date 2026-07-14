@@ -31,6 +31,7 @@ export async function signIn(
   const tokens = await serverFetch<LoginResponseDto>('/auth/signin', {
     method: 'POST',
     json: { username, password },
+    label: 'auth:signin',
   });
   return sessionFromTokens(tokens);
 }
@@ -51,6 +52,7 @@ export async function signUp(
     method: 'POST',
     json: dto,
     headers: clientContextHeaders(context),
+    label: 'auth:signup',
   });
 }
 

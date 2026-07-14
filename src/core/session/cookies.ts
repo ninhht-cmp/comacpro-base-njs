@@ -1,6 +1,7 @@
 import 'server-only';
 import { cookies } from 'next/headers';
 import { ApiError } from '@/lib/api/server-fetch';
+import { logger } from '@/lib/observability/logger';
 import { refreshSession } from './identity';
 import {
   openSession,
@@ -55,7 +56,7 @@ export async function refreshSessionAndPersist(): Promise<SessionData | null> {
     }
     // Transient failure (network/5xx/timeout): keep the cookie — the token may
     // still be valid and the next request can retry.
-    console.error('[session] refresh failed transiently', error);
+    logger.error('session', 'refresh failed transiently', error);
     return session;
   }
 }

@@ -20,6 +20,7 @@ import { APP_STORE_ID } from '@/config/app-links';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { clientContext } from '@/lib/api/client-context';
+import { logger } from '@/lib/observability/logger';
 import { detectPlatform } from '@/lib/platform';
 import { newVisitorId, VISITOR_COOKIE } from '@/lib/visitor';
 
@@ -67,7 +68,7 @@ async function resolveReferral(
     ) {
       return { kind: 'invalid' };
     }
-    console.error('[signup] referral lookup failed transiently', error);
+    logger.error('signup', 'referral lookup failed transiently', error);
     return { kind: 'unverified' };
   }
 }

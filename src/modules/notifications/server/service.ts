@@ -41,7 +41,7 @@ export async function fetchMyNotifications(
 ): Promise<NotificationPage> {
   const { data, pagination } = await serverFetchPage<NotificationResDto[]>(
     `/notifications${searchParams(query)}`,
-    { method: 'GET', accessToken, locale },
+    { method: 'GET', accessToken, locale, label: 'notifications:list' },
   );
   return {
     items: (data ?? []).map(toNotification),
@@ -61,7 +61,7 @@ export async function fetchUnreadCount(
 ): Promise<number> {
   const body = await serverFetch<NotificationUnreadCountDto>(
     '/notifications/unread-count',
-    { method: 'GET', accessToken, locale },
+    { method: 'GET', accessToken, locale, label: 'notifications:unread-count' },
   );
   return body?.count ?? 0;
 }
@@ -76,5 +76,6 @@ export async function markNotificationRead(
     method: 'PUT',
     accessToken,
     locale,
+    label: 'notifications:mark-read',
   });
 }

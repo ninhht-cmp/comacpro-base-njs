@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import { evaluateGuard, localizedFor } from '@/core/guard';
 import { refreshSession } from '@/core/session/identity';
 import { ApiError } from '@/lib/api/server-fetch';
+import { logger } from '@/lib/observability/logger';
 import {
   isAccessTokenExpiring,
   openSession,
@@ -94,7 +95,7 @@ export async function proxy(request: NextRequest) {
         // keep the session. We refresh ahead of expiry, so the current access
         // token is usually still valid and the next request retries. Logging
         // users out on backend hiccups is worse than one stale-token request.
-        console.error('[proxy] token refresh failed transiently', error);
+        logger.error('proxy', 'token refresh failed transiently', error);
       }
     }
   }
