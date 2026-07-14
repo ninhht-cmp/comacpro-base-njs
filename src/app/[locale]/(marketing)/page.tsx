@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -13,6 +14,17 @@ import { CtaLink } from '@/components/marketing/cta-link';
 import { FeatureCard } from '@/components/marketing/feature-card';
 import { SectionHeading } from '@/components/marketing/section-heading';
 import { routing } from '@/i18n/routing';
+import { pageMetadata } from '@/lib/seo';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Home.metadata');
+  return pageMetadata({
+    title: t('title'),
+    description: t('description'),
+    path: '/',
+    absoluteTitle: true, // brand-defining title; the template would double it
+  });
+}
 
 /**
  * Company landing, in the clean Claude-docs content style: a centered content

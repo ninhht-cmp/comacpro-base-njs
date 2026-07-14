@@ -3,7 +3,7 @@
   "updatedAt": "Cập nhật lần cuối: {date}",
   "terms": {
     "metadata": {
-      "title": "Điều khoản sử dụng — SaleNet",
+      "title": "Điều khoản sử dụng",
       "description": "Điều khoản sử dụng dịch vụ SaleNet."
     },
     "title": "Điều khoản sử dụng",
@@ -40,7 +40,7 @@
   },
   "privacy": {
     "metadata": {
-      "title": "Chính sách bảo mật — SaleNet",
+      "title": "Chính sách bảo mật",
       "description": "Chính sách bảo vệ dữ liệu cá nhân của SaleNet."
     },
     "title": "Chính sách bảo mật",

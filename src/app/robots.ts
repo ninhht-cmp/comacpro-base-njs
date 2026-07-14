@@ -2,8 +2,7 @@ import type { MetadataRoute } from 'next';
 import { env } from '@/config/env';
 import { getPathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-
-const FALLBACK = 'http://localhost:3000';
+import { siteOrigin } from '@/lib/seo';
 
 /** Internal routes crawlers must not index, in every localized form. */
 const PRIVATE_PATHNAMES = ['/account', '/notifications'] as const;
@@ -24,7 +23,7 @@ function disallowList(): string[] {
 }
 
 export default function robots(): MetadataRoute.Robots {
-  const origin = env.NEXT_PUBLIC_APP_URL ?? FALLBACK;
+  const origin = siteOrigin();
   const isProd = env.NODE_ENV === 'production';
 
   return {

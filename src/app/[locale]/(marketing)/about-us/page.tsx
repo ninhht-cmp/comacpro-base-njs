@@ -1,9 +1,20 @@
+import type { Metadata } from 'next';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { SectionHeading } from '@/components/marketing/section-heading';
 import { Card, CardContent } from '@/components/ui/card';
 import { routing } from '@/i18n/routing';
+import { pageMetadata } from '@/lib/seo';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('About.metadata');
+  return pageMetadata({
+    title: t('title'),
+    description: t('description'),
+    path: '/about-us',
+  });
+}
 
 /**
  * Public "about us" page. Section ids are deep-link targets — the signup

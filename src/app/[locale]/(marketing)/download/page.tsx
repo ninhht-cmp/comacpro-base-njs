@@ -9,16 +9,43 @@ import {
   IconUsersGroup,
 } from '@tabler/icons-react';
 import { FeatureCard } from '@/components/marketing/feature-card';
+import { JsonLd } from '@/components/json-ld';
 import { StoreBadges } from '@/components/store-badges';
-import { APP_STORE_ID } from '@/config/app-links';
+import {
+  APP_STORE_ID,
+  APP_STORE_URL,
+  GOOGLE_PLAY_URL,
+} from '@/config/app-links';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { detectPlatform } from '@/lib/platform';
+import { pageMetadata, SITE_NAME } from '@/lib/seo';
 
-/** Safari Smart App Banner — inert until the real App Store id is configured. */
-export const metadata: Metadata = APP_STORE_ID
-  ? { itunes: { appId: APP_STORE_ID } }
-  : {};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('Download.metadata');
+  return {
+    ...pageMetadata({
+      title: t('title'),
+      description: t('description'),
+      path: '/download',
+    }),
+    // Safari Smart App Banner — inert until the real App Store id is configured.
+    ...(APP_STORE_ID ? { itunes: { appId: APP_STORE_ID } } : {}),
+  };
+}
+
+// App entity for Google. Deliberately NO aggregateRating/review: Google
+// requires real rating data and fabricating it risks a manual action — add
+// the field once the store listings have genuine ratings to cite.
+const mobileAppJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'MobileApplication',
+  name: SITE_NAME,
+  operatingSystem: 'ANDROID, IOS',
+  applicationCategory: 'BusinessApplication',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'VND' },
+  installUrl: [GOOGLE_PLAY_URL, APP_STORE_URL],
+};
 
 const FEATURES = [
   { key: 'orders', icon: IconReceipt2 },
@@ -45,6 +72,7 @@ export default async function DownloadPage({
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col items-center gap-14 px-6 py-20">
+      <JsonLd data={mobileAppJsonLd} />
       <div className="flex flex-col items-center gap-5 text-center">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

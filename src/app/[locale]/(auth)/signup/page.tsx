@@ -24,10 +24,15 @@ import { logger } from '@/lib/observability/logger';
 import { detectPlatform } from '@/lib/platform';
 import { newVisitorId, VISITOR_COOKIE } from '@/lib/visitor';
 
-/** Safari Smart App Banner — inert until the real App Store id is configured. */
-export const metadata: Metadata = APP_STORE_ID
-  ? { itunes: { appId: APP_STORE_ID } }
-  : {};
+export const metadata: Metadata = {
+  // NEVER index: invite URLs carry the referrer's phone number as the
+  // referral code — indexing would publish it in search results. Also thin
+  // content: without a referral the page is just a blocked state. Excluded
+  // from the sitemap for the same reason.
+  robots: { index: false, follow: true },
+  // Safari Smart App Banner — inert until the real App Store id is configured.
+  ...(APP_STORE_ID ? { itunes: { appId: APP_STORE_ID } } : {}),
+};
 
 /**
  * Signup is INVITE-ONLY: the referral code (= the referrer's phone number)
