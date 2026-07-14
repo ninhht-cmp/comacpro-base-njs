@@ -40,15 +40,15 @@ pnpm dev             # http://localhost:3000
 | `pnpm test` / `pnpm test:coverage`  | Vitest unit/integration (coverage floors)         |
 | `pnpm test:e2e`                     | Playwright (dev server locally, prod build in CI) |
 | `pnpm check:i18n`                   | i18n key parity across locales                    |
-| `pnpm gen:api`                      | Regenerate the API client from the OpenAPI spec   |
+| `pnpm gen:api`                      | Regenerate API model types from the OpenAPI spec  |
 | `pnpm storybook`                    | Component workbench                               |
 | `pnpm doctor`                       | Environment sanity checks                         |
 
 ## Documentation
 
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) — where code goes (decision tree + rules).
-- [`docs/tech-stack.md`](docs/tech-stack.md) — stack choices and rationale.
-- [`docs/adr/`](docs/adr/) — architecture decision records.
+- [`AGENTS.md`](AGENTS.md) — tech stack (pinned) + working rules; also the AI-agent brief.
+- [`docs/adr/`](docs/adr/) — architecture decision records (stack rationale lives here).
 - [`docs/golden-path/`](docs/golden-path/README.md) — shared-config blueprint.
 - [`docs/runbooks/`](docs/runbooks/) — operational runbooks (rollback, …).
 - [`src/modules/README.md`](src/modules/README.md) — feature-module rules.
