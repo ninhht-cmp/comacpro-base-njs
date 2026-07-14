@@ -1,7 +1,6 @@
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { LocaleSwitcher } from '@/components/layout/locale-switcher';
 import { SiteHeader } from '@/components/layout/site-header';
 import { ThemeToggleCompact } from '@/components/theme';
 import { Button } from '@/components/ui/button';
@@ -75,7 +74,6 @@ export default async function AppLayout({
         actions={
           <>
             {session ? <NotificationBell count={unreadCount} /> : null}
-            <LocaleSwitcher />
             <ThemeToggleCompact />
             {session ? (
               <UserMenu user={session.user} />

@@ -76,16 +76,9 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }];
   },
-  async redirects() {
-    return [
-      // The mobile app's invite links point at the bare `/signup`
-      // (`/signup?referral=<phone>`). The default locale (vi) is unprefixed
-      // and localizes this path to `/dang-ky`, so the bare path would 404 —
-      // bounce it to the vi path instead (the query string is preserved
-      // automatically). `/en/signup` is untouched (source has no prefix).
-      { source: '/signup', destination: '/dang-ky', permanent: false },
-    ];
-  },
+  // No redirects: pathnames are identity-mapped (English URLs), so the mobile
+  // app's invite links (`/signup?referral=<phone>`) hit the route directly —
+  // the old `/signup → /dang-ky` bounce would now be a loop into a 404.
 };
 
 export default withNextIntl(nextConfig);

@@ -4,7 +4,9 @@ import { useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { signup, type AuthFormState } from '../server/actions';
+import { signupSchema } from '../schema';
 import { Field, FormError } from '@/components/form/field';
+import { useFormValidation } from '@/lib/forms/use-form-validation';
 
 const initialState: AuthFormState = {};
 
@@ -20,9 +22,14 @@ export function SignupForm({
 }) {
   const t = useTranslations('Auth');
   const [state, formAction, pending] = useActionState(signup, initialState);
+  // Same schema as the action: instant feedback, server stays authoritative.
+  const { errors, formProps } = useFormValidation(signupSchema, {
+    serverErrors: state.fieldErrors,
+    t,
+  });
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} {...formProps} className="flex flex-col gap-4">
       <input type="hidden" name="referralCode" value={referralCode} />
 
       <Field
@@ -34,7 +41,7 @@ export function SignupForm({
         // straight to the first field (deliberate a11y trade-off).
         autoFocus
         required
-        error={state.fieldErrors?.fullName}
+        error={errors.fullName}
       />
 
       <Field
@@ -45,7 +52,7 @@ export function SignupForm({
         autoComplete="tel"
         placeholder="09xxxxxxxx"
         required
-        error={state.fieldErrors?.username}
+        error={errors.username}
       />
 
       <p className="text-sm text-muted-foreground">{t('signup.credentials')}</p>

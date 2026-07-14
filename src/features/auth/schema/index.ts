@@ -16,7 +16,11 @@ export const VN_PHONE_REGEX = /^(\+84|84|0)[35789][0-9]{8}$/;
 const phoneField = z
   .string()
   .trim()
-  .regex(VN_PHONE_REGEX, { message: 'invalid_phone' });
+  // Normalize before judging: people type/paste phones as "090 123 4567",
+  // "090.123.4567" or "(+84) 90…" — strip the separators instead of rejecting
+  // them; the backend then receives the canonical form.
+  .transform((value) => value.replace(/[\s.()-]/g, ''))
+  .pipe(z.string().regex(VN_PHONE_REGEX, { message: 'invalid_phone' }));
 
 export const signinSchema = z.object({
   username: phoneField,

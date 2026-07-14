@@ -131,7 +131,13 @@ export default async function SignupPage({
           ) : (
             <>
               <div className="flex flex-col gap-1">
-                <h2 className="text-xl font-semibold">{t('signup.title')}</h2>
+                {/* Neutral headline on purpose: the blue CTA button below is
+                    the page's single action accent, and the 🚀 emoji already
+                    gives this line its pop. (A one-off terracotta accent was
+                    tried and rejected — third hue, orphaned from the system.) */}
+                <h2 className="text-xl font-semibold text-foreground">
+                  {t('signup.title')}
+                </h2>
                 <p className="text-sm text-muted-foreground">
                   {t('signup.subtitle')}
                 </p>

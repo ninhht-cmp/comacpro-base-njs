@@ -6,8 +6,8 @@
  * allow internal, absolute paths — never protocol-relative (`//host`) or
  * absolute URLs (`https://…`) that could redirect off-site.
  *
- * The returned value is an already-localized path (e.g. `/tai-khoan`,
- * `/en/account`), so callers navigate to it verbatim.
+ * The returned value is an already-localized path (e.g. `/account`), so
+ * callers navigate to it verbatim.
  */
 export function safeRedirect(value: unknown): string | null {
   if (typeof value !== 'string' || value.length === 0) return null;

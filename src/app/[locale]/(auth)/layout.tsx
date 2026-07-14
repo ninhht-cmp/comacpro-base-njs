@@ -24,8 +24,7 @@ export default async function AuthLayout({
   return (
     // flex-col so a page can stretch itself (flex-1) to the viewport bottom —
     // the signup card runs flush to the bottom edge on mobile.
-    <div className="flex min-h-svh flex-col bg-gradient-to-b from-muted/60 via-background to-background">
-      {children}
-    </div>
+    // bg-brand-glow: cool base + one soft primary bloom (see globals.css).
+    <div className="flex min-h-svh flex-col bg-brand-glow">{children}</div>
   );
 }

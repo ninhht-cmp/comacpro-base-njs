@@ -42,24 +42,24 @@ test.describe('auth guards', () => {
   test('bounces an unauthenticated user off a protected route with ?redirect=', async ({
     page,
   }) => {
-    await page.goto('/en/account');
+    await page.goto('/account');
 
     const url = new URL(page.url());
-    expect(url.pathname).toBe('/en/signin');
-    expect(url.searchParams.get('redirect')).toBe('/en/account');
+    expect(url.pathname).toBe('/signin');
+    expect(url.searchParams.get('redirect')).toBe('/account');
   });
 
   test('bounces a signed-in user off the sign-in page', async ({ page }) => {
     test.skip(!USER || !PASS, 'set E2E_USERNAME / E2E_PASSWORD to run');
 
-    await page.goto('/en/signin');
+    await page.goto('/signin');
     await page.fill('input[name="username"]', USER!);
     await page.fill('input[name="password"]', PASS!);
     await page.click('button[type="submit"]');
-    await page.waitForURL('**/en/account');
+    await page.waitForURL('**/account');
 
-    await page.goto('/en/signin');
-    await expect(page).toHaveURL('**/en/account');
+    await page.goto('/signin');
+    await expect(page).toHaveURL('**/account');
   });
 
   test('honors an explicit ?redirect= target after signing in', async ({
@@ -67,10 +67,10 @@ test.describe('auth guards', () => {
   }) => {
     test.skip(!USER || !PASS, 'set E2E_USERNAME / E2E_PASSWORD to run');
 
-    await page.goto('/en/signin?redirect=%2Fen');
+    await page.goto('/signin?redirect=%2F');
     await page.fill('input[name="username"]', USER!);
     await page.fill('input[name="password"]', PASS!);
     await page.click('button[type="submit"]');
-    await page.waitForURL((url) => url.pathname === '/en');
+    await page.waitForURL((url) => url.pathname === '/');
   });
 });

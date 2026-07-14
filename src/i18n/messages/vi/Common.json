@@ -11,9 +11,6 @@
   "actions": {
     "retry": "Thử lại"
   },
-  "locale": {
-    "switch": "Đổi ngôn ngữ"
-  },
   "theme": {
     "toggle": "Đổi giao diện"
   }

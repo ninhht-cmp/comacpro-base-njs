@@ -8,6 +8,7 @@ import { redirect as redirectToPath } from 'next/navigation';
 import { clearSession, setSession } from '@/core/session/server';
 import { redirect } from '@/i18n/navigation';
 import { fieldErrorsFrom } from '@/lib/forms/field-errors';
+import { stateFromApiError } from './api-error-map';
 import { safeRedirect } from './redirect';
 import { setSignupSuccess } from './signup-success';
 import {
@@ -29,8 +30,9 @@ import {
  * Server Actions for the auth forms (`useActionState`). Input is validated at
  * the boundary with the feature's zod schemas (`../schema`). On success each
  * action redirects to the next step; on failure it returns
- * `{ error, fieldErrors }` with ready-to-display messages (the backend's
- * localized message when available, otherwise a translated fallback).
+ * `{ error, fieldErrors }` with ready-to-display, TRANSLATED messages.
+ * Backend rejection texts are raw English internals — they never reach the
+ * UI directly; `stateFromApiError` maps the known ones (see api-error-map).
  */
 
 export interface AuthFormState {
@@ -46,11 +48,6 @@ export type SigninState = AuthFormState;
 async function authT() {
   const locale = await getLocale();
   return getTranslations({ locale, namespace: 'Auth' });
-}
-
-function messageFor(error: unknown, fallback: string): string {
-  if (error instanceof ApiError && error.message) return error.message;
-  return fallback;
 }
 
 /**
@@ -87,7 +84,7 @@ export async function signin(
       return { error: t('errors.invalid_credentials') };
     }
     logAuthFailure('signin', error);
-    return { error: messageFor(error, t('errors.unknown')) };
+    return stateFromApiError(error, t);
   }
 
   // Outside try/catch: redirect() throws NEXT_REDIRECT by design.
@@ -115,7 +112,7 @@ export async function signup(
     await signUp(parsed.data);
   } catch (error) {
     logAuthFailure('signup', error);
-    return { error: messageFor(error, t('errors.unknown')) };
+    return stateFromApiError(error, t);
   }
 
   // SaleNet delivers credentials out-of-band (ZaloOA) and the product lives
@@ -151,7 +148,7 @@ export async function forgotPassword(
     await forgotPasswordRequest(parsed.data.username);
   } catch (error) {
     logAuthFailure('forgot-password', error);
-    return { error: messageFor(error, t('errors.unknown')) };
+    return stateFromApiError(error, t);
   }
 
   const locale = await getLocale();
@@ -180,7 +177,7 @@ export async function resendForgotOtp(
     await resendForgotOtpRequest(parsed.data.username);
   } catch (error) {
     logAuthFailure('resend-forgot-otp', error);
-    return { error: messageFor(error, t('errors.unknown')) };
+    return stateFromApiError(error, t);
   }
   return {};
 }
@@ -212,7 +209,7 @@ export async function resetPassword(
     });
   } catch (error) {
     logAuthFailure('reset-password', error);
-    return { error: messageFor(error, t('errors.unknown')) };
+    return stateFromApiError(error, t);
   }
 
   const locale = await getLocale();

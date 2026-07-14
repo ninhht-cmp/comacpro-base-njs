@@ -5,12 +5,13 @@ import confetti from 'canvas-confetti';
 
 /**
  * One-shot fireworks for the signup-success moment: a big centre burst plus
- * two smaller echoes left/right, in the brand's warm golds. Renders nothing —
- * canvas-confetti draws on its own fixed full-screen canvas.
+ * two smaller echoes left/right, in brand blues plus one gold (echoing the
+ * honor medals). Renders nothing — canvas-confetti draws on its own fixed
+ * full-screen canvas.
  *
  * Skipped entirely under `prefers-reduced-motion`.
  */
-const COLORS = ['#e8734a', '#f59e0b', '#fbbf24', '#fde68a', '#ffffff'];
+const COLORS = ['#0f74c5', '#5b9ddf', '#93c5fd', '#fbbf24', '#ffffff'];
 
 function burst(origin: { x: number; y: number }, scale: number) {
   // The canvas-confetti "realistic look" recipe: overlapping shots with

@@ -5,12 +5,19 @@ import type { ZodError } from 'zod';
  * Narrow union (not `string`) so the strictly-typed next-intl translator is
  * assignable and a typo'd key is a compile error.
  */
-type FieldErrorKey =
+export type FieldErrorKey =
   | 'errors.passwords_mismatch'
   | 'errors.field_required'
   | 'errors.invalid_email'
   | 'errors.invalid_phone'
   | 'errors.field_invalid';
+
+/**
+ * Translator shape `fieldErrorsFrom` needs — satisfied by next-intl's `t` on
+ * the `Auth` namespace, server (`getTranslations`) or client
+ * (`useTranslations`) alike.
+ */
+export type FieldErrorTranslator = (key: FieldErrorKey) => string;
 
 /**
  * Map a zod boundary-validation error to per-field, ready-to-display messages

@@ -56,11 +56,9 @@ export function SignupAboutSection() {
                 {/* min-h = two lines at each breakpoint: every card keeps the
                     same height whether its title wraps or not (h-full on the
                     Card equalizes any third line across the row). */}
-                {/* Darkened terracotta (primary hue, L 0.672→0.55): raw
-                    `text-primary` at 14px on the pastel wash is 2.97:1 —
-                    below AA (4.5) for interactive text; this is 5.1:1. Dark
-                    mode reverts to the token (light-on-dark passes there). */}
-                <CardTitle className="flex min-h-8 items-center justify-center text-center text-xs leading-4 font-semibold text-[oklch(0.55_0.131_38.8)] sm:min-h-10 sm:text-sm sm:leading-5 dark:text-primary">
+                {/* Plain text-primary is AA-safe here: the blue primary is
+                    4.85:1 on white (light) and 5.3:1 on dark surfaces. */}
+                <CardTitle className="flex min-h-8 items-center justify-center text-center text-xs leading-4 font-semibold text-primary sm:min-h-10 sm:text-sm sm:leading-5">
                   {t(key)}
                 </CardTitle>
               </CardHeader>

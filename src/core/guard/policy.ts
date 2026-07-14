@@ -16,7 +16,6 @@ export type PathKey = keyof typeof routing.pathnames;
 // one place keeps the guards correct in every locale.
 export const PROTECTED_HREFS = [
   '/account',
-  '/checkout',
   '/notifications',
 ] as const satisfies PathKey[];
 
@@ -27,7 +26,7 @@ export const AUTH_HREFS = [
   '/reset-password',
 ] as const satisfies PathKey[];
 
-/** The localized path for a logical href in a given locale (e.g. `/tai-khoan`). */
+/** The localized path for a logical href in a given locale (e.g. `/account`). */
 export function localizedFor(href: PathKey, locale: string): string {
   const entry = routing.pathnames[href];
   if (typeof entry === 'string') return entry;

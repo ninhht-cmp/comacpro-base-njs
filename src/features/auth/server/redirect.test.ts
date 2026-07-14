@@ -3,7 +3,7 @@ import { safeRedirect } from './redirect';
 
 describe('safeRedirect', () => {
   it('allows internal absolute paths', () => {
-    expect(safeRedirect('/tai-khoan')).toBe('/tai-khoan');
+    expect(safeRedirect('/account')).toBe('/account');
     expect(safeRedirect('/en/account')).toBe('/en/account');
     expect(safeRedirect('/account?tab=orders')).toBe('/account?tab=orders');
   });

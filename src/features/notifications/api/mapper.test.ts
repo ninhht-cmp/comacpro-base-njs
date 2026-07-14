@@ -8,7 +8,7 @@ describe('toNotification', () => {
       id: 'n-1',
       isRead: false,
       event: 'WELCOME_TO_NEW_MEMBER',
-      pageUrl: '/tai-khoan',
+      pageUrl: '/account',
       description: 'Chào mừng bạn đến với SaleNet',
       createdAt: '2026-07-13T08:00:00.000Z',
     };
@@ -16,7 +16,7 @@ describe('toNotification', () => {
     expect(toNotification(dto)).toEqual({
       id: 'n-1',
       description: 'Chào mừng bạn đến với SaleNet',
-      pageUrl: '/tai-khoan',
+      pageUrl: '/account',
       event: 'WELCOME_TO_NEW_MEMBER',
       createdAt: '2026-07-13T08:00:00.000Z',
       isRead: false,

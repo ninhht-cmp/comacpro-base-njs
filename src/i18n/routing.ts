@@ -1,52 +1,29 @@
 import { defineRouting } from 'next-intl/routing';
 
+/**
+ * Single-locale on purpose: the product serves Vietnamese sales staff only,
+ * so the second locale was dropped (see the git history for the bilingual
+ * setup). The i18n LAYER stays — centralized, typed copy — and re-adding a
+ * locale is config + translation files, not an architecture change.
+ *
+ * `pathnames` are identity mappings (English URLs) by choice, but the map
+ * itself is load-bearing: it is the typed route registry (`PathKey`) that
+ * the guard policy, sitemap and robots derive from. Register new routes here.
+ */
 export const routing = defineRouting({
-  locales: ['vi', 'en'] as const,
+  locales: ['vi'] as const,
   defaultLocale: 'vi',
   localePrefix: 'as-needed',
 
   pathnames: {
     '/': '/',
-    '/signin': {
-      vi: '/dang-nhap',
-      en: '/signin',
-    },
-    '/signup': {
-      vi: '/dang-ky',
-      en: '/signup',
-    },
-    '/forgot-password': {
-      vi: '/quen-mat-khau',
-      en: '/forgot-password',
-    },
-    '/reset-password': {
-      vi: '/dat-lai-mat-khau',
-      en: '/reset-password',
-    },
-    '/products': {
-      vi: '/san-pham',
-      en: '/products',
-    },
-    '/cart': {
-      vi: '/gio-hang',
-      en: '/cart',
-    },
-    '/checkout': {
-      vi: '/thanh-toan',
-      en: '/checkout',
-    },
-    '/account': {
-      vi: '/tai-khoan',
-      en: '/account',
-    },
-    '/notifications': {
-      vi: '/thong-bao',
-      en: '/notifications',
-    },
-    '/about-us': {
-      vi: '/ve-chung-toi',
-      en: '/about-us',
-    },
+    '/signin': '/signin',
+    '/signup': '/signup',
+    '/forgot-password': '/forgot-password',
+    '/reset-password': '/reset-password',
+    '/account': '/account',
+    '/notifications': '/notifications',
+    '/about-us': '/about-us',
   },
 });
 

@@ -24,8 +24,9 @@ never comments that restate the code.
 
 - **Node 24.16** (`.nvmrc`), **pnpm** (see `packageManager`), Turbopack
 - **Next.js 16 / React 19** — App Router, RSC-first, `output: 'standalone'`
-- **next-intl v4** — locales `vi` (default, unprefixed) + `en`, localized
-  pathnames in `src/i18n/routing.ts`
+- **next-intl v4** — single locale `vi` (unprefixed) by deliberate choice;
+  localized pathnames in `src/i18n/routing.ts`. The i18n layer stays for
+  typed, centralized copy — adding a locale back is config + message files.
 - **Tailwind v4** (CSS-first config in `src/styles/globals.css`) + shadcn (radix)
 - **zod v4** for boundary validation; **jose** for the JWE session cookie
 - **orval** — generates ONLY model types from the OpenAPI spec
@@ -74,7 +75,7 @@ Is it a wire DTO type?              → generated: run `pnpm gen:api`, never han
 pnpm doctor          # environment sanity check (run after clone)
 pnpm dev             # dev server (Turbopack)
 pnpm typecheck && pnpm lint && pnpm vitest run   # the local gate
-pnpm check:i18n      # en/vi message parity (CI-gated)
+pnpm check:i18n      # message-key parity across locales (no-op at 1 locale)
 pnpm gen:api         # regenerate API models (needs OPENAPI_SPEC or local spec)
 pnpm test:e2e        # Playwright (builds prod in CI, dev server locally)
 ```
@@ -85,8 +86,8 @@ the dev server is running.
 
 ## Gotchas
 
-- Every user-facing string is translated. Adding a key means adding it to BOTH
-  `src/i18n/messages/en/*.json` and `vi/*.json` — parity is CI-gated.
+- Every user-facing string lives in `src/i18n/messages/vi/*.json` (never
+  hardcoded in components) — typed keys, single source for copy edits.
 - Server Actions return ready-to-display (already translated) messages;
   `fieldErrors` is keyed by input `name` (`src/lib/forms/field-errors.ts`).
 - Backend is **SaleNet** (`/v1` prefix): every response is wrapped in the

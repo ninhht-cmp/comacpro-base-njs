@@ -51,7 +51,7 @@ Adopt SaleNet as the template's backend. Concretely:
   blocked in place with guidance, no redirect), missing (invite-required
   explainer), transient lookup failure (fail OPEN: form without the card,
   backend re-validates on submit). A `next.config.ts` redirect maps the bare
-  `/signup` (vi is unprefixed and localizes to `/dang-ky`) so app links
+  `/signup` (vi is unprefixed; pathnames are identity-mapped) so app links
   don't 404. The lookup's REQUIRED `sessionId` query param (invite-open
   attribution; the app sends its device session) is satisfied by an anonymous
   visitor-id cookie minted in `proxy.ts` on the signup path only

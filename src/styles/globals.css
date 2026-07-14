@@ -62,8 +62,10 @@
   --popover:                oklch(1 0 0);
   --popover-foreground:     oklch(0.191 0.002 106.6);
 
-  /* Clay brand (#D97757) */
-  --primary:                oklch(0.672 0.131 38.8);
+  /* Royal blue brand (h250, L .55): 4.85:1 with white — passes AA both as a
+     button fill under white text and as link/text color on white. The warm
+     cream neutrals and the gold medal artwork stay: navy × cream × gold. */
+  --primary:                oklch(0.55 0.15 250);
   --primary-foreground:     oklch(1 0 0);
 
   --secondary:              oklch(0.948 0.013 82.4);
@@ -76,9 +78,9 @@
   --destructive-foreground: oklch(1 0 0);
   --border:                 oklch(0.899 0.013 82.4);
   --input:                  oklch(0.899 0.013 82.4);
-  --ring:                   oklch(0.672 0.131 38.8);
+  --ring:                   oklch(0.55 0.15 250);
 
-  --chart-1:                oklch(0.672 0.131 38.8);
+  --chart-1:                oklch(0.55 0.15 250);
   --chart-2:                oklch(0.551 0.009 99.0);
   --chart-3:                oklch(0.442 0.009 99.0);
   --chart-4:                oklch(0.359 0.005 106.7);
@@ -87,12 +89,12 @@
   /* Sidebar is slightly darker than page bg to differentiate without a border */
   --sidebar:                oklch(0.966 0.009 100.0);
   --sidebar-foreground:     oklch(0.191 0.002 106.6);
-  --sidebar-primary:        oklch(0.672 0.131 38.8);
+  --sidebar-primary:        oklch(0.55 0.15 250);
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent:         oklch(0.907 0.022 80.7);
   --sidebar-accent-foreground: oklch(0.191 0.002 106.6);
   --sidebar-border:         oklch(0.899 0.013 82.4);
-  --sidebar-ring:           oklch(0.672 0.131 38.8);
+  --sidebar-ring:           oklch(0.55 0.15 250);
 }
 
 /* Dark — warm charcoal, avoids the blue-gray tint common in generic dark themes */
@@ -106,9 +108,11 @@
   --popover:                oklch(0.303 0.003 17.3);
   --popover-foreground:     oklch(0.982 0.005 95.1);
 
-  /* Clay pulled back slightly — full #D97757 is too vibrant on dark bg */
-  --primary:                oklch(0.624 0.132 38.8);
-  --primary-foreground:     oklch(0.982 0.005 95.1);
+  /* Lighter blue on dark, with DARK text on primary fills: the only pairing
+     that passes AA both as a button (6.4:1) and as text on the dark bg
+     (5.3:1) — the old light-text-on-mid-tone pairing failed both. */
+  --primary:                oklch(0.68 0.12 250);
+  --primary-foreground:     oklch(0.191 0.002 106.6);
 
   --secondary:              oklch(0.342 0.006 78.3);
   --secondary-foreground:   oklch(0.982 0.005 95.1);
@@ -122,9 +126,9 @@
   /* Alpha borders scale better than fixed colors across dark surface variants */
   --border:                 oklch(1 0 0 / 12%);
   --input:                  oklch(1 0 0 / 16%);
-  --ring:                   oklch(0.624 0.132 38.8);
+  --ring:                   oklch(0.68 0.12 250);
 
-  --chart-1:                oklch(0.672 0.131 38.8);
+  --chart-1:                oklch(0.68 0.12 250);
   --chart-2:                oklch(0.807 0.014 97.5);
   --chart-3:                oklch(0.686 0.012 95.2);
   --chart-4:                oklch(0.551 0.009 99.0);
@@ -132,12 +136,26 @@
 
   --sidebar:                oklch(0.303 0.003 17.3);
   --sidebar-foreground:     oklch(0.982 0.005 95.1);
-  --sidebar-primary:        oklch(0.672 0.131 38.8);
+  --sidebar-primary:        oklch(0.68 0.12 250);
   --sidebar-primary-foreground: oklch(0.191 0.002 106.6);
   --sidebar-accent:         oklch(0.342 0.006 78.3);
   --sidebar-accent-foreground: oklch(0.982 0.005 95.1);
   --sidebar-border:         oklch(1 0 0 / 10%);
-  --sidebar-ring:           oklch(0.624 0.132 38.8);
+  --sidebar-ring:           oklch(0.68 0.12 250);
+}
+
+/**
+ * Brand-glow page background: a cool near-white base with one soft radial
+ * bloom of the brand color anchored upper-left (per the reference art).
+ * Derived from tokens — re-branding or dark mode re-tints it for free.
+ */
+@utility bg-brand-glow {
+  background-color: color-mix(in oklab, var(--primary) 3%, var(--background));
+  background-image: radial-gradient(
+    55rem 55rem at 16% 30%,
+    color-mix(in oklab, var(--primary) 10%, transparent),
+    transparent 70%
+  );
 }
 
 @layer base {

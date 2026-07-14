@@ -17,6 +17,17 @@ describe('auth schemas', () => {
     ).toBe(true);
   });
 
+  it('normalizes phone separators before validating', () => {
+    for (const raw of ['090 123 4567', '090.123.4567', '(+84) 90 123 4567']) {
+      const result = signinSchema.safeParse({ username: raw, password: 'p' });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        // The action forwards the CANONICAL form to the backend.
+        expect(result.data.username).toMatch(/^(\+84|0)901234567$/);
+      }
+    }
+  });
+
   it('flags a malformed phone with the invalid_phone sentinel', () => {
     const result = signinSchema.safeParse({ username: 'user', password: 'p' });
     expect(result.success).toBe(false);
