@@ -1,6 +1,6 @@
 name: API codegen freshness
 
-# Fails when the committed orval client drifts from the OpenAPI spec. It needs
+# Fails when the committed generated models drift from the OpenAPI spec. It needs
 # the same spec source the committed code came from, so it runs only when an
 # `OPENAPI_SPEC` repo variable is configured (Settings → Variables). Without it,
 # the job is skipped and never blocks a PR.
@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - 'openapi/**'
-      - 'orval.config.ts'
+      - 'scripts/gen-api/**'
       - 'src/lib/api/generated/**'
 
 # Read-only: the job just regenerates the client and diffs the working tree.

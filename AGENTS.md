@@ -30,7 +30,8 @@ that restate the code.
   typed, centralized copy — adding a locale back is config + message files.
 - **Tailwind v4** (CSS-first config in `src/styles/globals.css`) + shadcn (radix)
 - **zod v4** for boundary validation; **jose** for the JWE session cookie
-- **orval** — generates ONLY model types from the OpenAPI spec
+- **gen:api** (`scripts/gen-api/`, in-house) — generates model types from the
+  OpenAPI spec; dedupes inline enums via `openapi/codegen.json` (ADR 0007)
 - **Vitest** (+ Testing Library, MSW) / **Playwright** / **Storybook**
 
 ## Architecture (read before adding features)
@@ -105,7 +106,7 @@ the dev server is running.
   `openapi/selection.json` — run `pnpm gen:api:pick` (interactive: search +
   multi-select the operations to generate) to change it, then `pnpm gen:api`.
   The selection file is committed, so `gen:api`/`check:api-fresh` stay
-  deterministic (the input transformer prunes the spec to it).
+  deterministic (the generator prunes the spec to it).
 - Tests colocate with source (`*.test.ts[x]`); mock HTTP with MSW
   (`server.use(...)`), never fetch stubs.
 

@@ -26,8 +26,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "gen:api:pick": "tsx scripts/gen-api-pick.ts",
-    "gen:api": "node --env-file-if-exists=.env node_modules/orval/dist/bin/orval.mjs --config ./orval.config.ts",
-    "gen:api:watch": "node --env-file-if-exists=.env node_modules/orval/dist/bin/orval.mjs --config ./orval.config.ts --watch",
+    "gen:api": "tsx scripts/gen-api/generate.ts",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -79,7 +78,6 @@
     "knip": "^6.25.0",
     "lint-staged": "^17.0.7",
     "msw": "^2.14.6",
-    "orval": "^8.14.0",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "shadcn": "^4.10.0",

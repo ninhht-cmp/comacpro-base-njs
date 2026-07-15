@@ -1,0 +1,8 @@
+{
+  "$comment": "Config for `pnpm gen:api` (scripts/gen-api). enumNames maps an inline-enum PROPERTY name to the domain type name it should generate as — identical value-sets are deduplicated into one type regardless.",
+  "enumNames": {
+    "role": "UserRole",
+    "status": "UserStatus",
+    "event": "NotificationEvent"
+  }
+}

@@ -4,10 +4,10 @@
  * lives in `./mapper`.
  */
 
-import type { NotificationResDtoEvent } from '@/lib/api/generated/model';
+import type { NotificationEvent } from '@/lib/api/generated/model';
 
 /** SaleNet notification event kinds (re-exported generated union). */
-export type NotificationEvent = NotificationResDtoEvent;
+export type { NotificationEvent };
 
 export interface Notification {
   /** SaleNet notification id (UUID string). */
