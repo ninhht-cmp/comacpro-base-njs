@@ -1,11 +1,22 @@
-import type { UserRefResDto } from '@/lib/api/generated/model';
+import type {
+  ReferralListItemDto,
+  UserRefResDto,
+} from '@/lib/api/generated/model';
 import {
   type ClientContext,
   clientContextHeaders,
 } from '@/lib/api/client-context';
-import { UserRefResDtoSchema } from '@/lib/api/generated/schemas';
-import { serverFetch } from '@/lib/api/server-fetch';
-import { type ReferralUser, toReferralUser } from '../api';
+import {
+  ReferralListItemDtoSchema,
+  UserRefResDtoSchema,
+} from '@/lib/api/generated/schemas';
+import { serverFetch, serverFetchPage } from '@/lib/api/server-fetch';
+import {
+  type ReferralMemberPage,
+  type ReferralUser,
+  toReferralMember,
+  toReferralUser,
+} from '../api';
 
 /**
  * SaleNet `users` endpoints via the shared `serverFetch` transport. Each
@@ -49,6 +60,41 @@ export async function fetchReferralUser(
     },
   );
   return toReferralUser(dto);
+}
+
+export interface ReferralListQuery {
+  page?: number;
+  perPage?: number;
+}
+
+/** GET /v1/users/referrals — members the signed-in user referred (paginated). */
+export async function fetchMyReferrals(
+  accessToken: string,
+  query: ReferralListQuery = {},
+): Promise<ReferralMemberPage> {
+  const sp = new URLSearchParams();
+  if (query.page) sp.set('page', String(query.page));
+  if (query.perPage) sp.set('perPage', String(query.perPage));
+  const qs = sp.toString();
+
+  const { data, pagination } = await serverFetchPage<ReferralListItemDto[]>(
+    `/users/referrals${qs ? `?${qs}` : ''}`,
+    {
+      method: 'GET',
+      accessToken,
+      label: 'users:referrals',
+      schema: ReferralListItemDtoSchema.array(),
+    },
+  );
+  return {
+    items: (data ?? []).map(toReferralMember),
+    meta: pagination && {
+      page: pagination.currentPage ?? 1,
+      perPage: pagination.perPage ?? (data ?? []).length,
+      total: pagination.totalItem,
+      totalPages: pagination.totalPage ?? 1,
+    },
+  };
 }
 
 // Profile + password editing (PATCH /users/me, /users/change-password) lived

@@ -1,6 +1,10 @@
-import type { ProfileMeResDto, UserRefResDto } from '@/lib/api/generated/model';
+import type {
+  ProfileMeResDto,
+  ReferralListItemDto,
+  UserRefResDto,
+} from '@/lib/api/generated/model';
 import { roleFromValue, statusFromValue } from '@/core/identity';
-import type { ReferralUser, User } from './types';
+import type { ReferralMember, ReferralUser, User } from './types';
 
 /**
  * Anti-corruption layer: maps the generated wire DTOs → the domain types.
@@ -44,5 +48,20 @@ export function toReferralUser(dto: UserRefResDto): ReferralUser {
     role: roleFromValue(dto.role),
     status: statusFromValue(dto.status),
     code: dto.code,
+  };
+}
+
+export function toReferralMember(dto: ReferralListItemDto): ReferralMember {
+  return {
+    id: dto.profile.id,
+    fullName: dto.profile.fullName,
+    avatar: dto.profile.avatarUrl,
+    phone: dto.profile.phoneNumber,
+    role: roleFromValue(dto.role),
+    joinedAt: dto.profile.createdAt,
+    // Display name only, same boundary rule as toUser's ward/province.
+    province: dto.profile.province?.name,
+    ekycVerified: dto.profile.isEKYCVerified,
+    dealCount: dto.dealCount,
   };
 }

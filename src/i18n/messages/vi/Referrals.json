@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "title": "Giới thiệu thành viên"
+  },
+  "title": "Giới thiệu thành viên",
+  "invite": {
+    "title": "Link mời của bạn",
+    "description": "Chia sẻ link này để mời thành viên mới gia nhập đội nhóm của bạn trên SaleNet.",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép link mời",
+    "share": "Chia sẻ",
+    "shareTitle": "Tham gia SaleNet cùng tôi",
+    "unavailable": "Tài khoản của bạn chưa có link mời — hãy cập nhật hồ sơ trong ứng dụng SaleNet."
+  },
+  "list": {
+    "title": "Thành viên đã giới thiệu",
+    "total": "{count, plural, =1 {# thành viên} other {# thành viên}}",
+    "empty": "Bạn chưa giới thiệu thành viên nào. Chia sẻ link mời để bắt đầu xây dựng đội nhóm!",
+    "joined": "Tham gia {date}",
+    "deals": "{count} đơn",
+    "loadError": "Không tải được danh sách thành viên. Vui lòng thử lại sau.",
+    "prev": "Trang trước",
+    "next": "Trang sau",
+    "page": "Trang {page}/{total}"
+  }
+}

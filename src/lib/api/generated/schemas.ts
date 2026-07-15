@@ -5,7 +5,7 @@
  * transport boundary.
  */
 import { z } from 'zod';
-import type { BankShortenedResDto, BaseResDto, BaseResPaginationDto, Boolean, LoginDto, LoginResponseDto, NotificationEvent, NotificationResDto, NotificationUnreadCountDto, Object, PaginationResDto, ProfileMeResDto, ProvinceResDto, RefreshTokenDto, RegistrationDto, ShopResDto, TokenResponseDto, UserBankShortenedResDto, UserMinimalResDto, UserProfileRefResDto, UserRefResDto, UserRole, UserStatus, WardResDto } from './model';
+import type { BankShortenedResDto, BaseProfileDto, BaseResDto, BaseResPaginationDto, Boolean, LoginDto, LoginResponseDto, NotificationEvent, NotificationResDto, NotificationUnreadCountDto, Object, PaginationResDto, ProfileMeResDto, ProvinceResDto, ReferralListItemDto, RefreshTokenDto, RegistrationDto, ShopResDto, TokenResponseDto, UserBankShortenedResDto, UserMinimalResDto, UserProfileRefResDto, UserRefResDto, UserRole, UserStatus, WardResDto } from './model';
 
 export const NotificationEventSchema = z.enum(['WELCOME_TO_NEW_MEMBER', 'USER_REFERRAL_SIGNUP_SUCCESS', 'DEAL_CREATED_FOR_SELF', 'DEAL_CREATED_AND_ASSIGNED', 'DEAL_UPDATED_SUCCESS', 'DEAL_UPDATED_STATUS', 'DEAL_UPDATED_DUE_DATE', 'DEAL_UPDATED_COMMENT', 'DEAL_PRODUCT_SOLD_OUT_SUCCESSFULLY', 'PRODUCT_CREATED_AND_ASSIGNED', 'PRODUCT_UPDATED_PENDING', 'PRODUCT_UPDATED_PUBLISH', 'PRODUCT_UPDATED_REJECT']) satisfies z.ZodType<NotificationEvent>;
 
@@ -20,6 +20,16 @@ export const BankShortenedResDtoSchema = z.object({
   shortName: z.string().optional(),
   bin: z.string().optional(),
 }) satisfies z.ZodType<BankShortenedResDto>;
+
+export const BaseProfileDtoSchema = z.object({
+  id: z.string(),
+  avatarUrl: z.string().optional(),
+  fullName: z.string(),
+  phoneNumber: z.string().optional(),
+  createdAt: z.string(),
+  isEKYCVerified: z.boolean().optional(),
+  province: z.lazy(() => ProvinceResDtoSchema).optional(),
+}) satisfies z.ZodType<BaseProfileDto>;
 
 export const BaseResDtoSchema = z.object({
   success: z.boolean(),
@@ -112,6 +122,14 @@ export const ProvinceResDtoSchema = z.object({
   name: z.string(),
   countryId: z.string().nullable(),
 }) satisfies z.ZodType<ProvinceResDto>;
+
+export const ReferralListItemDtoSchema = z.object({
+  role: UserRoleSchema,
+  profile: z.lazy(() => BaseProfileDtoSchema),
+  dealCount: z.number().optional(),
+  isNeedUpdateProfile: z.boolean().optional(),
+  isSignedCollaborationContract: z.boolean().optional(),
+}) satisfies z.ZodType<ReferralListItemDto>;
 
 export const RefreshTokenDtoSchema = z.object({
   refreshToken: z.string(),

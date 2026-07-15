@@ -5,7 +5,7 @@ import { routing } from '@/i18n/routing';
 import { siteOrigin } from '@/lib/seo';
 
 /** Internal routes crawlers must not index, in every localized form. */
-const PRIVATE_PATHNAMES = ['/account', '/notifications'] as const;
+const PRIVATE_PATHNAMES = ['/account', '/notifications', '/referrals'] as const;
 
 function disallowList(): string[] {
   // Set: localized forms can collide for untranslated routes. `getPathname`

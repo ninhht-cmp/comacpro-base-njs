@@ -4,4 +4,4 @@
  * app — ADR 0005 / ADR 0006.)
  */
 
-export { ApiError, fetchReferralUser } from './service';
+export { ApiError, fetchMyReferrals, fetchReferralUser } from './service';

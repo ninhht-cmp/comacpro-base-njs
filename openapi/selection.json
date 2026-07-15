@@ -5,6 +5,7 @@
     "GET /v1/notifications/unread-count",
     "GET /v1/users/me",
     "GET /v1/users/referral/{code}",
+    "GET /v1/users/referrals",
     "POST /v1/auth/refresh",
     "POST /v1/auth/signin",
     "POST /v1/auth/signup",

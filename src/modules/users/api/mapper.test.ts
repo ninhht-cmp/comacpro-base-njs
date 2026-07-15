@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { ProfileMeResDto, UserRefResDto } from '@/lib/api/generated/model';
-import { toReferralUser, toUser } from './mapper';
+import type {
+  ProfileMeResDto,
+  ReferralListItemDto,
+  UserRefResDto,
+} from '@/lib/api/generated/model';
+import { toReferralMember, toReferralUser, toUser } from './mapper';
 import { UserRole, UserStatus } from './types';
 
 describe('toUser', () => {
@@ -76,5 +80,52 @@ describe('toReferralUser', () => {
       status: UserStatus.active,
       code: 'ABC',
     });
+  });
+});
+
+describe('toReferralMember', () => {
+  it('maps a full referral list item, flattening the profile', () => {
+    const dto: ReferralListItemDto = {
+      role: 'sm-member',
+      dealCount: 4,
+      profile: {
+        id: 'm-1',
+        fullName: 'Lê Văn C',
+        phoneNumber: '0911222333',
+        avatarUrl: 'https://cdn/c.png',
+        createdAt: '2026-07-01T00:00:00.000Z',
+        isEKYCVerified: true,
+        province: { id: 'p1', name: 'Hà Nội', countryId: 'vn' },
+      },
+    };
+
+    expect(toReferralMember(dto)).toEqual({
+      id: 'm-1',
+      fullName: 'Lê Văn C',
+      phone: '0911222333',
+      avatar: 'https://cdn/c.png',
+      role: UserRole['sm-member'],
+      joinedAt: '2026-07-01T00:00:00.000Z',
+      province: 'Hà Nội',
+      ekycVerified: true,
+      dealCount: 4,
+    });
+  });
+
+  it('degrades gracefully on a minimal item (only required fields)', () => {
+    const dto: ReferralListItemDto = {
+      role: 'sm-member',
+      profile: {
+        id: 'm-2',
+        fullName: 'Người Mới',
+        createdAt: '2026-07-10T00:00:00.000Z',
+      },
+    };
+
+    const member = toReferralMember(dto);
+    expect(member.fullName).toBe('Người Mới');
+    expect(member.phone).toBeUndefined();
+    expect(member.province).toBeUndefined();
+    expect(member.dealCount).toBeUndefined();
   });
 });

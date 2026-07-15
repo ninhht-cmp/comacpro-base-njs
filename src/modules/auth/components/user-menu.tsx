@@ -57,6 +57,9 @@ export function UserMenu({
         <DropdownMenuItem asChild>
           <Link href="/account">{t('nav.account')}</Link>
         </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/referrals">{t('nav.referrals')}</Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           variant="destructive"

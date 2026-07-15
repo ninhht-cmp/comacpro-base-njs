@@ -4,4 +4,4 @@
  * generated client directly.
  */
 export * from './types';
-export { toReferralUser, toUser } from './mapper';
+export { toReferralMember, toReferralUser, toUser } from './mapper';

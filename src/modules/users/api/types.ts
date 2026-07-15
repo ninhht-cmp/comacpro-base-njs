@@ -45,3 +45,29 @@ export interface ReferralUser {
   status?: UserStatus;
   code?: string;
 }
+
+/** One member the signed-in user referred (`GET /v1/users/referrals`). */
+export interface ReferralMember {
+  id: string;
+  fullName: string;
+  avatar?: string;
+  phone?: string;
+  role?: UserRole;
+  /** ISO date-time the member joined. */
+  joinedAt: string;
+  province?: string;
+  ekycVerified?: boolean;
+  dealCount?: number;
+}
+
+export interface ReferralPageMeta {
+  page: number;
+  perPage: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface ReferralMemberPage {
+  items: ReferralMember[];
+  meta?: ReferralPageMeta;
+}

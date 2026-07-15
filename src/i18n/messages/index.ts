@@ -9,6 +9,7 @@ const NAMESPACES = [
   'Errors',
   'Auth',
   'Notifications',
+  'Referrals',
   'About',
   'Download',
   'Legal',

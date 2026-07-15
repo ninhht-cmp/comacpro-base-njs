@@ -26,7 +26,30 @@ const mockProfile = {
   email: 'demo@example.com',
   role: 'sm-saler',
   referralCode: 'DEMO123',
+  referralUrl: 'https://salenet.example/signup?referral=0912345678',
 };
+
+const mockReferrals = [
+  {
+    role: 'sm-member',
+    dealCount: 3,
+    profile: {
+      id: 'mock-referral-1',
+      fullName: 'Thành Viên Một',
+      phoneNumber: '0900000001',
+      createdAt: '2026-07-01T00:00:00.000Z',
+      isEKYCVerified: true,
+    },
+  },
+  {
+    role: 'sm-member',
+    profile: {
+      id: 'mock-referral-2',
+      fullName: 'Thành Viên Hai',
+      createdAt: '2026-07-10T00:00:00.000Z',
+    },
+  },
+];
 
 const mockTokens = {
   accessToken: 'mock-access-token',
@@ -84,6 +107,18 @@ export const handlers: RequestHandler[] = [
         },
       }),
     ),
+  ),
+  http.get('*/v1/users/referrals', () =>
+    HttpResponse.json({
+      ...envelope(mockReferrals),
+      pagination: {
+        currentPage: 1,
+        perPage: 20,
+        pageItems: mockReferrals.length,
+        totalPage: 1,
+        totalItem: mockReferrals.length,
+      },
+    }),
   ),
   http.get('*/v1/notifications/unread-count', () =>
     HttpResponse.json(

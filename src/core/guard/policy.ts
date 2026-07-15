@@ -17,6 +17,7 @@ export type PathKey = keyof typeof routing.pathnames;
 export const PROTECTED_HREFS = [
   '/account',
   '/notifications',
+  '/referrals',
 ] as const satisfies PathKey[];
 
 export const AUTH_HREFS = ['/signin', '/signup'] as const satisfies PathKey[];
