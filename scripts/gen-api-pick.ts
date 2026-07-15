@@ -108,9 +108,11 @@ function listOperations(spec: Record<string, unknown>): Operation[] {
   return ops;
 }
 
-function loadCurrentSelection(): Set<string> {
+function loadCurrentSelection(): Set<string> | 'all' {
   try {
     const parsed = JSON.parse(readFileSync(SELECTION_PATH, 'utf8'));
+    // `"operations": "*"` = full-spec mode; picking narrows it to a list.
+    if (parsed.operations === '*') return 'all';
     return new Set<string>(parsed.operations ?? []);
   } catch {
     return new Set();
@@ -132,6 +134,8 @@ async function main() {
   if (operations.length === 0) fail('No operations found in the spec.');
 
   const current = loadCurrentSelection();
+  const isSelected = (key: string) =>
+    current === 'all' ? true : current.has(key);
   const pad = Math.max(...operations.map((o) => o.method.length));
 
   const prompt = new AutoComplete({
@@ -140,7 +144,7 @@ async function main() {
       'Chọn API cần generate — gõ để tìm, ↑↓ di chuyển, space chọn, enter xác nhận',
     limit: 18,
     multiple: true,
-    initial: operations.filter((o) => current.has(o.key)).map((o) => o.key),
+    initial: operations.filter((o) => isSelected(o.key)).map((o) => o.key),
     // `name` is the persisted key; `message` is the searchable, readable label.
     choices: operations.map((o) => ({
       name: o.key,
@@ -152,7 +156,8 @@ async function main() {
 
   const picked = await prompt.run();
 
-  const before = current;
+  const before =
+    current === 'all' ? new Set(operations.map((o) => o.key)) : current;
   const after = new Set(picked);
   const added = picked.filter((k) => !before.has(k));
   const removed = [...before].filter((k) => !after.has(k));

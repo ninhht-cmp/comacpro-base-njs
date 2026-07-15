@@ -27,6 +27,7 @@
     "format:check": "prettier --check .",
     "gen:api:pick": "tsx scripts/gen-api-pick.ts",
     "gen:api": "tsx scripts/gen-api/generate.ts",
+    "gen:api:sync": "tsx scripts/gen-api/sync.ts",
     "prepare": "husky",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

@@ -173,6 +173,48 @@ describe('generateModels', () => {
     );
   });
 
+  it('generates the whole spec when selection is \'all\' (operations: "*")', () => {
+    const { content, stats } = generateModels(
+      spec(
+        {
+          ThingDto: { type: 'object', properties: { id: { type: 'string' } } },
+          OtherDto: { type: 'object', properties: { id: { type: 'string' } } },
+        },
+        {
+          '/things': {
+            get: {
+              responses: {
+                '200': {
+                  content: {
+                    'application/json': {
+                      schema: { $ref: '#/components/schemas/ThingDto' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          '/others': {
+            post: {
+              requestBody: {
+                content: {
+                  'application/json': {
+                    schema: { $ref: '#/components/schemas/OtherDto' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      ),
+      'all',
+    );
+    expect(content).toContain('export interface ThingDto');
+    expect(content).toContain('export interface OtherDto');
+    expect(content).toContain('scope: full spec (2 operations)');
+    expect(stats.schemas).toBe(2);
+  });
+
   it('is deterministic: same input → byte-identical output', () => {
     const make = () =>
       generateModels(

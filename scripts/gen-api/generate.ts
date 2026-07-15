@@ -37,17 +37,19 @@ async function loadSpec(source: string): Promise<OpenApiSpec> {
   return JSON.parse(readFileSync(source, 'utf8')) as OpenApiSpec;
 }
 
-function loadSelection(): Set<string> {
+function loadSelection(): Set<string> | 'all' {
   let raw: string;
   try {
     raw = readFileSync(SELECTION_PATH, 'utf8');
   } catch {
     throw new Error(
-      'gen:api: openapi/selection.json not found. Run `pnpm gen:api:pick`.',
+      'gen:api: openapi/selection.json not found. Run `pnpm gen:api:pick`, ' +
+        'or commit `{ "operations": "*" }` to generate the full spec.',
     );
   }
-  const operations = (JSON.parse(raw) as { operations?: string[] }).operations;
-  return new Set(operations ?? []);
+  const operations = (JSON.parse(raw) as { operations?: string[] | '*' })
+    .operations;
+  return operations === '*' ? 'all' : new Set(operations ?? []);
 }
 
 function loadConfig(): CodegenConfig {

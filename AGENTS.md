@@ -104,9 +104,12 @@ the dev server is running.
 - The committed `openapi/openapi.json` is a snapshot of the SaleNet spec;
   regen with `pnpm gen:api`. Scope is per-operation and lives in
   `openapi/selection.json` — run `pnpm gen:api:pick` (interactive: search +
-  multi-select the operations to generate) to change it, then `pnpm gen:api`.
-  The selection file is committed, so `gen:api`/`check:api-fresh` stay
-  deterministic (the generator prunes the spec to it).
+  multi-select the operations to generate) to change it, then `pnpm gen:api`;
+  `"operations": "*"` generates the full spec. When the backend changes,
+  `pnpm gen:api:sync` pulls the live spec (`OPENAPI_SPEC`) into the snapshot
+  and regenerates — models are derived state, always rewritten wholesale
+  (typecheck then surfaces renamed/removed fields). The selection file is
+  committed, so `gen:api`/`check:api-fresh` stay deterministic.
 - Tests colocate with source (`*.test.ts[x]`); mock HTTP with MSW
   (`server.use(...)`), never fetch stubs.
 

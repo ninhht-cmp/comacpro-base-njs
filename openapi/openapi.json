@@ -34,7 +34,7 @@
     "/v1/system/activities": {
       "get": {
         "operationId": "AuditLogController_getActivities",
-        "summary": "List activity logs \u2014 system role only",
+        "summary": "List activity logs — system role only",
         "parameters": [
           {
             "name": "page",
@@ -6194,7 +6194,7 @@
             "name": "segment",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo ph\u00e2n kh\u00fac",
+            "description": "Lọc theo phân khúc",
             "schema": {
               "enum": [
                 "blocked",
@@ -6210,7 +6210,7 @@
             "name": "role",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo c\u1ea5p b\u1eadc (level)",
+            "description": "Lọc theo cấp bậc (level)",
             "schema": {
               "enum": [
                 "sm-admin",
@@ -6234,7 +6234,7 @@
             "name": "keyword",
             "required": false,
             "in": "query",
-            "description": "T\u00ecm theo t\u00ean / username",
+            "description": "Tìm theo tên / username",
             "schema": {
               "type": "string"
             }
@@ -6243,7 +6243,7 @@
             "name": "module",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc user c\u00f3 ho\u1ea1t \u0111\u1ed9ng \u1edf m\u1ea3ng n\u00e0y",
+            "description": "Lọc user có hoạt động ở mảng này",
             "schema": {
               "type": "string"
             }
@@ -6278,7 +6278,7 @@
             "name": "windowDays",
             "required": false,
             "in": "query",
-            "description": "C\u1eeda s\u1ed5 th\u1ed1ng k\u00ea (ng\u00e0y)",
+            "description": "Cửa sổ thống kê (ngày)",
             "schema": {
               "default": 30,
               "type": "number"
@@ -6992,7 +6992,7 @@
             "name": "status",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo tr\u1ea1ng th\u00e1i eKYC",
+            "description": "Lọc theo trạng thái eKYC",
             "schema": {
               "enum": ["success", "failure", "in-progress"],
               "type": "string"
@@ -7002,7 +7002,7 @@
             "name": "userId",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo userId",
+            "description": "Lọc theo userId",
             "schema": {
               "type": "string"
             }
@@ -7011,7 +7011,7 @@
             "name": "idCard",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo s\u1ed1 CCCD/CMND (ch\u00ednh x\u00e1c)",
+            "description": "Lọc theo số CCCD/CMND (chính xác)",
             "schema": {
               "type": "string"
             }
@@ -7020,7 +7020,7 @@
             "name": "search",
             "required": false,
             "in": "query",
-            "description": "T\u00ecm theo h\u1ecd t\u00ean ho\u1eb7c s\u1ed1 gi\u1ea5y t\u1edd (ILIKE)",
+            "description": "Tìm theo họ tên hoặc số giấy tờ (ILIKE)",
             "schema": {
               "type": "string"
             }
@@ -7029,7 +7029,7 @@
             "name": "picPhoneNumber",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo S\u0110T ng\u01b0\u1eddi ph\u1ee5 tr\u00e1ch (PIC) (ILIKE)",
+            "description": "Lọc theo SĐT người phụ trách (PIC) (ILIKE)",
             "schema": {
               "type": "string"
             }
@@ -7038,7 +7038,7 @@
             "name": "createdFrom",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc createdAt t\u1eeb ng\u00e0y (YYYY-MM-DD)",
+            "description": "Lọc createdAt từ ngày (YYYY-MM-DD)",
             "schema": {
               "type": "string"
             }
@@ -7047,7 +7047,7 @@
             "name": "createdTo",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc createdAt \u0111\u1ebfn ng\u00e0y (YYYY-MM-DD)",
+            "description": "Lọc createdAt đến ngày (YYYY-MM-DD)",
             "schema": {
               "type": "string"
             }
@@ -7056,7 +7056,7 @@
             "name": "hasMedia",
             "required": false,
             "in": "query",
-            "description": "true: ch\u1ec9 event \u0111\u00e3 c\u00f3 \u1ea3nh; false: ch\u01b0a c\u00f3 \u1ea3nh",
+            "description": "true: chỉ event đã có ảnh; false: chưa có ảnh",
             "schema": {
               "type": "boolean"
             }
@@ -7236,7 +7236,7 @@
     "/v1/users/activities/heartbeat": {
       "post": {
         "operationId": "UserActivityController_heartbeat",
-        "summary": "Client g\u1eedi heartbeat khi foreground \u0111\u1ec3 \u0111o active time th\u1ef1c t\u1ebf",
+        "summary": "Client gửi heartbeat khi foreground để đo active time thực tế",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -13875,7 +13875,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "ISO date \u2014 required when range=custom",
+            "description": "ISO date — required when range=custom",
             "schema": {
               "type": "string"
             }
@@ -13884,7 +13884,7 @@
             "name": "to",
             "required": false,
             "in": "query",
-            "description": "ISO date \u2014 required when range=custom",
+            "description": "ISO date — required when range=custom",
             "schema": {
               "type": "string"
             }
@@ -13939,7 +13939,7 @@
             "name": "from",
             "required": false,
             "in": "query",
-            "description": "ISO date \u2014 required when range=custom",
+            "description": "ISO date — required when range=custom",
             "schema": {
               "type": "string"
             }
@@ -13948,7 +13948,7 @@
             "name": "to",
             "required": false,
             "in": "query",
-            "description": "ISO date \u2014 required when range=custom",
+            "description": "ISO date — required when range=custom",
             "schema": {
               "type": "string"
             }
@@ -15945,7 +15945,7 @@
     "/v1/admin/dashboard/users/activities": {
       "get": {
         "operationId": "DashboardAdminController_userActivity",
-        "summary": "B\u00e1o c\u00e1o h\u00e0nh vi ng\u01b0\u1eddi d\u00f9ng: DAU/WAU/MAU, daily series, ph\u00e2n kh\u00fac, top m\u1ea3ng, theo gi\u1edd \u2014 cache ~20', 1 API cho m\u1ecdi chart",
+        "summary": "Báo cáo hành vi người dùng: DAU/WAU/MAU, daily series, phân khúc, top mảng, theo giờ — cache ~20', 1 API cho mọi chart",
         "parameters": [],
         "responses": {
           "200": {
@@ -15981,7 +15981,7 @@
     "/v1/admin/dashboard/users/activities/team": {
       "get": {
         "operationId": "DashboardAdminController_userTeamActivity",
-        "summary": "Hi\u1ec7u qu\u1ea3 team theo t\u1eebng ng\u01b0\u1eddi (drill-down, c\u00f3 ph\u00e2n trang). M\u1eb7c \u0111\u1ecbnh li\u1ec7t k\u00ea SM_MANAGER; truy\u1ec1n role \u0111\u1ec3 xem c\u1ea5p kh\u00e1c, ho\u1eb7c parentId \u0111\u1ec3 x\u1ed5 c\u1ea5p d\u01b0\u1edbi tr\u1ef1c ti\u1ebfp c\u1ee7a 1 ng\u01b0\u1eddi (click drill \u0111\u1ebfn khi hasMembers=false). M\u1ed7i d\u00f2ng: t\u1ed5ng qu\u00e2n s\u1ed1 downline, th\u00e0nh vi\u00ean m\u1edbi 30 ng\u00e0y, s\u1ed1 \u0111ang ho\u1ea1t \u0111\u1ed9ng + ph\u00e2n b\u1ed1 segment.",
+        "summary": "Hiệu quả team theo từng người (drill-down, có phân trang). Mặc định liệt kê SM_MANAGER; truyền role để xem cấp khác, hoặc parentId để xổ cấp dưới trực tiếp của 1 người (click drill đến khi hasMembers=false). Mỗi dòng: tổng quân số downline, thành viên mới 30 ngày, số đang hoạt động + phân bố segment.",
         "parameters": [
           {
             "name": "page",
@@ -16010,7 +16010,7 @@
             "name": "role",
             "required": false,
             "in": "query",
-            "description": "L\u1ecdc theo c\u1ea5p b\u1eadc. M\u1eb7c \u0111\u1ecbnh sm-manager n\u1ebfu kh\u00f4ng truy\u1ec1n parentId",
+            "description": "Lọc theo cấp bậc. Mặc định sm-manager nếu không truyền parentId",
             "schema": {
               "enum": [
                 "sm-admin",
@@ -16034,7 +16034,7 @@
             "name": "parentId",
             "required": false,
             "in": "query",
-            "description": "Drill-down: l\u1ea5y c\u1ea5p d\u01b0\u1edbi TR\u1ef0C TI\u1ebeP c\u1ee7a user n\u00e0y (depth=1). Click 1 ng\u01b0\u1eddi \u0111\u1ec3 x\u1ed5 ti\u1ebfp",
+            "description": "Drill-down: lấy cấp dưới TRỰC TIẾP của user này (depth=1). Click 1 người để xổ tiếp",
             "schema": {
               "type": "string"
             }
@@ -16043,7 +16043,7 @@
             "name": "sortBy",
             "required": false,
             "in": "query",
-            "description": "S\u1eafp x\u1ebfp theo c\u1ed9t n\u00e0o",
+            "description": "Sắp xếp theo cột nào",
             "schema": {
               "default": "teamTotal",
               "enum": [
@@ -16104,7 +16104,7 @@
     "/v1/admin/dashboard/deals-stats": {
       "get": {
         "operationId": "DashboardAdminController_getDealStat",
-        "summary": "Th\u1ed1ng k\u00ea giao d\u1ecbch theo th\u1eddi gian",
+        "summary": "Thống kê giao dịch theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16190,7 +16190,7 @@
     "/v1/admin/dashboard/deals/stats": {
       "get": {
         "operationId": "DashboardAdminController_getDealStat",
-        "summary": "Th\u1ed1ng k\u00ea giao d\u1ecbch theo th\u1eddi gian",
+        "summary": "Thống kê giao dịch theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16276,7 +16276,7 @@
     "/v1/admin/dashboard/users-stats": {
       "get": {
         "operationId": "DashboardAdminController_getUserStat",
-        "summary": "Th\u1ed1ng k\u00ea nh\u00e2n vi\u00ean theo th\u1eddi gian",
+        "summary": "Thống kê nhân viên theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16362,7 +16362,7 @@
     "/v1/admin/dashboard/users/stats": {
       "get": {
         "operationId": "DashboardAdminController_getUserStat",
-        "summary": "Th\u1ed1ng k\u00ea nh\u00e2n vi\u00ean theo th\u1eddi gian",
+        "summary": "Thống kê nhân viên theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16448,7 +16448,7 @@
     "/v1/admin/dashboard/customers-stats": {
       "get": {
         "operationId": "DashboardAdminController_getCustomerStat",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 kh\u00e1ch h\u00e0ng theo th\u1eddi gian (ng\u00e0y/th\u00e1ng/n\u0103m ho\u1eb7c kho\u1ea3ng ng\u00e0y t\u00f9y ch\u1ecdn)",
+        "summary": "Biểu đồ khách hàng theo thời gian (ngày/tháng/năm hoặc khoảng ngày tùy chọn)",
         "parameters": [
           {
             "name": "groupBy",
@@ -16534,7 +16534,7 @@
     "/v1/admin/dashboard/customers/stats": {
       "get": {
         "operationId": "DashboardAdminController_getCustomerStat",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 kh\u00e1ch h\u00e0ng theo th\u1eddi gian (ng\u00e0y/th\u00e1ng/n\u0103m ho\u1eb7c kho\u1ea3ng ng\u00e0y t\u00f9y ch\u1ecdn)",
+        "summary": "Biểu đồ khách hàng theo thời gian (ngày/tháng/năm hoặc khoảng ngày tùy chọn)",
         "parameters": [
           {
             "name": "groupBy",
@@ -16620,7 +16620,7 @@
     "/v1/admin/dashboard/suppliers-stats": {
       "get": {
         "operationId": "DashboardAdminController_getSupplierStat",
-        "summary": "Th\u1ed1ng k\u00ea nh\u00e0 cung c\u1ea5p theo th\u1eddi gian",
+        "summary": "Thống kê nhà cung cấp theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16706,7 +16706,7 @@
     "/v1/admin/dashboard/suppliers/stats": {
       "get": {
         "operationId": "DashboardAdminController_getSupplierStat",
-        "summary": "Th\u1ed1ng k\u00ea nh\u00e0 cung c\u1ea5p theo th\u1eddi gian",
+        "summary": "Thống kê nhà cung cấp theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16792,7 +16792,7 @@
     "/v1/admin/dashboard/commission-stats": {
       "get": {
         "operationId": "DashboardAdminController_getCommissionStat",
-        "summary": "Th\u1ed1ng k\u00ea hoa h\u1ed3ng theo th\u1eddi gian",
+        "summary": "Thống kê hoa hồng theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16878,7 +16878,7 @@
     "/v1/admin/dashboard/commissions/stats": {
       "get": {
         "operationId": "DashboardAdminController_getCommissionStat",
-        "summary": "Th\u1ed1ng k\u00ea hoa h\u1ed3ng theo th\u1eddi gian",
+        "summary": "Thống kê hoa hồng theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -16964,7 +16964,7 @@
     "/v1/admin/dashboard/revenue-stats": {
       "get": {
         "operationId": "DashboardAdminController_getRevenueStat",
-        "summary": "Th\u1ed1ng k\u00ea doanh thu theo th\u1eddi gian",
+        "summary": "Thống kê doanh thu theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -17050,7 +17050,7 @@
     "/v1/admin/dashboard/revenue/stats": {
       "get": {
         "operationId": "DashboardAdminController_getRevenueStat",
-        "summary": "Th\u1ed1ng k\u00ea doanh thu theo th\u1eddi gian",
+        "summary": "Thống kê doanh thu theo thời gian",
         "parameters": [
           {
             "name": "groupBy",
@@ -17136,7 +17136,7 @@
     "/v1/admin/dashboard/revenue/overview": {
       "get": {
         "operationId": "DashboardAdminController_getRevenueOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan doanh thu: t\u1ed5ng, h\u00f4m nay, t\u0103ng tr\u01b0\u1edfng so th\u00e1ng tr\u01b0\u1edbc, hoa h\u1ed3ng trung b\u00ecnh",
+        "summary": "Thẻ tổng quan doanh thu: tổng, hôm nay, tăng trưởng so tháng trước, hoa hồng trung bình",
         "parameters": [],
         "responses": {
           "200": {
@@ -17172,7 +17172,7 @@
     "/v1/admin/dashboard/customers/overview": {
       "get": {
         "operationId": "DashboardAdminController_getCustomerOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan kh\u00e1ch h\u00e0ng: t\u1ed5ng, \u0111\u00e3 duy\u1ec7t, ch\u1edd duy\u1ec7t, c\u00f3 giao d\u1ecbch",
+        "summary": "Thẻ tổng quan khách hàng: tổng, đã duyệt, chờ duyệt, có giao dịch",
         "parameters": [],
         "responses": {
           "200": {
@@ -17208,7 +17208,7 @@
     "/v1/admin/dashboard/customers/by-province": {
       "get": {
         "operationId": "DashboardAdminController_getCustomerByProvince",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 kh\u00e1ch h\u00e0ng theo t\u1ec9nh/th\u00e0nh ph\u1ed1 (top 7 + Kh\u00e1c).",
+        "summary": "Biểu đồ khách hàng theo tỉnh/thành phố (top 7 + Khác).",
         "parameters": [
           {
             "name": "groupBy",
@@ -17294,7 +17294,7 @@
     "/v1/admin/dashboard/customers/type-rate": {
       "get": {
         "operationId": "DashboardAdminController_getCustomerTypeRate",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 donut lo\u1ea1i kh\u00e1ch h\u00e0ng (C\u00f4ng ty vs C\u00e1 nh\u00e2n)",
+        "summary": "Biểu đồ donut loại khách hàng (Công ty vs Cá nhân)",
         "parameters": [],
         "responses": {
           "200": {
@@ -17330,7 +17330,7 @@
     "/v1/admin/dashboard/suppliers/overview": {
       "get": {
         "operationId": "DashboardAdminController_getSupplierOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan nh\u00e0 cung c\u1ea5p: t\u1ed5ng, \u0111\u00e3 duy\u1ec7t, ch\u1edd duy\u1ec7t, c\u00f3 s\u1ea3n ph\u1ea9m",
+        "summary": "Thẻ tổng quan nhà cung cấp: tổng, đã duyệt, chờ duyệt, có sản phẩm",
         "parameters": [],
         "responses": {
           "200": {
@@ -17366,7 +17366,7 @@
     "/v1/admin/dashboard/suppliers/by-province": {
       "get": {
         "operationId": "DashboardAdminController_getSupplierByProvince",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 nh\u00e0 cung c\u1ea5p theo t\u1ec9nh/th\u00e0nh ph\u1ed1 (top 7 + Kh\u00e1c)",
+        "summary": "Biểu đồ nhà cung cấp theo tỉnh/thành phố (top 7 + Khác)",
         "parameters": [
           {
             "name": "groupBy",
@@ -17452,7 +17452,7 @@
     "/v1/admin/dashboard/suppliers/type-rate": {
       "get": {
         "operationId": "DashboardAdminController_getSupplierTypeRate",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 donut lo\u1ea1i nh\u00e0 cung c\u1ea5p (C\u00f4ng ty vs C\u00e1 nh\u00e2n)",
+        "summary": "Biểu đồ donut loại nhà cung cấp (Công ty vs Cá nhân)",
         "parameters": [],
         "responses": {
           "200": {
@@ -17488,7 +17488,7 @@
     "/v1/admin/dashboard/deals/overview": {
       "get": {
         "operationId": "DashboardAdminController_getDealOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan giao d\u1ecbch: t\u1ed5ng, ho\u00e0n th\u00e0nh, \u0111ang x\u1eed l\u00fd, hu\u1ef7, doanh thu",
+        "summary": "Thẻ tổng quan giao dịch: tổng, hoàn thành, đang xử lý, huỷ, doanh thu",
         "parameters": [],
         "responses": {
           "200": {
@@ -17524,7 +17524,7 @@
     "/v1/admin/dashboard/deals/by-status": {
       "get": {
         "operationId": "DashboardAdminController_getDealsByStatus",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 donut giao d\u1ecbch theo tr\u1ea1ng th\u00e1i: s\u1ed1 l\u01b0\u1ee3ng v\u00e0 t\u1ec9 l\u1ec7 %",
+        "summary": "Biểu đồ donut giao dịch theo trạng thái: số lượng và tỉ lệ %",
         "parameters": [],
         "responses": {
           "200": {
@@ -17560,7 +17560,7 @@
     "/v1/admin/dashboard/deals/value-by-status": {
       "get": {
         "operationId": "DashboardAdminController_getDealValueByStatus",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 c\u1ed9t gi\u00e1 tr\u1ecb giao d\u1ecbch theo tr\u1ea1ng th\u00e1i",
+        "summary": "Biểu đồ cột giá trị giao dịch theo trạng thái",
         "parameters": [],
         "responses": {
           "200": {
@@ -17599,7 +17599,7 @@
     "/v1/admin/dashboard/commissions/stats-by-role": {
       "get": {
         "operationId": "DashboardAdminController_getCommissionStatsByRole",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 Chi tr\u1ea3 theo vai tr\u00f2: hoa h\u1ed3ng theo th\u1eddi gian ph\u00e2n theo ch\u1ee9c v\u1ee5 (sm-manager, sm-leader, sm-saler, sm-member)",
+        "summary": "Biểu đồ Chi trả theo vai trò: hoa hồng theo thời gian phân theo chức vụ (sm-manager, sm-leader, sm-saler, sm-member)",
         "parameters": [
           {
             "name": "groupBy",
@@ -17685,7 +17685,7 @@
     "/v1/admin/dashboard/commissions/overview": {
       "get": {
         "operationId": "DashboardAdminController_getCommissionOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan hoa h\u1ed3ng: t\u1ed5ng, \u0111\u00e3 chi tr\u1ea3, c\u00f2n ph\u1ea3i chi tr\u1ea3, t\u1ec9 l\u1ec7 chi tr\u1ea3",
+        "summary": "Thẻ tổng quan hoa hồng: tổng, đã chi trả, còn phải chi trả, tỉ lệ chi trả",
         "parameters": [],
         "responses": {
           "200": {
@@ -17721,7 +17721,7 @@
     "/v1/admin/dashboard/commissions/allocation": {
       "get": {
         "operationId": "DashboardAdminController_getCommissionAllocation",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 ph\u00e2n b\u1ed5 hoa h\u1ed3ng theo nh\u00f3m (C\u1ed9ng \u0111\u1ed3ng, Kh\u00e1ch h\u00e0ng, NCC, Ngu\u1ed3n h\u00e0ng, Giao d\u1ecbch)",
+        "summary": "Biểu đồ phân bổ hoa hồng theo nhóm (Cộng đồng, Khách hàng, NCC, Nguồn hàng, Giao dịch)",
         "parameters": [
           {
             "name": "startDate",
@@ -17789,7 +17789,7 @@
     "/v1/admin/dashboard/users/overview": {
       "get": {
         "operationId": "DashboardAdminController_getUserOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan ng\u01b0\u1eddi d\u00f9ng: t\u1ed5ng, ho\u1ea1t \u0111\u1ed9ng, t\u1ec9 l\u1ec7 chuy\u1ec3n \u0111\u1ed5i, m\u1edbi trong th\u00e1ng",
+        "summary": "Thẻ tổng quan người dùng: tổng, hoạt động, tỉ lệ chuyển đổi, mới trong tháng",
         "parameters": [],
         "responses": {
           "200": {
@@ -17825,7 +17825,7 @@
     "/v1/admin/dashboard/users/funnel": {
       "get": {
         "operationId": "DashboardAdminController_getUserFunnel",
-        "summary": "Ph\u1ec5u t\u1ec9 l\u1ec7 chuy\u1ec3n \u0111\u1ed5i ng\u01b0\u1eddi d\u00f9ng: \u0110\u0103ng k\u00fd \u2192 eKYC \u2192 B\u1ed5 sung th\u00f4ng tin \u2192 K\u00fd h\u1ee3p \u0111\u1ed3ng",
+        "summary": "Phễu tỉ lệ chuyển đổi người dùng: Đăng ký → eKYC → Bổ sung thông tin → Ký hợp đồng",
         "parameters": [
           {
             "name": "groupBy",
@@ -17911,7 +17911,7 @@
     "/v1/admin/dashboard/users/by-role": {
       "get": {
         "operationId": "DashboardAdminController_getUsersByRole",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 ng\u01b0\u1eddi d\u00f9ng theo vai tr\u00f2 (G\u0110 T\u1ec9nh, TNKV, CVKD, \u0110DTM)",
+        "summary": "Biểu đồ người dùng theo vai trò (GĐ Tỉnh, TNKV, CVKD, ĐDTM)",
         "parameters": [],
         "responses": {
           "200": {
@@ -17950,7 +17950,7 @@
     "/v1/admin/dashboard/products/stats": {
       "get": {
         "operationId": "DashboardAdminController_getProductStat",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 s\u1ed1 l\u01b0\u1ee3ng s\u1ea3n ph\u1ea9m \u0111\u01b0\u1ee3c t\u1ea1o theo th\u1eddi gian (ng\u00e0y/th\u00e1ng/n\u0103m ho\u1eb7c kho\u1ea3ng ng\u00e0y t\u00f9y ch\u1ecdn)",
+        "summary": "Biểu đồ số lượng sản phẩm được tạo theo thời gian (ngày/tháng/năm hoặc khoảng ngày tùy chọn)",
         "parameters": [
           {
             "name": "groupBy",
@@ -18036,7 +18036,7 @@
     "/v1/admin/dashboard/products/overview": {
       "get": {
         "operationId": "DashboardAdminController_getProductOverview",
-        "summary": "Th\u1ebb t\u1ed5ng quan s\u1ea3n ph\u1ea9m: t\u1ed5ng, ch\u1edd duy\u1ec7t, \u0111\u00e3 duy\u1ec7t, h\u1ebft h\u00e0ng",
+        "summary": "Thẻ tổng quan sản phẩm: tổng, chờ duyệt, đã duyệt, hết hàng",
         "parameters": [],
         "responses": {
           "200": {
@@ -18072,7 +18072,7 @@
     "/v1/admin/dashboard/products/by-warehouse": {
       "get": {
         "operationId": "DashboardAdminController_getProductByWarehouse",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 s\u1ea3n ph\u1ea9m theo Kho b\u00e3i (top 7 T\u1ec9nh/Th\u00e0nh + Kh\u00e1c). Kho\u1ea3ng ng\u00e0y t\u1ed1i \u0111a 30 ng\u00e0y",
+        "summary": "Biểu đồ sản phẩm theo Kho bãi (top 7 Tỉnh/Thành + Khác). Khoảng ngày tối đa 30 ngày",
         "parameters": [
           {
             "name": "groupBy",
@@ -18158,7 +18158,7 @@
     "/v1/admin/dashboard/products/by-category": {
       "get": {
         "operationId": "DashboardAdminController_getProductByCategory",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 donut Ph\u00e2n lo\u1ea1i theo danh m\u1ee5c: s\u1ed1 l\u01b0\u1ee3ng v\u00e0 t\u1ec9 l\u1ec7 % theo danh m\u1ee5c cha",
+        "summary": "Biểu đồ donut Phân loại theo danh mục: số lượng và tỉ lệ % theo danh mục cha",
         "parameters": [
           {
             "name": "groupBy",
@@ -18241,7 +18241,7 @@
     "/v1/admin/dashboard/products/by-machine-type": {
       "get": {
         "operationId": "DashboardAdminController_getProductByMachineType",
-        "summary": "Bi\u1ec3u \u0111\u1ed3 donut T\u1ec9 l\u1ec7 lo\u1ea1i h\u00e0ng (D\u00e2n d\u00f9ng / B\u00e3i trong n\u01b0\u1edbc / \u0110\u1eb7t n\u01b0\u1edbc ngo\u00e0i)",
+        "summary": "Biểu đồ donut Tỉ lệ loại hàng (Dân dùng / Bãi trong nước / Đặt nước ngoài)",
         "parameters": [
           {
             "name": "groupBy",
@@ -19718,7 +19718,7 @@
           },
           "headers": {
             "type": "object",
-            "description": "Request headers with sensitive fields (authorization, cookie, x-api-key, \u2026) removed"
+            "description": "Request headers with sensitive fields (authorization, cookie, x-api-key, …) removed"
           },
           "auth": {
             "$ref": "#/components/schemas/ActivityAuthResDto"
@@ -19734,7 +19734,7 @@
           },
           "errors": {
             "type": "object",
-            "description": "Error details \u2014 populated only when isSuccess is false, null otherwise"
+            "description": "Error details — populated only when isSuccess is false, null otherwise"
           }
         }
       },
@@ -23182,39 +23182,39 @@
           "lastActivityAt": {
             "format": "date-time",
             "type": "string",
-            "description": "Th\u1eddi \u0111i\u1ec3m ho\u1ea1t \u0111\u1ed9ng g\u1ea7n nh\u1ea5t (c\u00f3 gi\u1edd)"
+            "description": "Thời điểm hoạt động gần nhất (có giờ)"
           },
           "activeDays": {
             "type": "number",
-            "description": "S\u1ed1 ng\u00e0y c\u00f3 ho\u1ea1t \u0111\u1ed9ng trong c\u1eeda s\u1ed5"
+            "description": "Số ngày có hoạt động trong cửa sổ"
           },
           "readCount": {
             "type": "number",
-            "description": "S\u1ed1 request GET trong c\u1eeda s\u1ed5"
+            "description": "Số request GET trong cửa sổ"
           },
           "writeCount": {
             "type": "number",
-            "description": "S\u1ed1 request ghi (POST/PUT/PATCH/DELETE) trong c\u1eeda s\u1ed5"
+            "description": "Số request ghi (POST/PUT/PATCH/DELETE) trong cửa sổ"
           },
           "totalActiveSeconds": {
             "type": "number",
-            "description": "T\u1ed5ng active time th\u1eadt (gi\u00e2y) trong c\u1eeda s\u1ed5"
+            "description": "Tổng active time thật (giây) trong cửa sổ"
           },
           "peakHour": {
             "type": "number",
-            "description": "Gi\u1edd ho\u1ea1t \u0111\u1ed9ng nhi\u1ec1u nh\u1ea5t (0-23, gi\u1edd \u0111\u1ecba ph\u01b0\u01a1ng)"
+            "description": "Giờ hoạt động nhiều nhất (0-23, giờ địa phương)"
           },
           "moduleReads": {
             "type": "object",
-            "description": "S\u1ed1 l\u01b0\u1ee3t \u0110\u1eccC (GET) theo m\u1ea3ng"
+            "description": "Số lượt ĐỌC (GET) theo mảng"
           },
           "moduleWrites": {
             "type": "object",
-            "description": "S\u1ed1 l\u01b0\u1ee3t GHI (POST/PUT/PATCH/DELETE) theo m\u1ea3ng"
+            "description": "Số lượt GHI (POST/PUT/PATCH/DELETE) theo mảng"
           },
           "moduleDurations": {
             "type": "object",
-            "description": "Active time (gi\u00e2y) theo m\u1ea3ng \u2014 xem m\u1ed7i m\u1ea3ng bao l\u00e2u"
+            "description": "Active time (giây) theo mảng — xem mỗi mảng bao lâu"
           }
         },
         "required": [
@@ -23465,7 +23465,7 @@
           },
           "reason": {
             "type": "string",
-            "description": "L\u00fd do ch\u1eb7n (b\u1eaft bu\u1ed9c khi status = inactive)"
+            "description": "Lý do chặn (bắt buộc khi status = inactive)"
           }
         },
         "required": ["status"]
@@ -23499,7 +23499,7 @@
           },
           "user": {
             "nullable": true,
-            "description": "Th\u00f4ng tin user (join t\u1eeb user/profile)",
+            "description": "Thông tin user (join từ user/profile)",
             "allOf": [
               {
                 "$ref": "#/components/schemas/EkycEventUserResDto"
@@ -23508,7 +23508,7 @@
           },
           "pic": {
             "nullable": true,
-            "description": "PIC (ng\u01b0\u1eddi ph\u1ee5 tr\u00e1ch) c\u1ee7a user",
+            "description": "PIC (người phụ trách) của user",
             "allOf": [
               {
                 "$ref": "#/components/schemas/EkycEventUserResDto"
@@ -23517,7 +23517,7 @@
           },
           "mediaCount": {
             "type": "number",
-            "description": "S\u1ed1 \u1ea3nh eKYC \u0111\u00e3 l\u01b0u (meta.ekycMedia.items)"
+            "description": "Số ảnh eKYC đã lưu (meta.ekycMedia.items)"
           },
           "createdAt": {
             "format": "date-time",
@@ -23531,15 +23531,15 @@
         "properties": {
           "type": {
             "type": "string",
-            "description": "Lo\u1ea1i \u1ea3nh: face | cardFront | cardRear"
+            "description": "Loại ảnh: face | cardFront | cardRear"
           },
           "storageKey": {
             "type": "string",
-            "description": "Storage key d\u00f9ng \u0111\u1ec3 xin signed URL khi xem"
+            "description": "Storage key dùng để xin signed URL khi xem"
           },
           "url": {
             "type": "string",
-            "description": "Link \u1ea3nh: CDN g\u1ed1c (ch\u01b0a k\u00fd) khi list, signed URL khi view"
+            "description": "Link ảnh: CDN gốc (chưa ký) khi list, signed URL khi view"
           }
         },
         "required": ["type", "storageKey", "url"]
@@ -23552,14 +23552,14 @@
           },
           "expiresInSeconds": {
             "type": "number",
-            "description": "Th\u1eddi gian s\u1ed1ng c\u1ee7a signed URL (gi\u00e2y)"
+            "description": "Thời gian sống của signed URL (giây)"
           },
           "meta": {
             "type": "object",
-            "description": "Object eKYC g\u1ed1c (meta), g\u1ed3m c\u1ea3 ekycMedia"
+            "description": "Object eKYC gốc (meta), gồm cả ekycMedia"
           },
           "items": {
-            "description": "M\u1ed7i item k\u00e8m signed URL",
+            "description": "Mỗi item kèm signed URL",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/EkycMediaItemResDto"
@@ -23623,11 +23623,11 @@
         "properties": {
           "module": {
             "type": "string",
-            "description": "M\u1ea3ng/m\u00e0n h\u00ecnh \u0111ang xem (vd products, deals)"
+            "description": "Mảng/màn hình đang xem (vd products, deals)"
           },
           "activeMs": {
             "type": "number",
-            "description": "Th\u1eddi gian active th\u1eadt (ms) k\u1ec3 t\u1eeb heartbeat tr\u01b0\u1edbc (client t\u1ef1 \u0111o, \u0111\u00e3 tr\u1eeb idle)"
+            "description": "Thời gian active thật (ms) kể từ heartbeat trước (client tự đo, đã trừ idle)"
           }
         },
         "required": ["module", "activeMs"]
@@ -25101,10 +25101,10 @@
           },
           "createdById": {
             "type": "string",
-            "description": "User id \u0111\u00e3 t\u1ea1o phi\u00ean b\u1ea3n n\u00e0y"
+            "description": "User id đã tạo phiên bản này"
           },
           "createdBy": {
-            "description": "Ng\u01b0\u1eddi t\u1ea1o phi\u00ean b\u1ea3n n\u00e0y",
+            "description": "Người tạo phiên bản này",
             "allOf": [
               {
                 "$ref": "#/components/schemas/UserMinimalResDto"
@@ -25113,10 +25113,10 @@
           },
           "updatedById": {
             "type": "string",
-            "description": "User id \u0111\u00e3 v\u00f4 hi\u1ec7u h\u00f3a phi\u00ean b\u1ea3n n\u00e0y"
+            "description": "User id đã vô hiệu hóa phiên bản này"
           },
           "updatedBy": {
-            "description": "Ng\u01b0\u1eddi v\u00f4 hi\u1ec7u h\u00f3a phi\u00ean b\u1ea3n n\u00e0y",
+            "description": "Người vô hiệu hóa phiên bản này",
             "allOf": [
               {
                 "$ref": "#/components/schemas/UserMinimalResDto"
@@ -25146,7 +25146,7 @@
         "properties": {
           "defaultValue": {
             "type": "number",
-            "description": "Gi\u00e1 tr\u1ecb hoa h\u1ed3ng m\u1edbi (s\u1ed1 ti\u1ec1n c\u1ed1 \u0111\u1ecbnh n\u1ebfu FIXED, ho\u1eb7c % n\u1ebfu PERCENT)"
+            "description": "Giá trị hoa hồng mới (số tiền cố định nếu FIXED, hoặc % nếu PERCENT)"
           },
           "description": {
             "type": "string"
@@ -25663,15 +25663,15 @@
           },
           "ordersCountYesterday": {
             "type": "number",
-            "description": "T\u1ed5ng \u0111\u01a1n h\u00f4m qua (ch\u1ec9 tr\u1ea3 v\u1ec1 khi l\u1ecdc H\u00f4m nay)"
+            "description": "Tổng đơn hôm qua (chỉ trả về khi lọc Hôm nay)"
           },
           "confirmedCountYesterday": {
             "type": "number",
-            "description": "\u0110\u01a1n ho\u00e0n th\u00e0nh h\u00f4m qua (ch\u1ec9 tr\u1ea3 v\u1ec1 khi l\u1ecdc H\u00f4m nay)"
+            "description": "Đơn hoàn thành hôm qua (chỉ trả về khi lọc Hôm nay)"
           },
           "cancelledCountYesterday": {
             "type": "number",
-            "description": "\u0110\u01a1n h\u1ee7y h\u00f4m qua (ch\u1ec9 tr\u1ea3 v\u1ec1 khi l\u1ecdc H\u00f4m nay)"
+            "description": "Đơn hủy hôm qua (chỉ trả về khi lọc Hôm nay)"
           },
           "byProduct": {
             "type": "array",
@@ -25713,19 +25713,19 @@
           },
           "fromRevenue": {
             "type": "number",
-            "description": "S\u1ed1 ti\u1ec1n tr\u1eeb t\u1eeb t\u00e0i kho\u1ea3n th\u01b0\u1edfng"
+            "description": "Số tiền trừ từ tài khoản thưởng"
           },
           "fromIncome": {
             "type": "number",
-            "description": "S\u1ed1 ti\u1ec1n tr\u1eeb t\u1eeb t\u00e0i kho\u1ea3n l\u01b0\u01a1ng"
+            "description": "Số tiền trừ từ tài khoản lương"
           },
           "revenueBalance": {
             "type": "number",
-            "description": "S\u1ed1 d\u01b0 t\u00e0i kho\u1ea3n th\u01b0\u1edfng hi\u1ec7n t\u1ea1i"
+            "description": "Số dư tài khoản thưởng hiện tại"
           },
           "incomeBalance": {
             "type": "number",
-            "description": "S\u1ed1 d\u01b0 t\u00e0i kho\u1ea3n l\u01b0\u01a1ng hi\u1ec7n t\u1ea1i"
+            "description": "Số dư tài khoản lương hiện tại"
           },
           "sufficient": {
             "type": "boolean"
@@ -26083,19 +26083,19 @@
         "properties": {
           "dau": {
             "type": "number",
-            "description": "Active h\u00f4m nay"
+            "description": "Active hôm nay"
           },
           "wau": {
             "type": "number",
-            "description": "Active 7 ng\u00e0y"
+            "description": "Active 7 ngày"
           },
           "mau": {
             "type": "number",
-            "description": "Active 30 ng\u00e0y"
+            "description": "Active 30 ngày"
           },
           "stickiness": {
             "type": "number",
-            "description": "\u0110\u1ed9 b\u00e1m d\u00ednh = DAU/MAU (0..1)"
+            "description": "Độ bám dính = DAU/MAU (0..1)"
           }
         },
         "required": ["dau", "wau", "mau", "stickiness"]
@@ -26105,23 +26105,23 @@
         "properties": {
           "date": {
             "type": "string",
-            "description": "Ng\u00e0y (YYYY-MM-DD, gi\u1edd \u0111\u1ecba ph\u01b0\u01a1ng)"
+            "description": "Ngày (YYYY-MM-DD, giờ địa phương)"
           },
           "activeUsers": {
             "type": "number",
-            "description": "S\u1ed1 user c\u00f3 ho\u1ea1t \u0111\u1ed9ng trong ng\u00e0y (DAU)"
+            "description": "Số user có hoạt động trong ngày (DAU)"
           },
           "reads": {
             "type": "number",
-            "description": "T\u1ed5ng l\u01b0\u1ee3t \u0111\u1ecdc (GET)"
+            "description": "Tổng lượt đọc (GET)"
           },
           "writes": {
             "type": "number",
-            "description": "T\u1ed5ng l\u01b0\u1ee3t ghi"
+            "description": "Tổng lượt ghi"
           },
           "activeSeconds": {
             "type": "number",
-            "description": "T\u1ed5ng active time (gi\u00e2y)"
+            "description": "Tổng active time (giây)"
           }
         },
         "required": ["date", "activeUsers", "reads", "writes", "activeSeconds"]
@@ -26150,7 +26150,7 @@
         "properties": {
           "module": {
             "type": "string",
-            "description": "Nh\u00f3m nghi\u1ec7p v\u1ee5 (domain)"
+            "description": "Nhóm nghiệp vụ (domain)"
           },
           "reads": {
             "type": "number"
@@ -26160,7 +26160,7 @@
           },
           "activeSeconds": {
             "type": "number",
-            "description": "Active time (gi\u00e2y)"
+            "description": "Active time (giây)"
           }
         },
         "required": ["module", "reads", "writes", "activeSeconds"]
@@ -26170,11 +26170,11 @@
         "properties": {
           "hour": {
             "type": "number",
-            "description": "Gi\u1edd \u0111\u1ecba ph\u01b0\u01a1ng 0-23"
+            "description": "Giờ địa phương 0-23"
           },
           "activeSeconds": {
             "type": "number",
-            "description": "Active time (gi\u00e2y)"
+            "description": "Active time (giây)"
           }
         },
         "required": ["hour", "activeSeconds"]
@@ -26186,28 +26186,28 @@
             "$ref": "#/components/schemas/DashboardStickinessResDto"
           },
           "dailyActiveUsers": {
-            "description": "DAU + \u0111\u1ecdc/ghi/th\u1eddi l\u01b0\u1ee3ng theo ng\u00e0y (30 ng\u00e0y)",
+            "description": "DAU + đọc/ghi/thời lượng theo ngày (30 ngày)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DailyReportItemResDto"
             }
           },
           "segments": {
-            "description": "Ph\u00e2n b\u1ed1 ph\u00e2n kh\u00fac",
+            "description": "Phân bố phân khúc",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DashboardSegmentResDto"
             }
           },
           "topModules": {
-            "description": "Top m\u1ea3ng nghi\u1ec7p v\u1ee5 (30 ng\u00e0y)",
+            "description": "Top mảng nghiệp vụ (30 ngày)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DashboardModuleResDto"
             }
           },
           "activeByHour": {
-            "description": "Active time theo gi\u1edd (24 bucket, 30 ng\u00e0y)",
+            "description": "Active time theo giờ (24 bucket, 30 ngày)",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/DashboardHourResDto"
@@ -26215,7 +26215,7 @@
           },
           "generatedAt": {
             "type": "string",
-            "description": "Th\u1eddi \u0111i\u1ec3m t\u00ednh (ISO)"
+            "description": "Thời điểm tính (ISO)"
           }
         },
         "required": [
@@ -26232,7 +26232,7 @@
         "properties": {
           "userId": {
             "type": "string",
-            "description": "ID ng\u01b0\u1eddi d\u00f9ng"
+            "description": "ID người dùng"
           },
           "username": {
             "type": "string",
@@ -26240,7 +26240,7 @@
           },
           "fullName": {
             "type": "string",
-            "description": "H\u1ecd t\u00ean"
+            "description": "Họ tên"
           },
           "role": {
             "type": "string",
@@ -26259,7 +26259,7 @@
               "sm-saler",
               "sm-member"
             ],
-            "description": "C\u1ea5p b\u1eadc"
+            "description": "Cấp bậc"
           },
           "ownSegment": {
             "type": "string",
@@ -26270,47 +26270,47 @@
               "dormant",
               "churned"
             ],
-            "description": "Ph\u00e2n kh\u00fac ho\u1ea1t \u0111\u1ed9ng c\u1ee7a ch\u00ednh ng\u01b0\u1eddi n\u00e0y"
+            "description": "Phân khúc hoạt động của chính người này"
           },
           "hasMembers": {
             "type": "boolean",
-            "description": "C\u00f2n c\u1ea5p d\u01b0\u1edbi \u0111\u1ec3 drill ti\u1ebfp kh\u00f4ng (teamTotal > 0)"
+            "description": "Còn cấp dưới để drill tiếp không (teamTotal > 0)"
           },
           "teamTotal": {
             "type": "number",
-            "description": "T\u1ed5ng qu\u00e2n s\u1ed1 team (to\u00e0n downline)"
+            "description": "Tổng quân số team (toàn downline)"
           },
           "newMembers": {
             "type": "number",
-            "description": "S\u1ed1 th\u00e0nh vi\u00ean m\u1edbi trong 30 ng\u00e0y g\u1ea7n nh\u1ea5t"
+            "description": "Số thành viên mới trong 30 ngày gần nhất"
           },
           "active": {
             "type": "number",
-            "description": "S\u1ed1 ng\u01b0\u1eddi \u0111ang ho\u1ea1t \u0111\u1ed9ng = effective + passive"
+            "description": "Số người đang hoạt động = effective + passive"
           },
           "effective": {
             "type": "number",
-            "description": "S\u1ed1 ng\u01b0\u1eddi ho\u1ea1t \u0111\u1ed9ng hi\u1ec7u qu\u1ea3 (c\u00f3 ghi \u1edf catalog/deal/crm/shop)"
+            "description": "Số người hoạt động hiệu quả (có ghi ở catalog/deal/crm/shop)"
           },
           "passive": {
             "type": "number",
-            "description": "S\u1ed1 ng\u01b0\u1eddi ho\u1ea1t \u0111\u1ed9ng k\u00e9m (c\u00f3 v\u00e0o nh\u01b0ng kh\u00f4ng ghi m\u1ea3ng c\u1ed1t l\u00f5i)"
+            "description": "Số người hoạt động kém (có vào nhưng không ghi mảng cốt lõi)"
           },
           "dormant": {
             "type": "number",
-            "description": "S\u1ed1 ng\u01b0\u1eddi ng\u1ee7 \u0111\u00f4ng (kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng 30-90 ng\u00e0y)"
+            "description": "Số người ngủ đông (không hoạt động 30-90 ngày)"
           },
           "churned": {
             "type": "number",
-            "description": "S\u1ed1 ng\u01b0\u1eddi r\u1eddi b\u1ecf (kh\u00f4ng ho\u1ea1t \u0111\u1ed9ng > 90 ng\u00e0y / ch\u01b0a t\u1eebng)"
+            "description": "Số người rời bỏ (không hoạt động > 90 ngày / chưa từng)"
           },
           "blocked": {
             "type": "number",
-            "description": "S\u1ed1 ng\u01b0\u1eddi b\u1ecb kh\u00f3a"
+            "description": "Số người bị khóa"
           },
           "effectiveRate": {
             "type": "number",
-            "description": "T\u1ef7 l\u1ec7 hi\u1ec7u qu\u1ea3 = effective / teamTotal (0..1)"
+            "description": "Tỷ lệ hiệu quả = effective / teamTotal (0..1)"
           }
         },
         "required": [
@@ -26345,19 +26345,19 @@
         "properties": {
           "totalRevenue": {
             "type": "number",
-            "description": "T\u1ed5ng doanh thu t\u1eeb c\u00e1c giao d\u1ecbch ho\u00e0n th\u00e0nh"
+            "description": "Tổng doanh thu từ các giao dịch hoàn thành"
           },
           "todayRevenue": {
             "type": "number",
-            "description": "Doanh thu ph\u00e1t sinh trong ng\u00e0y hi\u1ec7n t\u1ea1i"
+            "description": "Doanh thu phát sinh trong ngày hiện tại"
           },
           "growthRate": {
             "type": "number",
-            "description": "Ph\u1ea7n tr\u0103m t\u0103ng/gi\u1ea3m doanh thu so v\u1edbi th\u00e1ng tr\u01b0\u1edbc (1 ch\u1eef s\u1ed1 th\u1eadp ph\u00e2n)"
+            "description": "Phần trăm tăng/giảm doanh thu so với tháng trước (1 chữ số thập phân)"
           },
           "avgCommission": {
             "type": "number",
-            "description": "Gi\u00e1 tr\u1ecb hoa h\u1ed3ng trung b\u00ecnh tr\u00ean m\u1ed7i giao d\u1ecbch ho\u00e0n th\u00e0nh"
+            "description": "Giá trị hoa hồng trung bình trên mỗi giao dịch hoàn thành"
           }
         },
         "required": [
@@ -26372,19 +26372,19 @@
         "properties": {
           "totalCustomers": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 kh\u00e1ch h\u00e0ng trong ph\u1ea1m vi \u0111\u01b0\u1ee3c ph\u00e9p xem"
+            "description": "Tổng số khách hàng trong phạm vi được phép xem"
           },
           "approvedCustomers": {
             "type": "number",
-            "description": "S\u1ed1 kh\u00e1ch h\u00e0ng \u1edf tr\u1ea1ng th\u00e1i \u0111\u00e3 duy\u1ec7t"
+            "description": "Số khách hàng ở trạng thái đã duyệt"
           },
           "pendingCustomers": {
             "type": "number",
-            "description": "S\u1ed1 kh\u00e1ch h\u00e0ng \u1edf tr\u1ea1ng th\u00e1i ch\u1edd ph\u00ea duy\u1ec7t"
+            "description": "Số khách hàng ở trạng thái chờ phê duyệt"
           },
           "customersWithDeals": {
             "type": "number",
-            "description": "S\u1ed1 kh\u00e1ch h\u00e0ng \u0111\u00e3 c\u00f3 \u00edt nh\u1ea5t 1 giao d\u1ecbch trong h\u1ec7 th\u1ed1ng"
+            "description": "Số khách hàng đã có ít nhất 1 giao dịch trong hệ thống"
           }
         },
         "required": [
@@ -26399,11 +26399,11 @@
         "properties": {
           "province": {
             "type": "string",
-            "description": "T\u00ean t\u1ec9nh/th\u00e0nh ph\u1ed1, ho\u1eb7c 'Kh\u00e1c' cho c\u00e1c t\u1ec9nh ngo\u00e0i top 7"
+            "description": "Tên tỉnh/thành phố, hoặc 'Khác' cho các tỉnh ngoài top 7"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng kh\u00e1ch h\u00e0ng"
+            "description": "Số lượng khách hàng"
           }
         },
         "required": ["province", "count"]
@@ -26413,23 +26413,23 @@
         "properties": {
           "totalCustomers": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 kh\u00e1ch h\u00e0ng (\u0111\u00e3 duy\u1ec7t + ch\u1edd duy\u1ec7t)"
+            "description": "Tổng số khách hàng (đã duyệt + chờ duyệt)"
           },
           "companyCount": {
             "type": "number",
-            "description": "S\u1ed1 kh\u00e1ch h\u00e0ng lo\u1ea1i C\u00f4ng ty"
+            "description": "Số khách hàng loại Công ty"
           },
           "personalCount": {
             "type": "number",
-            "description": "S\u1ed1 kh\u00e1ch h\u00e0ng lo\u1ea1i C\u00e1 nh\u00e2n"
+            "description": "Số khách hàng loại Cá nhân"
           },
           "companyPercent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % kh\u00e1ch h\u00e0ng C\u00f4ng ty (l\u00e0m tr\u00f2n s\u1ed1 nguy\u00ean)"
+            "description": "Tỉ lệ % khách hàng Công ty (làm tròn số nguyên)"
           },
           "personalPercent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % kh\u00e1ch h\u00e0ng C\u00e1 nh\u00e2n (100 - companyPercent)"
+            "description": "Tỉ lệ % khách hàng Cá nhân (100 - companyPercent)"
           }
         },
         "required": [
@@ -26445,19 +26445,19 @@
         "properties": {
           "totalSuppliers": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 nh\u00e0 cung c\u1ea5p trong ph\u1ea1m vi \u0111\u01b0\u1ee3c ph\u00e9p xem"
+            "description": "Tổng số nhà cung cấp trong phạm vi được phép xem"
           },
           "approvedSuppliers": {
             "type": "number",
-            "description": "S\u1ed1 nh\u00e0 cung c\u1ea5p \u1edf tr\u1ea1ng th\u00e1i \u0111\u00e3 duy\u1ec7t"
+            "description": "Số nhà cung cấp ở trạng thái đã duyệt"
           },
           "pendingSuppliers": {
             "type": "number",
-            "description": "S\u1ed1 nh\u00e0 cung c\u1ea5p \u1edf tr\u1ea1ng th\u00e1i ch\u1edd ph\u00ea duy\u1ec7t"
+            "description": "Số nhà cung cấp ở trạng thái chờ phê duyệt"
           },
           "suppliersWithProducts": {
             "type": "number",
-            "description": "S\u1ed1 nh\u00e0 cung c\u1ea5p \u0111\u00e3 c\u00f3 \u00edt nh\u1ea5t 1 s\u1ea3n ph\u1ea9m trong h\u1ec7 th\u1ed1ng"
+            "description": "Số nhà cung cấp đã có ít nhất 1 sản phẩm trong hệ thống"
           }
         },
         "required": [
@@ -26472,11 +26472,11 @@
         "properties": {
           "province": {
             "type": "string",
-            "description": "T\u00ean t\u1ec9nh/th\u00e0nh ph\u1ed1, ho\u1eb7c 'Kh\u00e1c' cho c\u00e1c t\u1ec9nh ngo\u00e0i top 7"
+            "description": "Tên tỉnh/thành phố, hoặc 'Khác' cho các tỉnh ngoài top 7"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng nh\u00e0 cung c\u1ea5p"
+            "description": "Số lượng nhà cung cấp"
           }
         },
         "required": ["province", "count"]
@@ -26486,23 +26486,23 @@
         "properties": {
           "totalSuppliers": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 nh\u00e0 cung c\u1ea5p (\u0111\u00e3 duy\u1ec7t + ch\u1edd duy\u1ec7t)"
+            "description": "Tổng số nhà cung cấp (đã duyệt + chờ duyệt)"
           },
           "companyCount": {
             "type": "number",
-            "description": "S\u1ed1 nh\u00e0 cung c\u1ea5p lo\u1ea1i C\u00f4ng ty"
+            "description": "Số nhà cung cấp loại Công ty"
           },
           "personalCount": {
             "type": "number",
-            "description": "S\u1ed1 nh\u00e0 cung c\u1ea5p lo\u1ea1i C\u00e1 nh\u00e2n"
+            "description": "Số nhà cung cấp loại Cá nhân"
           },
           "companyPercent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % nh\u00e0 cung c\u1ea5p C\u00f4ng ty (l\u00e0m tr\u00f2n s\u1ed1 nguy\u00ean)"
+            "description": "Tỉ lệ % nhà cung cấp Công ty (làm tròn số nguyên)"
           },
           "personalPercent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % nh\u00e0 cung c\u1ea5p C\u00e1 nh\u00e2n (100 - companyPercent)"
+            "description": "Tỉ lệ % nhà cung cấp Cá nhân (100 - companyPercent)"
           }
         },
         "required": [
@@ -26518,23 +26518,23 @@
         "properties": {
           "totalDeals": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 giao d\u1ecbch (t\u1ea5t c\u1ea3 tr\u1ea1ng th\u00e1i)"
+            "description": "Tổng số giao dịch (tất cả trạng thái)"
           },
           "completedDeals": {
             "type": "number",
-            "description": "S\u1ed1 giao d\u1ecbch ho\u00e0n th\u00e0nh"
+            "description": "Số giao dịch hoàn thành"
           },
           "inProgressDeals": {
             "type": "number",
-            "description": "S\u1ed1 giao d\u1ecbch \u0111ang x\u1eed l\u00fd"
+            "description": "Số giao dịch đang xử lý"
           },
           "cancelledDeals": {
             "type": "number",
-            "description": "S\u1ed1 giao d\u1ecbch b\u1ecb hu\u1ef7"
+            "description": "Số giao dịch bị huỷ"
           },
           "revenue": {
             "type": "number",
-            "description": "T\u1ed5ng hoa h\u1ed3ng tr\u00edch th\u01b0\u1edfng c\u1ee7a giao d\u1ecbch ho\u00e0n th\u00e0nh"
+            "description": "Tổng hoa hồng trích thưởng của giao dịch hoàn thành"
           }
         },
         "required": [
@@ -26550,15 +26550,15 @@
         "properties": {
           "status": {
             "type": "string",
-            "description": "Tr\u1ea1ng th\u00e1i giao d\u1ecbch"
+            "description": "Trạng thái giao dịch"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng giao d\u1ecbch"
+            "description": "Số lượng giao dịch"
           },
           "percent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % (s\u1ed1 nguy\u00ean, t\u1ed5ng = 100)"
+            "description": "Tỉ lệ % (số nguyên, tổng = 100)"
           }
         },
         "required": ["status", "count", "percent"]
@@ -26568,7 +26568,7 @@
         "properties": {
           "totalDeals": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 giao d\u1ecbch"
+            "description": "Tổng số giao dịch"
           },
           "items": {
             "type": "array",
@@ -26584,11 +26584,11 @@
         "properties": {
           "status": {
             "type": "string",
-            "description": "Tr\u1ea1ng th\u00e1i giao d\u1ecbch"
+            "description": "Trạng thái giao dịch"
           },
           "totalValue": {
             "type": "number",
-            "description": "T\u1ed5ng gi\u00e1 tr\u1ecb giao d\u1ecbch"
+            "description": "Tổng giá trị giao dịch"
           }
         },
         "required": ["status", "totalValue"]
@@ -26598,23 +26598,23 @@
         "properties": {
           "label": {
             "type": "string",
-            "description": "Nh\u00e3n th\u1eddi gian (DD/MM, MM, YYYY)"
+            "description": "Nhãn thời gian (DD/MM, MM, YYYY)"
           },
           "smManager": {
             "type": "number",
-            "description": "Hoa h\u1ed3ng c\u1ee7a Gi\u00e1m \u0111\u1ed1c t\u1ec9nh (sm-manager)"
+            "description": "Hoa hồng của Giám đốc tỉnh (sm-manager)"
           },
           "smLeader": {
             "type": "number",
-            "description": "Hoa h\u1ed3ng c\u1ee7a Tr\u01b0\u1edfng nh\u00f3m KV (sm-leader)"
+            "description": "Hoa hồng của Trưởng nhóm KV (sm-leader)"
           },
           "smSaler": {
             "type": "number",
-            "description": "Hoa h\u1ed3ng c\u1ee7a CVKD (sm-saler)"
+            "description": "Hoa hồng của CVKD (sm-saler)"
           },
           "smMember": {
             "type": "number",
-            "description": "Hoa h\u1ed3ng c\u1ee7a Th\u00e0nh vi\u00ean (sm-member)"
+            "description": "Hoa hồng của Thành viên (sm-member)"
           }
         },
         "required": ["label", "smManager", "smLeader", "smSaler", "smMember"]
@@ -26624,19 +26624,19 @@
         "properties": {
           "totalCommission": {
             "type": "number",
-            "description": "T\u1ed5ng hoa h\u1ed3ng chi tr\u1ea3 trong h\u1ec7 th\u1ed1ng"
+            "description": "Tổng hoa hồng chi trả trong hệ thống"
           },
           "paidAmount": {
             "type": "number",
-            "description": "T\u1ed5ng gi\u00e1 tr\u1ecb \u0111\u00e3 chi tr\u1ea3 (r\u00fat ti\u1ec1n th\u00e0nh c\u00f4ng t\u1eeb v\u00ed ch\u00ednh)"
+            "description": "Tổng giá trị đã chi trả (rút tiền thành công từ ví chính)"
           },
           "remainingAmount": {
             "type": "number",
-            "description": "C\u00f2n ph\u1ea3i chi tr\u1ea3 = T\u1ed5ng hoa h\u1ed3ng - \u0110\u00e3 chi tr\u1ea3"
+            "description": "Còn phải chi trả = Tổng hoa hồng - Đã chi trả"
           },
           "paymentRate": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 chi tr\u1ea3 % (s\u1ed1 nguy\u00ean)"
+            "description": "Tỉ lệ chi trả % (số nguyên)"
           }
         },
         "required": [
@@ -26651,15 +26651,15 @@
         "properties": {
           "group": {
             "type": "string",
-            "description": "T\u00ean nh\u00f3m hoa h\u1ed3ng"
+            "description": "Tên nhóm hoa hồng"
           },
           "value": {
             "type": "number",
-            "description": "T\u1ed5ng gi\u00e1 tr\u1ecb hoa h\u1ed3ng c\u1ee7a nh\u00f3m"
+            "description": "Tổng giá trị hoa hồng của nhóm"
           },
           "percent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % (s\u1ed1 nguy\u00ean, t\u1ed5ng = 100)"
+            "description": "Tỉ lệ % (số nguyên, tổng = 100)"
           }
         },
         "required": ["group", "value", "percent"]
@@ -26669,19 +26669,19 @@
         "properties": {
           "totalUsers": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 ng\u01b0\u1eddi d\u00f9ng (field roles)"
+            "description": "Tổng số người dùng (field roles)"
           },
           "activeUsers": {
             "type": "number",
-            "description": "Ng\u01b0\u1eddi d\u00f9ng ho\u1ea1t \u0111\u1ed9ng (Firebase, tr\u1ea3 v\u1ec1 0 n\u1ebfu kh\u00f4ng c\u00f3 d\u1eef li\u1ec7u)"
+            "description": "Người dùng hoạt động (Firebase, trả về 0 nếu không có dữ liệu)"
           },
           "conversionRate": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 chuy\u1ec3n \u0111\u1ed5i % (\u0111\u00e3 k\u00fd H\u0110 / t\u1ed5ng \u0111\u0103ng k\u00fd, 1 ch\u1eef s\u1ed1 th\u1eadp ph\u00e2n)"
+            "description": "Tỉ lệ chuyển đổi % (đã ký HĐ / tổng đăng ký, 1 chữ số thập phân)"
           },
           "newUsersThisMonth": {
             "type": "number",
-            "description": "Ng\u01b0\u1eddi d\u00f9ng m\u1edbi trong th\u00e1ng hi\u1ec7n t\u1ea1i"
+            "description": "Người dùng mới trong tháng hiện tại"
           }
         },
         "required": [
@@ -26696,15 +26696,15 @@
         "properties": {
           "step": {
             "type": "string",
-            "description": "T\u00ean b\u01b0\u1edbc trong ph\u1ec5u"
+            "description": "Tên bước trong phễu"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng ng\u01b0\u1eddi d\u00f9ng t\u1ea1i b\u01b0\u1edbc n\u00e0y"
+            "description": "Số lượng người dùng tại bước này"
           },
           "percent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % so v\u1edbi b\u01b0\u1edbc tr\u01b0\u1edbc (1 ch\u1eef s\u1ed1 th\u1eadp ph\u00e2n)"
+            "description": "Tỉ lệ % so với bước trước (1 chữ số thập phân)"
           }
         },
         "required": ["step", "count", "percent"]
@@ -26714,11 +26714,11 @@
         "properties": {
           "role": {
             "type": "string",
-            "description": "T\u00ean vai tr\u00f2 hi\u1ec3n th\u1ecb"
+            "description": "Tên vai trò hiển thị"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng ng\u01b0\u1eddi d\u00f9ng"
+            "description": "Số lượng người dùng"
           }
         },
         "required": ["role", "count"]
@@ -26728,19 +26728,19 @@
         "properties": {
           "totalProducts": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 s\u1ea3n ph\u1ea9m \u1edf t\u1ea5t c\u1ea3 tr\u1ea1ng th\u00e1i trong ph\u1ea1m vi \u0111\u01b0\u1ee3c ph\u00e9p xem"
+            "description": "Tổng số sản phẩm ở tất cả trạng thái trong phạm vi được phép xem"
           },
           "pendingProducts": {
             "type": "number",
-            "description": "S\u1ed1 s\u1ea3n ph\u1ea9m \u1edf tr\u1ea1ng th\u00e1i ch\u1edd duy\u1ec7t"
+            "description": "Số sản phẩm ở trạng thái chờ duyệt"
           },
           "approvedProducts": {
             "type": "number",
-            "description": "S\u1ed1 s\u1ea3n ph\u1ea9m \u1edf tr\u1ea1ng th\u00e1i \u0111\u00e3 duy\u1ec7t"
+            "description": "Số sản phẩm ở trạng thái đã duyệt"
           },
           "outOfStockProducts": {
             "type": "number",
-            "description": "S\u1ed1 s\u1ea3n ph\u1ea9m h\u1ebft h\u00e0ng (inStock = false)"
+            "description": "Số sản phẩm hết hàng (inStock = false)"
           }
         },
         "required": [
@@ -26755,11 +26755,11 @@
         "properties": {
           "province": {
             "type": "string",
-            "description": "T\u00ean t\u1ec9nh/th\u00e0nh ph\u1ed1 c\u1ee7a kho b\u00e3i, ho\u1eb7c 'Kh\u00e1c' cho c\u00e1c t\u1ec9nh ngo\u00e0i top 7"
+            "description": "Tên tỉnh/thành phố của kho bãi, hoặc 'Khác' cho các tỉnh ngoài top 7"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng s\u1ea3n ph\u1ea9m trong kho thu\u1ed9c t\u1ec9nh/th\u00e0nh ph\u1ed1"
+            "description": "Số lượng sản phẩm trong kho thuộc tỉnh/thành phố"
           }
         },
         "required": ["province", "count"]
@@ -26769,15 +26769,15 @@
         "properties": {
           "category": {
             "type": "string",
-            "description": "T\u00ean danh m\u1ee5c cha"
+            "description": "Tên danh mục cha"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng s\u1ea3n ph\u1ea9m thu\u1ed9c danh m\u1ee5c"
+            "description": "Số lượng sản phẩm thuộc danh mục"
           },
           "percent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % (s\u1ed1 nguy\u00ean, t\u1ed5ng = 100)"
+            "description": "Tỉ lệ % (số nguyên, tổng = 100)"
           }
         },
         "required": ["category", "count", "percent"]
@@ -26787,7 +26787,7 @@
         "properties": {
           "totalProducts": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 s\u1ea3n ph\u1ea9m \u1edf t\u1ea5t c\u1ea3 danh m\u1ee5c"
+            "description": "Tổng số sản phẩm ở tất cả danh mục"
           },
           "items": {
             "type": "array",
@@ -26803,19 +26803,19 @@
         "properties": {
           "machineType": {
             "type": "string",
-            "description": "M\u00e3 lo\u1ea1i h\u00e0ng (machineType enum)"
+            "description": "Mã loại hàng (machineType enum)"
           },
           "label": {
             "type": "string",
-            "description": "Nh\u00e3n hi\u1ec3n th\u1ecb (H\u00e0ng d\u00e2n d\u00f9ng / H\u00e0ng b\u00e3i trong n\u01b0\u1edbc / H\u00e0ng \u0111\u1eb7t n\u01b0\u1edbc ngo\u00e0i)"
+            "description": "Nhãn hiển thị (Hàng dân dùng / Hàng bãi trong nước / Hàng đặt nước ngoài)"
           },
           "count": {
             "type": "number",
-            "description": "S\u1ed1 l\u01b0\u1ee3ng s\u1ea3n ph\u1ea9m"
+            "description": "Số lượng sản phẩm"
           },
           "percent": {
             "type": "number",
-            "description": "T\u1ec9 l\u1ec7 % (s\u1ed1 nguy\u00ean, t\u1ed5ng = 100)"
+            "description": "Tỉ lệ % (số nguyên, tổng = 100)"
           }
         },
         "required": ["machineType", "label", "count", "percent"]
@@ -26825,7 +26825,7 @@
         "properties": {
           "totalProducts": {
             "type": "number",
-            "description": "T\u1ed5ng s\u1ed1 s\u1ea3n ph\u1ea9m"
+            "description": "Tổng số sản phẩm"
           },
           "items": {
             "type": "array",
