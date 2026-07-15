@@ -10,7 +10,7 @@
  * using the old name. That IS the update mechanism.
  */
 import { execSync } from 'node:child_process';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { GENERATED_DIR, loadDotEnv, loadSpec, SNAPSHOT_PATH } from './io';
 
 loadDotEnv();
@@ -29,6 +29,20 @@ if (!source || source === `./${SNAPSHOT_PATH}`) {
 async function main(): Promise<void> {
   console.log(`Fetching spec from ${source} …`);
   const spec = await loadSpec(source!);
+
+  // Compare CONTENT, not bytes: the committed snapshot is prettier-formatted
+  // while a fresh serialization is not, so a byte diff is mostly formatting
+  // noise (observed: 3k "changed" lines for an identical spec).
+  let current: unknown;
+  try {
+    current = JSON.parse(readFileSync(SNAPSHOT_PATH, 'utf8'));
+  } catch {
+    current = undefined; // no/unreadable snapshot → treat as changed
+  }
+  if (JSON.stringify(spec) === JSON.stringify(current)) {
+    console.log('Already in sync — the live spec matches the snapshot.');
+    return;
+  }
 
   // Re-serialize (stable 2-space form) so snapshot diffs are reviewable and
   // independent of the server's whitespace.
