@@ -1,8 +1,12 @@
 {
-  "$comment": "Config for `pnpm gen:api` (scripts/gen-api). enumNames maps an inline-enum PROPERTY name to the domain type name it should generate as — identical value-sets are deduplicated into one type regardless.",
+  "$comment": "Config for `pnpm gen:api` (scripts/gen-api). enumNames maps an inline-enum PROPERTY name to the domain type name; forceOptional demotes fields the spec wrongly marks required but the LIVE API omits (verified 2026-07-15 — report upstream to the SaleNet team).",
   "enumNames": {
     "role": "UserRole",
     "status": "UserStatus",
     "event": "NotificationEvent"
+  },
+  "forceOptional": {
+    "NotificationResDto": ["pageUrl"],
+    "NotificationUnreadCountDto": ["count"]
   }
 }

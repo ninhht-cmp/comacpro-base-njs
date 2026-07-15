@@ -49,6 +49,12 @@ export interface OpenApiSpec extends JsonObject {
 export interface CodegenConfig {
   /** Inline-enum names by property name, e.g. `{ "role": "UserRole" }`. */
   enumNames?: Record<string, string>;
+  /**
+   * Spec patches: fields the spec marks required but the LIVE API omits
+   * (verified drift; report upstream). Demoted to optional in both the
+   * emitted types and validators. `{ "NotificationResDto": ["pageUrl"] }`.
+   */
+  forceOptional?: Record<string, string[]>;
 }
 
 export const HTTP_METHODS = [
@@ -456,8 +462,19 @@ function zodType(node: SchemaNode, where: string): string {
 function zodObject(node: SchemaNode, where: string, indent = '  '): string {
   const required = new Set(node.required ?? []);
   const lines = Object.entries(node.properties ?? {}).map(([key, child]) => {
-    const optional = required.has(key) ? '' : '.optional()';
-    return `${indent}${quoteKey(key)}: ${zodType(child, `${where}.${key}`)}${optional},`;
+    const base = zodType(child, `${where}.${key}`);
+    let suffix = '';
+    if (!required.has(key)) {
+      // NestJS's serializer emits `null` for absent optional fields while the
+      // spec omits `nullable` (verified against the live API) — accept null
+      // and NORMALIZE it to undefined so parsed data matches the `?:` types
+      // and mappers never see the null-vs-absent distinction. Explicitly
+      // nullable fields keep their `| null` (it's part of their type).
+      suffix = child.nullable
+        ? '.optional()'
+        : '.nullish().transform((v) => v ?? undefined)';
+    }
+    return `${indent}${quoteKey(key)}: ${base}${suffix},`;
   });
   return `z.object({\n${lines.join('\n')}\n${indent.slice(2)}})`;
 }
@@ -556,6 +573,13 @@ export function generateModels(
   sanitizeEmptyEnums(spec);
 
   const schemas = spec.components?.schemas ?? {};
+  // Apply spec patches BEFORE emission so types and validators agree.
+  for (const [name, fields] of Object.entries(config.forceOptional ?? {})) {
+    const target = schemas[name];
+    if (target?.required) {
+      target.required = target.required.filter((f) => !fields.includes(f));
+    }
+  }
   const names = reachableSchemaNames(spec);
   for (const name of names) {
     if (!IDENTIFIER.test(name))

@@ -305,13 +305,37 @@ describe('generateModels', () => {
     expect(schemas).toContain(
       "export const UserRoleSchema = z.enum(['admin', 'member'])",
     );
-    expect(schemas).toContain('id: z.string(),'); // required → no .optional()
+    expect(schemas).toContain('id: z.string(),'); // required → no wrapper
+    // Explicitly nullable keeps its `| null`; plain optionals are normalized
+    // (NestJS emits null for absent optionals — verified on the live API).
     expect(schemas).toContain('note: z.string().nullable().optional(),');
-    expect(schemas).toContain('role: UserRoleSchema.optional(),'); // shared, not re-inlined
     expect(schemas).toContain(
-      'child: z.lazy(() => ChildDtoSchema).optional(),',
+      'role: UserRoleSchema.nullish().transform((v) => v ?? undefined),',
+    );
+    expect(schemas).toContain(
+      'child: z.lazy(() => ChildDtoSchema).nullish().transform((v) => v ?? undefined),',
     );
     expect(schemas).toContain('satisfies z.ZodType<ThingDto>');
+  });
+
+  it('forceOptional demotes spec-required fields in types AND validators', () => {
+    const { content, schemas } = generateModels(
+      spec({
+        ThingDto: {
+          type: 'object',
+          required: ['id', 'liveOmitsMe'],
+          properties: {
+            id: { type: 'string' },
+            liveOmitsMe: { type: 'string' },
+          },
+        },
+      }),
+      SELECT_THINGS,
+      { forceOptional: { ThingDto: ['liveOmitsMe'] } },
+    );
+    expect(content).toContain('id: string;'); // untouched
+    expect(content).toContain('liveOmitsMe?: string;'); // demoted in the type
+    expect(schemas).toContain('liveOmitsMe: z.string().nullish()'); // and validator
   });
 
   it('is deterministic: same input → byte-identical output', () => {

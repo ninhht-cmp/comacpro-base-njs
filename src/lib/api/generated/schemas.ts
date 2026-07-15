@@ -14,34 +14,34 @@ export const UserRoleSchema = z.enum(['sm-admin', 'sm-system', 'sm-marketing', '
 export const UserStatusSchema = z.enum(['active', 'inactive']) satisfies z.ZodType<UserStatus>;
 
 export const BankShortenedResDtoSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().optional(),
-  logo: z.string().optional(),
-  shortName: z.string().optional(),
-  bin: z.string().optional(),
+  id: z.string().nullish().transform((v) => v ?? undefined),
+  name: z.string().nullish().transform((v) => v ?? undefined),
+  logo: z.string().nullish().transform((v) => v ?? undefined),
+  shortName: z.string().nullish().transform((v) => v ?? undefined),
+  bin: z.string().nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<BankShortenedResDto>;
 
 export const BaseProfileDtoSchema = z.object({
   id: z.string(),
-  avatarUrl: z.string().optional(),
+  avatarUrl: z.string().nullish().transform((v) => v ?? undefined),
   fullName: z.string(),
-  phoneNumber: z.string().optional(),
+  phoneNumber: z.string().nullish().transform((v) => v ?? undefined),
   createdAt: z.string(),
-  isEKYCVerified: z.boolean().optional(),
-  province: z.lazy(() => ProvinceResDtoSchema).optional(),
+  isEKYCVerified: z.boolean().nullish().transform((v) => v ?? undefined),
+  province: z.lazy(() => ProvinceResDtoSchema).nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<BaseProfileDto>;
 
 export const BaseResDtoSchema = z.object({
   success: z.boolean(),
   data: z.record(z.string(), z.unknown()),
-  messages: z.record(z.string(), z.unknown()).optional(),
+  messages: z.record(z.string(), z.unknown()).nullish().transform((v) => v ?? undefined),
   statusCode: z.number(),
 }) satisfies z.ZodType<BaseResDto>;
 
 export const BaseResPaginationDtoSchema = z.object({
   success: z.boolean(),
   data: z.record(z.string(), z.unknown()),
-  messages: z.record(z.string(), z.unknown()).optional(),
+  messages: z.record(z.string(), z.unknown()).nullish().transform((v) => v ?? undefined),
   statusCode: z.number(),
   pagination: z.lazy(() => PaginationResDtoSchema),
 }) satisfies z.ZodType<BaseResPaginationDto>;
@@ -57,7 +57,7 @@ export const LoginDtoSchema = z.object({
 
 export const LoginResponseDtoSchema = z.object({
   accessToken: z.string(),
-  refreshToken: z.string().optional(),
+  refreshToken: z.string().nullish().transform((v) => v ?? undefined),
   expiresIn: z.number(),
 }) satisfies z.ZodType<LoginResponseDto>;
 
@@ -65,13 +65,13 @@ export const NotificationResDtoSchema = z.object({
   id: z.string(),
   isRead: z.boolean(),
   event: NotificationEventSchema,
-  pageUrl: z.string(),
+  pageUrl: z.string().nullish().transform((v) => v ?? undefined),
   description: z.string(),
   createdAt: z.string(),
 }) satisfies z.ZodType<NotificationResDto>;
 
 export const NotificationUnreadCountDtoSchema = z.object({
-  count: z.number(),
+  count: z.number().nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<NotificationUnreadCountDto>;
 
 export const ObjectSchema = z.object({
@@ -79,42 +79,42 @@ export const ObjectSchema = z.object({
 }) satisfies z.ZodType<Object>;
 
 export const PaginationResDtoSchema = z.object({
-  currentPage: z.number().optional(),
-  perPage: z.number().optional(),
-  pageItems: z.number().optional(),
-  totalPage: z.number().optional(),
+  currentPage: z.number().nullish().transform((v) => v ?? undefined),
+  perPage: z.number().nullish().transform((v) => v ?? undefined),
+  pageItems: z.number().nullish().transform((v) => v ?? undefined),
+  totalPage: z.number().nullish().transform((v) => v ?? undefined),
   totalItem: z.number(),
 }) satisfies z.ZodType<PaginationResDto>;
 
 export const ProfileMeResDtoSchema = z.object({
   id: z.string(),
-  accountType: z.string().optional(),
-  avatarUrl: z.string().optional(),
-  idCardNumber: z.string().optional(),
-  issuingAuthority: z.string().optional(),
-  dateOfIssue: z.string().optional(),
+  accountType: z.string().nullish().transform((v) => v ?? undefined),
+  avatarUrl: z.string().nullish().transform((v) => v ?? undefined),
+  idCardNumber: z.string().nullish().transform((v) => v ?? undefined),
+  issuingAuthority: z.string().nullish().transform((v) => v ?? undefined),
+  dateOfIssue: z.string().nullish().transform((v) => v ?? undefined),
   fullName: z.string(),
-  phoneNumber: z.string().optional(),
-  email: z.string().optional(),
-  taxId: z.string().optional(),
-  representative: z.string().optional(),
-  representativeRole: z.string().optional(),
-  businessLicenseId: z.string().optional(),
-  userBank: z.lazy(() => UserBankShortenedResDtoSchema).optional(),
-  externalIds: z.record(z.string(), z.unknown()).optional(),
-  provinceId: z.string().optional(),
-  province: z.lazy(() => ProvinceResDtoSchema).optional(),
-  wardId: z.string().optional(),
-  ward: z.lazy(() => WardResDtoSchema).optional(),
-  address: z.string().optional(),
-  socialNetworks: z.record(z.string(), z.unknown()).optional(),
-  isNeedUpdateProfile: z.boolean().optional(),
-  isNeedChangePassword: z.boolean().optional(),
-  referralUrl: z.string().optional(),
-  referralCode: z.string().optional(),
-  role: UserRoleSchema.optional(),
-  isEKYCVerified: z.boolean().optional(),
-  shop: z.lazy(() => ShopResDtoSchema).optional(),
+  phoneNumber: z.string().nullish().transform((v) => v ?? undefined),
+  email: z.string().nullish().transform((v) => v ?? undefined),
+  taxId: z.string().nullish().transform((v) => v ?? undefined),
+  representative: z.string().nullish().transform((v) => v ?? undefined),
+  representativeRole: z.string().nullish().transform((v) => v ?? undefined),
+  businessLicenseId: z.string().nullish().transform((v) => v ?? undefined),
+  userBank: z.lazy(() => UserBankShortenedResDtoSchema).nullish().transform((v) => v ?? undefined),
+  externalIds: z.record(z.string(), z.unknown()).nullish().transform((v) => v ?? undefined),
+  provinceId: z.string().nullish().transform((v) => v ?? undefined),
+  province: z.lazy(() => ProvinceResDtoSchema).nullish().transform((v) => v ?? undefined),
+  wardId: z.string().nullish().transform((v) => v ?? undefined),
+  ward: z.lazy(() => WardResDtoSchema).nullish().transform((v) => v ?? undefined),
+  address: z.string().nullish().transform((v) => v ?? undefined),
+  socialNetworks: z.record(z.string(), z.unknown()).nullish().transform((v) => v ?? undefined),
+  isNeedUpdateProfile: z.boolean().nullish().transform((v) => v ?? undefined),
+  isNeedChangePassword: z.boolean().nullish().transform((v) => v ?? undefined),
+  referralUrl: z.string().nullish().transform((v) => v ?? undefined),
+  referralCode: z.string().nullish().transform((v) => v ?? undefined),
+  role: UserRoleSchema.nullish().transform((v) => v ?? undefined),
+  isEKYCVerified: z.boolean().nullish().transform((v) => v ?? undefined),
+  shop: z.lazy(() => ShopResDtoSchema).nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<ProfileMeResDto>;
 
 export const ProvinceResDtoSchema = z.object({
@@ -126,9 +126,9 @@ export const ProvinceResDtoSchema = z.object({
 export const ReferralListItemDtoSchema = z.object({
   role: UserRoleSchema,
   profile: z.lazy(() => BaseProfileDtoSchema),
-  dealCount: z.number().optional(),
-  isNeedUpdateProfile: z.boolean().optional(),
-  isSignedCollaborationContract: z.boolean().optional(),
+  dealCount: z.number().nullish().transform((v) => v ?? undefined),
+  isNeedUpdateProfile: z.boolean().nullish().transform((v) => v ?? undefined),
+  isSignedCollaborationContract: z.boolean().nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<ReferralListItemDto>;
 
 export const RefreshTokenDtoSchema = z.object({
@@ -144,16 +144,16 @@ export const RegistrationDtoSchema = z.object({
 export const ShopResDtoSchema = z.object({
   id: z.string(),
   name: z.string(),
-  address: z.string().optional(),
-  provinceId: z.string().optional(),
-  wardId: z.string().optional(),
+  address: z.string().nullish().transform((v) => v ?? undefined),
+  provinceId: z.string().nullish().transform((v) => v ?? undefined),
+  wardId: z.string().nullish().transform((v) => v ?? undefined),
   status: UserStatusSchema,
   ownerId: z.string(),
   createdAt: z.string(),
-  updatedAt: z.string().optional(),
-  province: z.lazy(() => ProvinceResDtoSchema).optional(),
-  ward: z.lazy(() => WardResDtoSchema).optional(),
-  owner: z.lazy(() => UserMinimalResDtoSchema).optional(),
+  updatedAt: z.string().nullish().transform((v) => v ?? undefined),
+  province: z.lazy(() => ProvinceResDtoSchema).nullish().transform((v) => v ?? undefined),
+  ward: z.lazy(() => WardResDtoSchema).nullish().transform((v) => v ?? undefined),
+  owner: z.lazy(() => UserMinimalResDtoSchema).nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<ShopResDto>;
 
 export const TokenResponseDtoSchema = z.object({
@@ -163,34 +163,34 @@ export const TokenResponseDtoSchema = z.object({
 }) satisfies z.ZodType<TokenResponseDto>;
 
 export const UserBankShortenedResDtoSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullish().transform((v) => v ?? undefined),
   bank: z.lazy(() => BankShortenedResDtoSchema),
-  accountName: z.string().optional(),
-  accountNumber: z.string().optional(),
+  accountName: z.string().nullish().transform((v) => v ?? undefined),
+  accountNumber: z.string().nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<UserBankShortenedResDto>;
 
 export const UserMinimalResDtoSchema = z.object({
   id: z.string(),
-  username: z.string().optional(),
+  username: z.string().nullish().transform((v) => v ?? undefined),
   role: UserRoleSchema,
   status: UserStatusSchema,
-  profile: z.lazy(() => UserProfileRefResDtoSchema).optional(),
+  profile: z.lazy(() => UserProfileRefResDtoSchema).nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<UserMinimalResDto>;
 
 export const UserProfileRefResDtoSchema = z.object({
   id: z.string(),
   fullName: z.string(),
   phoneNumber: z.string(),
-  avatarUrl: z.string().optional(),
+  avatarUrl: z.string().nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<UserProfileRefResDto>;
 
 export const UserRefResDtoSchema = z.object({
   id: z.string(),
-  username: z.string().optional(),
+  username: z.string().nullish().transform((v) => v ?? undefined),
   role: UserRoleSchema,
   status: UserStatusSchema,
-  profile: z.lazy(() => UserProfileRefResDtoSchema).optional(),
-  code: z.string().optional(),
+  profile: z.lazy(() => UserProfileRefResDtoSchema).nullish().transform((v) => v ?? undefined),
+  code: z.string().nullish().transform((v) => v ?? undefined),
 }) satisfies z.ZodType<UserRefResDto>;
 
 export const WardResDtoSchema = z.object({

@@ -72,7 +72,9 @@ test.describe('auth guards', () => {
     await page.waitForURL('**/account');
 
     await page.goto('/signin');
-    await expect(page).toHaveURL('**/account');
+    // Regex, not '**/account': toHaveURL prefixes string globs with the
+    // baseURL, and `**/` then demands an extra path segment before /account.
+    await expect(page).toHaveURL(/\/account$/);
   });
 
   test('honors an explicit ?redirect= target after signing in', async ({

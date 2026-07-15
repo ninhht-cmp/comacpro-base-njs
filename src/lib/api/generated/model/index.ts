@@ -106,14 +106,14 @@ export interface NotificationResDto {
   id: string;
   isRead: boolean;
   event: NotificationEvent;
-  pageUrl: string;
+  pageUrl?: string;
   description: string;
   /** Format: date-time. */
   createdAt: string;
 }
 
 export interface NotificationUnreadCountDto {
-  count: number;
+  count?: number;
 }
 
 export interface Object {
