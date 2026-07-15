@@ -1,10 +1,10 @@
 /**
- * Guards that the committed orval output matches the current OpenAPI spec.
+ * Guards that the committed generated models match the current OpenAPI spec.
  *
- * The generated client under `src/lib/api/generated` is committed so CI can
- * build without reaching the backend — but that means it can silently go stale
- * if someone changes the spec without running `pnpm gen:api`. This script
- * regenerates and fails if the working tree changed.
+ * The generated models under `src/lib/api/generated` are committed so CI can
+ * build without reaching the backend — but that means they can silently go
+ * stale if someone changes the spec without running `pnpm gen:api`. This
+ * script regenerates and fails if the working tree changed.
  *
  *   OPENAPI_SPEC=<url|path> pnpm check:api-fresh
  *
@@ -22,7 +22,7 @@ function run(command: string): void {
 }
 
 function main(): void {
-  console.log('Regenerating API client from the spec…');
+  console.log('Regenerating API models from the spec…');
   run('pnpm gen:api');
 
   // `git status --porcelain` (unlike `git diff`) also reports UNTRACKED files,
@@ -32,7 +32,7 @@ function main(): void {
   }).trim();
   if (drift) {
     console.error(
-      `\n✗ Generated API client is out of date.\n` +
+      `\n✗ Generated API models are out of date.\n` +
         `  ${GENERATED_DIR} changed after regeneration — commit the result of \`pnpm gen:api\`.\n`,
     );
     // Show what drifted to make the failure actionable.
@@ -40,7 +40,7 @@ function main(): void {
     process.exit(1);
   }
 
-  console.log('✓ Generated API client is in sync with the spec.');
+  console.log('✓ Generated API models are in sync with the spec.');
 }
 
 main();

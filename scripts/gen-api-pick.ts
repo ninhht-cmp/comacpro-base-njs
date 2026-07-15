@@ -4,9 +4,9 @@
  * Reads the spec (`OPENAPI_SPEC` URL/path, else the committed snapshot),
  * lists every operation, lets you search + multi-select which ones to
  * generate models for, and writes the choice to `openapi/selection.json`.
- * That file is the deterministic source of truth the input transformer reads
- * at gen time (see scripts/openapi-input-transformer.mjs) — so CI stays
- * reproducible and this step is dev-only.
+ * That file is the deterministic source of truth the generator reads at gen
+ * time (see scripts/gen-api/) — so CI stays reproducible and this step is
+ * dev-only.
  *
  *   pnpm gen:api:pick   # choose, then run `pnpm gen:api`
  *
