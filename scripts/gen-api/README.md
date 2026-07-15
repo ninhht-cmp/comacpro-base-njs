@@ -21,7 +21,9 @@ repo's transport is `serverFetch`; see ADR 0002/0007).
   from the same schema walk, so the two artifacts cannot drift
 - `io.ts` — shared env/spec/selection loading; all paths live here
 - `generate.ts` / `sync.ts` / `pick.ts` / `check-fresh.ts` — thin commands
-- `openapi/openapi.json` — committed spec snapshot (offline, reviewable diffs)
+- `openapi/openapi.json` — LOCAL spec snapshot (gitignored: it maps the
+  backend's whole API surface, admin endpoints included — that recon map
+  stays out of the repo; recreate anytime with `pnpm gen:api:sync`)
 - `openapi/selection.json` — operation scope; `"operations": "*"` = full spec
 - `openapi/codegen.json` — inline-enum naming (`{ "role": "UserRole" }`)
 
@@ -40,7 +42,8 @@ repo's transport is `serverFetch`; see ADR 0002/0007).
 1. Copy this folder.
 2. Add the four script entries above to `package.json` (needs `tsx`;
    plus `enquirer` if you want the picker).
-3. Create `openapi/` with a spec snapshot and
-   `{ "operations": "*" }` as `selection.json`; narrow later with the picker.
+3. Create `openapi/` with `{ "operations": "*" }` as `selection.json`; set
+   `OPENAPI_SPEC` in `.env` and run `pnpm gen:api:sync` for the local
+   snapshot (gitignore it); narrow later with the picker.
 4. Optional: `openapi/codegen.json` for domain enum names; a CI job calling
    `check:api-fresh` (see `.github/workflows/api-codegen.yml` here).

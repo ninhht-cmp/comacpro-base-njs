@@ -75,7 +75,7 @@ if (!existsSync(envPath)) {
   if (!env.OPENAPI_SPEC) {
     add(
       'warn',
-      'OPENAPI_SPEC unset — `gen:api` uses the committed snapshot (openapi/openapi.json); set it to the live spec URL to enable `gen:api:sync`.',
+      'OPENAPI_SPEC unset — `gen:api` needs the local snapshot (openapi/openapi.json, gitignored); set the spec URL in .env and run `pnpm gen:api:sync` to create it.',
     );
   } else {
     add('ok', `OPENAPI_SPEC → ${env.OPENAPI_SPEC}`);

@@ -103,7 +103,9 @@ the dev server is running.
 - Usernames ARE Vietnamese phone numbers; user ids are UUID strings; roles
   are the 13 `sm-*` strings (generated unions re-exported by
   `@/core/identity`).
-- The committed `openapi/openapi.json` is a snapshot of the SaleNet spec;
+- `openapi/openapi.json` is a LOCAL snapshot of the SaleNet spec (gitignored —
+  it maps the backend's entire API surface, which stays out of the repo;
+  create it with `pnpm gen:api:sync`);
   regen with `pnpm gen:api`. Scope is per-operation and lives in
   `openapi/selection.json` — run `pnpm gen:api:pick` (interactive: search +
   multi-select the operations to generate) to change it, then `pnpm gen:api`;

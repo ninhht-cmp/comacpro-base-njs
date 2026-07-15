@@ -37,7 +37,18 @@ export async function loadSpec(source: string): Promise<OpenApiSpec> {
     }
     return (await response.json()) as OpenApiSpec;
   }
-  return JSON.parse(readFileSync(source, 'utf8')) as OpenApiSpec;
+  try {
+    return JSON.parse(readFileSync(source, 'utf8')) as OpenApiSpec;
+  } catch {
+    // The snapshot is a LOCAL cache (gitignored — it maps the backend's whole
+    // API surface, which doesn't belong in the repo), so a fresh clone won't
+    // have it yet.
+    throw new Error(
+      `gen:api: spec not found at "${source}". Set OPENAPI_SPEC to the ` +
+        `swagger URL in .env, then \`pnpm gen:api:sync\` to (re)create the ` +
+        `local snapshot.`,
+    );
+  }
 }
 
 /**

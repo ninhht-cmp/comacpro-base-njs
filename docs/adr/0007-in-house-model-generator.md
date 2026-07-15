@@ -61,3 +61,10 @@ dropped with orval — regeneration is a deliberate, spec-driven act.
 - Response envelope types are deliberately not generated; `serverFetch` owns
   the envelope (ADR 0003). Runtime response validation remains the deliberate
   debt tracked in ADR 0002.
+- **Amended 2026-07-15**: the spec snapshot is now a LOCAL, gitignored cache
+  (`pnpm gen:api:sync` recreates it) — committing it published the backend's
+  entire API surface (admin/wallet operations included) alongside the app.
+  The committed inputs are `selection.json` + `codegen.json` (non-sensitive:
+  they name only the operations the app visibly calls); the committed
+  generated models keep CI building offline. The snapshot remains in git
+  HISTORY — scrub with a history rewrite before the repo is ever made public.

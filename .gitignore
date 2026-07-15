@@ -51,3 +51,8 @@ storybook-static
 .claude/settings.local.json
 .claude/drafts/
 plans/*.md
+
+# Full API-surface snapshot (all backend operations, admin included) — local
+# codegen cache only; refresh with `pnpm gen:api:sync`. Kept out of the repo
+# so the backend's entire attack surface isn't published alongside the app.
+openapi/openapi.json
