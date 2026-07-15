@@ -10,18 +10,14 @@
  * using the old name. That IS the update mechanism.
  */
 import { execSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
+import { GENERATED_DIR, loadDotEnv, loadSpec, SNAPSHOT_PATH } from './io';
 
-try {
-  process.loadEnvFile('.env');
-} catch {
-  // No .env — OPENAPI_SPEC may still come from the environment.
-}
+loadDotEnv();
 
-const SNAPSHOT = 'openapi/openapi.json';
 const source = process.env.OPENAPI_SPEC;
 
-if (!source || source === `./${SNAPSHOT}`) {
+if (!source || source === `./${SNAPSHOT_PATH}`) {
   console.error(
     '✗ gen:api:sync needs OPENAPI_SPEC (the live spec URL, e.g. ' +
       'https://…/docs-json) set in .env — syncing the snapshot from itself ' +
@@ -32,30 +28,21 @@ if (!source || source === `./${SNAPSHOT}`) {
 
 async function main(): Promise<void> {
   console.log(`Fetching spec from ${source} …`);
-  let raw: string;
-  if (/^https?:\/\//.test(source!)) {
-    const response = await fetch(source!);
-    if (!response.ok) {
-      throw new Error(`fetching spec failed — HTTP ${response.status}`);
-    }
-    raw = await response.text();
-  } else {
-    raw = readFileSync(source!, 'utf8');
-  }
+  const spec = await loadSpec(source!);
 
   // Re-serialize (stable 2-space form) so snapshot diffs are reviewable and
   // independent of the server's whitespace.
-  writeFileSync(SNAPSHOT, `${JSON.stringify(JSON.parse(raw), null, 2)}\n`);
+  writeFileSync(SNAPSHOT_PATH, `${JSON.stringify(spec, null, 2)}\n`);
 
   // Regenerate FROM THE SNAPSHOT (not the URL): proves the committed pair is
   // consistent — exactly what CI's check:api-fresh will verify.
   execSync('pnpm gen:api', {
     stdio: 'inherit',
-    env: { ...process.env, OPENAPI_SPEC: `./${SNAPSHOT}` },
+    env: { ...process.env, OPENAPI_SPEC: `./${SNAPSHOT_PATH}` },
   });
 
   const diff = execSync(
-    `git diff --stat -- ${SNAPSHOT} src/lib/api/generated`,
+    `git diff --stat -- ${SNAPSHOT_PATH} ${GENERATED_DIR}`,
     { encoding: 'utf8' },
   ).trim();
   if (diff) {

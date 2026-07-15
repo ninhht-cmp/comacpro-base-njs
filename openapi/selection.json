@@ -1,5 +1,5 @@
 {
-  "$comment": "Managed by `pnpm gen:api:pick`. The set of OpenAPI operations whose models `pnpm gen:api` emits. Keys are `METHOD /path`. Edit via the picker, not by hand.",
+  "$comment": "The OpenAPI operations (`METHOD /path`) whose models `pnpm gen:api` emits; `\"*\"` = the full spec. Managed by `pnpm gen:api:pick`; hand-edits are fine — gen:api validates every key against the spec.",
   "operations": [
     "GET /v1/notifications",
     "GET /v1/notifications/unread-count",

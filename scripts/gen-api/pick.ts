@@ -13,30 +13,18 @@
  * Kept separate from generation on purpose: an interactive gen would break
  * CI's `check:api-fresh`.
  */
-import { readFileSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { writeFileSync } from 'node:fs';
 import Enquirer from 'enquirer';
+import { HTTP_METHODS } from './core';
+import {
+  loadDotEnv,
+  loadSpec,
+  readSelection,
+  SELECTION_PATH,
+  specSource,
+} from './io';
 
-// Load .env for OPENAPI_SPEC (mirrors `gen:api`'s --env-file) before reading
-// it below. Runs via `tsx` directly, so there is no node --env-file flag.
-try {
-  process.loadEnvFile('.env');
-} catch {
-  // No .env — fine; fall back to the committed snapshot.
-}
-
-const SPEC_SOURCE = process.env.OPENAPI_SPEC ?? './openapi/openapi.json';
-const SELECTION_PATH = join(process.cwd(), 'openapi/selection.json');
-const HTTP_METHODS = [
-  'get',
-  'put',
-  'post',
-  'delete',
-  'options',
-  'head',
-  'patch',
-  'trace',
-] as const;
+loadDotEnv();
 
 interface Operation {
   /** Stable key persisted to selection.json: `METHOD /path`. */
@@ -68,21 +56,6 @@ function fail(message: string): never {
   process.exit(1);
 }
 
-async function loadSpec(): Promise<Record<string, unknown>> {
-  try {
-    if (/^https?:\/\//.test(SPEC_SOURCE)) {
-      const res = await fetch(SPEC_SOURCE);
-      if (!res.ok) fail(`Fetching ${SPEC_SOURCE} failed: HTTP ${res.status}`);
-      return (await res.json()) as Record<string, unknown>;
-    }
-    return JSON.parse(readFileSync(SPEC_SOURCE, 'utf8'));
-  } catch (error) {
-    return fail(
-      `Could not read OpenAPI spec "${SPEC_SOURCE}": ${(error as Error).message}`,
-    );
-  }
-}
-
 function listOperations(spec: Record<string, unknown>): Operation[] {
   const paths = (spec.paths ?? {}) as Record<string, Record<string, unknown>>;
   const ops: Operation[] = [];
@@ -108,29 +81,30 @@ function listOperations(spec: Record<string, unknown>): Operation[] {
   return ops;
 }
 
+/** Current scope: 'all' (`"*"`), a key set, or empty when no file yet. */
 function loadCurrentSelection(): Set<string> | 'all' {
-  try {
-    const parsed = JSON.parse(readFileSync(SELECTION_PATH, 'utf8'));
-    // `"operations": "*"` = full-spec mode; picking narrows it to a list.
-    if (parsed.operations === '*') return 'all';
-    return new Set<string>(parsed.operations ?? []);
-  } catch {
-    return new Set();
-  }
+  const read = readSelection();
+  if (read === 'all') return 'all';
+  return new Set(read ?? []);
 }
 
 function writeSelection(keys: string[]): void {
   const payload = {
     $comment:
-      'Managed by `pnpm gen:api:pick`. The set of OpenAPI operations whose models `pnpm gen:api` emits. Keys are `METHOD /path`. Edit via the picker, not by hand.',
+      'The OpenAPI operations (`METHOD /path`) whose models `pnpm gen:api` emits; `"*"` = the full spec. Managed by `pnpm gen:api:pick`; hand-edits are fine — gen:api validates every key against the spec.',
     operations: [...keys].sort(),
   };
   writeFileSync(SELECTION_PATH, `${JSON.stringify(payload, null, 2)}\n`);
 }
 
 async function main() {
-  const spec = await loadSpec();
-  const operations = listOperations(spec);
+  const source = specSource();
+  const spec = await loadSpec(source).catch((error: unknown) =>
+    fail(
+      `Could not read OpenAPI spec "${source}": ${error instanceof Error ? error.message : error}`,
+    ),
+  );
+  const operations = listOperations(spec as Record<string, unknown>);
   if (operations.length === 0) fail('No operations found in the spec.');
 
   const current = loadCurrentSelection();

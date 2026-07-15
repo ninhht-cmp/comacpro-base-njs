@@ -51,7 +51,7 @@ export interface CodegenConfig {
   enumNames?: Record<string, string>;
 }
 
-const HTTP_METHODS = [
+export const HTTP_METHODS = [
   'get',
   'put',
   'post',
