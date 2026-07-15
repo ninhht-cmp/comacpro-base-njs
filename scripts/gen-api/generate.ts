@@ -62,11 +62,17 @@ function loadConfig(): CodegenConfig {
 
 async function main(): Promise<void> {
   const spec = await loadSpec(SPEC_SOURCE);
-  const { content, stats } = generateModels(
-    spec,
-    loadSelection(),
-    loadConfig(),
-  );
+  const selection = loadSelection();
+  const { content, stats } = generateModels(spec, selection, loadConfig());
+
+  if (selection === 'all') {
+    // Full-spec mode is a bootstrap convenience, not a resting state: every
+    // schema lands in the emitted surface and nothing flags the unused ones.
+    console.warn(
+      'gen:api: full-spec mode ("operations": "*") — emitting every schema. ' +
+        'Narrow with `pnpm gen:api:pick` once the needed surface is known.',
+    );
+  }
 
   // The generator owns the whole directory: a full rewrite means schemas that
   // fall out of the selection can never linger as orphaned files.
