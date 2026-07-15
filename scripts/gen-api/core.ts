@@ -356,7 +356,10 @@ function docComment(node: SchemaNode, indent: string): string {
   if (node.deprecated) parts.push('@deprecated');
   if (node.format) parts.push(`Format: ${node.format}.`);
   if (parts.length === 0) return '';
-  return `${indent}/** ${parts.join(' ')} */\n`;
+  // A description containing `*/` would terminate the comment early and
+  // corrupt the emitted file — descriptions are backend-authored free text.
+  const safe = parts.join(' ').replace(/\*\//g, '*\\/');
+  return `${indent}/** ${safe} */\n`;
 }
 
 function objectLiteral(node: SchemaNode, where: string, indent = '  '): string {

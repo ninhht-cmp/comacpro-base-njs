@@ -215,6 +215,74 @@ describe('generateModels', () => {
     expect(stats.schemas).toBe(2);
   });
 
+  it('emits numeric enums as a plain union (numbers cannot be const-object keys)', () => {
+    const { content } = generateModels(
+      spec({
+        ThingDto: {
+          type: 'object',
+          properties: { level: { type: 'number', enum: [1, 2, 3] } },
+        },
+      }),
+      SELECT_THINGS,
+    );
+    expect(content).toContain('export type Level = 1 | 2 | 3;');
+    expect(content).not.toContain('export const Level');
+    expect(content).toContain('level?: Level;');
+  });
+
+  it('treats a null enum member as nullability, not a value', () => {
+    const { content } = generateModels(
+      spec({
+        ThingDto: {
+          type: 'object',
+          properties: { mood: { type: 'string', enum: ['up', 'down', null] } },
+        },
+      }),
+      SELECT_THINGS,
+    );
+    expect(content).toContain("up: 'up',");
+    // null must surface as `| null` on the property, never as an enum member.
+    expect(content).not.toMatch(/null:|'null'/);
+    expect(content).toContain('mood?: Mood | null;');
+  });
+
+  it('errors when two DIFFERENT value-sets contest the same default name', () => {
+    expect(() =>
+      generateModels(
+        spec({
+          ThingDto: {
+            type: 'object',
+            properties: {
+              kind: { type: 'string', enum: ['a'] },
+              other: { $ref: '#/components/schemas/OtherDto' },
+            },
+          },
+          OtherDto: {
+            type: 'object',
+            properties: { kind: { type: 'string', enum: ['b'] } },
+          },
+        }),
+        SELECT_THINGS,
+      ),
+    ).toThrow(/collides|codegen.json/);
+  });
+
+  it('escapes `*/` in backend descriptions so the emitted JSDoc cannot break', () => {
+    const { content } = generateModels(
+      spec({
+        ThingDto: {
+          type: 'object',
+          properties: {
+            x: { type: 'string', description: 'weird */ text' },
+          },
+        },
+      }),
+      SELECT_THINGS,
+    );
+    expect(content).toContain('weird *\\/ text');
+    expect(content).not.toContain('/** weird */ text */');
+  });
+
   it('is deterministic: same input → byte-identical output', () => {
     const make = () =>
       generateModels(
