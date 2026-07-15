@@ -3,6 +3,10 @@ import type {
   ProfileMeResDto,
   TokenResponseDto,
 } from '@/lib/api/generated/model';
+import {
+  ProfileMeResDtoSchema,
+  TokenResponseDtoSchema,
+} from '@/lib/api/generated/schemas';
 import { ApiError, serverFetch } from '@/lib/api/server-fetch';
 import { logger } from '@/lib/observability/logger';
 import type { SessionData, SessionUser } from './session';
@@ -54,6 +58,7 @@ export async function refreshTokens(
     method: 'POST',
     json: { refreshToken },
     label: 'auth:refresh',
+    schema: TokenResponseDtoSchema,
   });
   return {
     accessToken: tokens.accessToken,
@@ -70,6 +75,7 @@ export async function fetchProfile(
     method: 'GET',
     accessToken,
     label: 'users:me',
+    schema: ProfileMeResDtoSchema,
   });
 }
 

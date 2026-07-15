@@ -111,6 +111,37 @@ describe('serverFetch', () => {
   });
 });
 
+describe('serverFetch response validation (schema option)', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('parses a conforming payload and STRIPS unknown keys (whitelist)', async () => {
+    const { z } = await import('zod');
+    server.use(
+      http.get('*/v1/ok', () =>
+        HttpResponse.json(envelope({ id: 'a', extra: 'dropped' })),
+      ),
+    );
+    await expect(
+      serverFetch('/ok', { schema: z.object({ id: z.string() }) }),
+    ).resolves.toEqual({ id: 'a' });
+  });
+
+  it('fails fast on contract drift outside production (ApiError 502 + logged issues)', async () => {
+    const { z } = await import('zod');
+    const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {});
+    server.use(
+      http.get('*/v1/drift', () => HttpResponse.json(envelope({ id: 123 }))),
+    );
+    await expect(
+      serverFetch('/drift', {
+        schema: z.object({ id: z.string() }),
+        label: 'x',
+      }),
+    ).rejects.toMatchObject({ name: 'ApiError', status: 502 });
+    expect(errorLog.mock.calls.flat().join('\n')).toContain('shape mismatch');
+  });
+});
+
 describe('serverFetch observability', () => {
   afterEach(() => vi.restoreAllMocks());
 

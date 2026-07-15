@@ -23,7 +23,8 @@ export function MarkReadButton({ id }: { id: string }) {
         startTransition(async () => {
           const result = await markNotificationAsRead(id);
           if (result.error) {
-            toast.error(t('markReadError'));
+            // Already translated — actions return ready-to-display messages.
+            toast.error(result.error);
             return;
           }
           router.refresh();

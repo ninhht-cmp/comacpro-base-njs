@@ -3,6 +3,7 @@ import {
   type ClientContext,
   clientContextHeaders,
 } from '@/lib/api/client-context';
+import { UserRefResDtoSchema } from '@/lib/api/generated/schemas';
 import { serverFetch } from '@/lib/api/server-fetch';
 import { type ReferralUser, toReferralUser } from '../api';
 
@@ -44,6 +45,7 @@ export async function fetchReferralUser(
       timeoutMs: 3_000,
       headers: clientContextHeaders(context),
       label: 'users:referral',
+      schema: UserRefResDtoSchema,
     },
   );
   return toReferralUser(dto);

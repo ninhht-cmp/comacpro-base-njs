@@ -16,7 +16,9 @@ repo's transport is `serverFetch`; see ADR 0002/0007).
 
 ## Files
 
-- `core.ts` — the pure generator (unit-tested in `core.test.ts`)
+- `core.ts` — the pure generator (unit-tested in `core.test.ts`); emits both
+  the types (`model/index.ts`) and matching zod validators (`schemas.ts`)
+  from the same schema walk, so the two artifacts cannot drift
 - `io.ts` — shared env/spec/selection loading; all paths live here
 - `generate.ts` / `sync.ts` / `pick.ts` / `check-fresh.ts` — thin commands
 - `openapi/openapi.json` — committed spec snapshot (offline, reviewable diffs)

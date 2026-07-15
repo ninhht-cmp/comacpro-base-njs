@@ -38,7 +38,12 @@ describe('refreshSession', () => {
       }),
       http.get('*/v1/users/me', () =>
         HttpResponse.json(
-          envelope({ id: 'new', phoneNumber: '0900000000', role: 'sm-leader' }),
+          envelope({
+            id: 'new',
+            fullName: 'New Name',
+            phoneNumber: '0900000000',
+            role: 'sm-leader',
+          }),
         ),
       ),
     );
@@ -56,21 +61,22 @@ describe('refreshSession', () => {
     expect(a.user).toMatchObject({ id: 'new', role: 'sm-leader' });
   });
 
-  it('keeps the old refresh token when the backend returns none', async () => {
+  it('fails fast (outside production) when the refresh response violates the contract', async () => {
+    // The spec marks TokenResponseDto.refreshToken required; a response
+    // without it is drift, surfaced at the transport boundary. In production
+    // the same mismatch shadow-logs and the `?? refreshToken` fallback in
+    // refreshTokens keeps the session usable.
     server.use(
       http.post('*/v1/auth/refresh', () =>
         HttpResponse.json(
           envelope({ accessToken: 'new-access', expiresIn: 3600 }),
         ),
       ),
-      http.get('*/v1/users/me', () =>
-        HttpResponse.json(
-          envelope({ id: 'x', phoneNumber: '0900', role: 'sm-member' }),
-        ),
-      ),
     );
-    const refreshed = await refreshSession(sessionWith('keep-me'));
-    expect(refreshed.refreshToken).toBe('keep-me');
+    await expect(refreshSession(sessionWith('keep-me'))).rejects.toMatchObject({
+      name: 'ApiError',
+      status: 502,
+    });
   });
 
   it('keeps the stale user snapshot when the profile refresh fails transiently (5xx)', async () => {

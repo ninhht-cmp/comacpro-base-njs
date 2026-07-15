@@ -30,8 +30,9 @@ that restate the code.
   typed, centralized copy — adding a locale back is config + message files.
 - **Tailwind v4** (CSS-first config in `src/styles/globals.css`) + shadcn (radix)
 - **zod v4** for boundary validation; **jose** for the JWE session cookie
-- **gen:api** (`scripts/gen-api/`, in-house) — generates model types from the
-  OpenAPI spec; dedupes inline enums via `openapi/codegen.json` (ADR 0007)
+- **gen:api** (`scripts/gen-api/`, in-house) — generates model types + zod
+  response validators from the OpenAPI spec; dedupes inline enums via
+  `openapi/codegen.json` (ADR 0007)
 - **Vitest** (+ Testing Library, MSW) / **Playwright** / **Storybook**
 
 ## Architecture (read before adding features)
@@ -70,8 +71,9 @@ Is it a wire DTO type?              → generated: run `pnpm gen:api`, never han
   `@/modules/<name>/server`. Deep imports fail lint by default.
 - Never import `next/link` or `redirect`/`useRouter` from `next/navigation` —
   use `@/i18n/navigation` (locale-aware wrappers).
-- `src/lib/api/generated/model` is the only supported generated import;
-  `generated/.reference/` is quarantined output, never import it.
+- The only supported generated imports are `@/lib/api/generated/model`
+  (types) and `@/lib/api/generated/schemas` (zod response validators, for
+  `serverFetch({ schema })` in services).
 
 ## Quick commands
 

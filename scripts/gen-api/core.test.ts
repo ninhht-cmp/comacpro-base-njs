@@ -283,6 +283,37 @@ describe('generateModels', () => {
     expect(content).not.toContain('/** weird */ text */');
   });
 
+  it('emits zod validators mirroring the types (shared enums, optional/nullable, lazy refs)', () => {
+    const role = { type: 'string', enum: ['admin', 'member'] };
+    const { schemas } = generateModels(
+      spec({
+        ThingDto: {
+          type: 'object',
+          required: ['id'],
+          properties: {
+            id: { type: 'string' },
+            note: { type: 'string', nullable: true },
+            role,
+            child: { $ref: '#/components/schemas/ChildDto' },
+          },
+        },
+        ChildDto: { type: 'object', properties: { role: { ...role } } },
+      }),
+      SELECT_THINGS,
+      { enumNames: { role: 'UserRole' } },
+    );
+    expect(schemas).toContain(
+      "export const UserRoleSchema = z.enum(['admin', 'member'])",
+    );
+    expect(schemas).toContain('id: z.string(),'); // required → no .optional()
+    expect(schemas).toContain('note: z.string().nullable().optional(),');
+    expect(schemas).toContain('role: UserRoleSchema.optional(),'); // shared, not re-inlined
+    expect(schemas).toContain(
+      'child: z.lazy(() => ChildDtoSchema).optional(),',
+    );
+    expect(schemas).toContain('satisfies z.ZodType<ThingDto>');
+  });
+
   it('is deterministic: same input → byte-identical output', () => {
     const make = () =>
       generateModels(

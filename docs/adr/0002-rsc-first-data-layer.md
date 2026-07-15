@@ -56,5 +56,11 @@ blessed way" to fetch data.
   `body as T`. The mappers contain enum drift at compile time, but a shape
   change in the live API surfaces at runtime. Revisit once the spec is
   trustworthy (generate zod from it and parse in `serverFetch`).
+  - **Resolved 2026-07-15**: the in-house generator (ADR 0007) now emits zod
+    validators (`generated/schemas.ts`) and services pass them to
+    `serverFetch({ schema })`. Two-phase rollout: mismatches THROW outside
+    production (dev + CI mocks fail fast) and shadow-log in production until
+    the spec's field-level accuracy is proven against the live API — then
+    flip to always-throw.
 - No backend `/auth/logout` endpoint exists; logout only clears the cookie
   and the refresh token stays valid until TTL. Tracked as a backend ask.

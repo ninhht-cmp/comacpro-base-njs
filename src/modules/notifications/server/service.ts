@@ -2,6 +2,10 @@ import type {
   NotificationResDto,
   NotificationUnreadCountDto,
 } from '@/lib/api/generated/model';
+import {
+  NotificationResDtoSchema,
+  NotificationUnreadCountDtoSchema,
+} from '@/lib/api/generated/schemas';
 import { serverFetch, serverFetchPage } from '@/lib/api/server-fetch';
 import { type NotificationPage, toNotification } from '../api';
 
@@ -41,7 +45,13 @@ export async function fetchMyNotifications(
 ): Promise<NotificationPage> {
   const { data, pagination } = await serverFetchPage<NotificationResDto[]>(
     `/notifications${searchParams(query)}`,
-    { method: 'GET', accessToken, locale, label: 'notifications:list' },
+    {
+      method: 'GET',
+      accessToken,
+      locale,
+      label: 'notifications:list',
+      schema: NotificationResDtoSchema.array(),
+    },
   );
   return {
     items: (data ?? []).map(toNotification),
@@ -61,7 +71,13 @@ export async function fetchUnreadCount(
 ): Promise<number> {
   const body = await serverFetch<NotificationUnreadCountDto>(
     '/notifications/unread-count',
-    { method: 'GET', accessToken, locale, label: 'notifications:unread-count' },
+    {
+      method: 'GET',
+      accessToken,
+      locale,
+      label: 'notifications:unread-count',
+      schema: NotificationUnreadCountDtoSchema,
+    },
   );
   return body?.count ?? 0;
 }

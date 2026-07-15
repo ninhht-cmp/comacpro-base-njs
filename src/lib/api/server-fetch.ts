@@ -1,3 +1,4 @@
+import type { ZodType } from 'zod';
 import { env } from '@/config/env';
 import { logger } from '@/lib/observability/logger';
 import { buildCurl } from './debug';
@@ -80,7 +81,17 @@ function errorMessageFrom(body: unknown): string {
   return 'Request failed';
 }
 
-export interface ServerFetchOptions extends Omit<RequestInit, 'body'> {
+export interface ServerFetchOptions<T = unknown> extends Omit<
+  RequestInit,
+  'body'
+> {
+  /**
+   * Runtime validator for the (unwrapped) response — pass the generated zod
+   * schema (`@/lib/api/generated/schemas`). Without it the payload is trusted
+   * as `T` unchecked. Mismatches fail fast outside production and shadow-log
+   * in production — see {@link validateResponse}.
+   */
+  schema?: ZodType<T>;
   /** Session bearer token; sent as `Authorization: Bearer <token>`. */
   accessToken?: string;
   /**
@@ -141,6 +152,9 @@ async function fetchEnvelope(
     locale,
     json,
     label,
+    // Consumed by serverFetch/serverFetchPage; must not leak into fetch init.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    schema: _schema,
     timeoutMs = DEFAULT_TIMEOUT_MS,
     headers,
     ...init
@@ -234,13 +248,47 @@ async function fetchEnvelope(
   return { body, envelope };
 }
 
+/**
+ * Validate an unwrapped payload against the caller's schema. Two-phase
+ * rollout on purpose (ADR 0002's runtime-validation debt):
+ * - dev/test: THROW — contract drift fails fast, in front of the developer
+ *   and CI (whose MSW mocks must therefore stay spec-accurate).
+ * - production: shadow mode — log loudly (Sentry-able) but return the raw
+ *   payload, because the spec's field-level accuracy against the live API is
+ *   not yet proven end-to-end; breaking a page over a mislabeled optional
+ *   field is worse than one structured error line. Flip to always-throw once
+ *   prod logs show zero mismatches.
+ */
+function validateResponse<T>(
+  data: T,
+  options: ServerFetchOptions<T>,
+  path: string,
+): T {
+  const { schema, label } = options;
+  if (!schema) return data;
+  const parsed = schema.safeParse(data);
+  if (parsed.success) return parsed.data;
+
+  const method = (options.method ?? 'GET').toUpperCase();
+  const tag = label ? `${method} ${path} [${label}]` : `${method} ${path}`;
+  logger.error('api', `✗ response shape mismatch ${tag}`, {
+    issues: parsed.error.issues,
+  });
+  if (env.NODE_ENV === 'production') return data;
+  throw new ApiError(`Upstream response shape mismatch on ${tag}`, 502);
+}
+
 /** Request + unwrap: returns the envelope's `data` (or the raw body). */
 export async function serverFetch<T>(
   path: string,
-  options: ServerFetchOptions = {},
+  options: ServerFetchOptions<T> = {},
 ): Promise<T> {
   const { body, envelope } = await fetchEnvelope(path, options);
-  return (envelope ? envelope.data : body) as T;
+  return validateResponse(
+    (envelope ? envelope.data : body) as T,
+    options,
+    path,
+  );
 }
 
 /**
@@ -250,7 +298,7 @@ export async function serverFetch<T>(
  */
 export async function serverFetchPage<T>(
   path: string,
-  options: ServerFetchOptions = {},
+  options: ServerFetchOptions<T> = {},
 ): Promise<{ data: T; pagination?: ApiPagination }> {
   const { envelope } = await fetchEnvelope(path, options);
   if (!envelope) {
@@ -259,7 +307,7 @@ export async function serverFetchPage<T>(
     );
   }
   return {
-    data: envelope.data as T,
+    data: validateResponse(envelope.data as T, options, path),
     pagination: envelope.pagination as ApiPagination | undefined,
   };
 }

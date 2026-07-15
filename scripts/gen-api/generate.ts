@@ -36,7 +36,11 @@ async function main(): Promise<void> {
     );
   }
   const selection = read === 'all' ? 'all' : new Set(read);
-  const { content, stats } = generateModels(spec, selection, loadConfig());
+  const { content, schemas, stats } = generateModels(
+    spec,
+    selection,
+    loadConfig(),
+  );
 
   if (selection === 'all') {
     // Full-spec mode is a bootstrap convenience, not a resting state: every
@@ -52,10 +56,11 @@ async function main(): Promise<void> {
   rmSync(OUTPUT_DIR, { recursive: true, force: true });
   mkdirSync(join(OUTPUT_DIR, 'model'), { recursive: true });
   writeFileSync(OUTPUT_FILE, content);
+  writeFileSync(join(OUTPUT_DIR, 'schemas.ts'), schemas);
 
   console.log(
     `gen:api ✓ ${stats.schemas} schemas, ${stats.enums} shared enums ` +
-      `(${stats.dedupedSites} duplicate sites folded) → ${GENERATED_DIR}/model/index.ts`,
+      `(${stats.dedupedSites} duplicate sites folded) → ${GENERATED_DIR}/{model/index,schemas}.ts`,
   );
 }
 

@@ -7,6 +7,7 @@ import {
   type ClientContext,
   clientContextHeaders,
 } from '@/lib/api/client-context';
+import { LoginResponseDtoSchema } from '@/lib/api/generated/schemas';
 import { serverFetch } from '@/lib/api/server-fetch';
 import { sessionFromTokens } from '@/core/session/identity';
 
@@ -32,6 +33,7 @@ export async function signIn(
     method: 'POST',
     json: { username, password },
     label: 'auth:signin',
+    schema: LoginResponseDtoSchema,
   });
   return sessionFromTokens(tokens);
 }
